@@ -6,13 +6,19 @@ public class Tesoro {
     private  String descripcion;
     private  ETreasureRarity rarezaTesoro;
     private  ETreasureType tipoTesoro;
+    private  int puntos;
+    private  int partes;
+    
+
     public Tesoro(String codigo, String nombre, String descripcion, ETreasureRarity rarezaTesoro,
-            ETreasureType tipoTesoro) {
+            ETreasureType tipoTesoro, int puntos, int partes) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.rarezaTesoro = rarezaTesoro;
         this.tipoTesoro = tipoTesoro;
+        this.puntos = puntos;
+        this.partes = partes;
     }
 
     public String getCodigo() {
@@ -53,6 +59,22 @@ public class Tesoro {
 
     public void setTipoTesoro(ETreasureType tipoTesoro) {
         this.tipoTesoro = tipoTesoro;
+    }
+
+    public int getPuntos() {
+        return puntos;
+    }
+
+    public void setPuntos(int puntos) {
+        this.puntos = puntos;
+    }
+
+    public int getPartes() {
+        return partes;
+    }
+
+    public void setPartes(int partes) {
+        this.partes = partes;
     }
     
 }
