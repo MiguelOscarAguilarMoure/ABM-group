@@ -1,12 +1,11 @@
 package regions;
 
 import java.util.ArrayList;
-
-import treasures.Tesoro;
+import treasures.Treasure;
 
 public abstract class Region {
     private  static String codigo;
-    private  ArrayList<Tesoro> listaTesoros;
+    private  ArrayList<Treasure> listaTesoros;
     
 
 }
