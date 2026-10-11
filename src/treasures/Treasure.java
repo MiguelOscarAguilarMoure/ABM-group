@@ -4,9 +4,9 @@ import java.util.Random;
 
 public class Treasure {
     private static final Random random = new Random();
-    //los hacemos final porque oslo se puden asignar una vez 
+    // los hacemos final porque oslo se puden asignar una vez
 
-    private  final  String codigo;
+    private final String codigo;
     private final String nombre;
     private final String descripcion;
     private final ETreasureRarity rarezaTesoro;
@@ -14,14 +14,16 @@ public class Treasure {
     private final int puntos;
     private final int partes;
 
-    public Treasure(String codigo, String descripcion, String nombre, int partes, int puntos, ETreasureRarity rarezaTesoro, ETreasureType tipoTesoro) {
+    public Treasure(String codigo, String nombre, String descripcion,
+            ETreasureRarity rarezaTesoro, ETreasureType tipoTesoro,
+            int partes, int puntos) {
         this.codigo = codigo;
-        this.descripcion = descripcion;
         this.nombre = nombre;
-        this.partes = partes;
-        this.puntos = puntos;
+        this.descripcion = descripcion;
         this.rarezaTesoro = rarezaTesoro;
         this.tipoTesoro = tipoTesoro;
+        this.partes = partes;
+        this.puntos = puntos;
     }
 
     public String getCodigo() {
@@ -51,11 +53,11 @@ public class Treasure {
     public int getPartes() {
         return partes;
     }
-    //devuelve el codigo  y genera partes de forma aleatoria
-  public String getCodigoConParte() {
+
+    // devuelve el codigo y genera partes de forma aleatoria
+    public String getCodigoConParte() {
         int parte = random.nextInt(partes) + 1;
         return String.format("%s_%04d", codigo, parte);
     }
 
-    
 }
