@@ -1,7 +1,9 @@
 package people;
 
 import excavation.TerrainShape;
+import excavation.TerrainSize;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.plaf.synth.Region;
 import skills.Skill;
 import treasures.ETreasureRarity;
@@ -86,11 +88,18 @@ public class Archeologist {
     public void setEspecializacion(Region especializacion) {
         this.especializacion = especializacion;
     }
-
+    /**
+     * meteodo para obtener la experiencia
+     * @return
+     */
     public int getExpNecesaria() {
         return 50 + 50 * nivel;
     }
-
+    /**
+     * Metodo para añadir la experiencia
+     * @param exp
+     * @return
+     */
     public boolean addExperiencia(int exp) {
         experiencia += exp;
         if (nivel < NIVEL_MAX && experiencia >= getExpNecesaria()) {
@@ -100,5 +109,71 @@ public class Archeologist {
         }
         return false;
     }
-    
+     /**
+      * metodo para obtener los distintos tamñaos segunb el nivel
+      * @return
+      */   
+    public List<TerrainSize> getTamaños() {
+        List<TerrainSize> tamaños = new ArrayList<>();
+        tamaños.add(TerrainSize.SMALL);
+        if (nivel >= 2)
+            tamaños.add(TerrainSize.MEDIUM);
+        if (nivel >= 4)
+            tamaños.add(TerrainSize.LARGE);
+        return tamaños;
+    }
+    /**
+     * Clase para saber si arqueplogo puede aprender una habildad
+     * @param s
+     * @return
+     */
+    public boolean puedeAprender(Skill s) {
+        if (listaHabilidades.contains(s)) {
+            return false;
+        }
+        /*
+         * for (Skill dep : s.getDependencias()) {
+         * if (!habilidades.contains(dep)) {
+         * return false;
+         * }
+         */
+        /*
+         * for (Skill inc : s.getIncompatibilidades()) {
+         * if (habilidades.contains(inc)) {
+         * return false;
+         * }
+         */
+        return true;
+    }
+
+    /**
+     * Añade una habilidad y, si desbloquea formas de terreno, las añade también.
+     * 
+     * @param s La habilidad a añadir.
+     */
+    /*
+     * public void addHabilidad(Skill s) {
+     * listaHabilidades.add(s);
+     * for (TerrainShape terrenoforma : s.getTerreno()) {
+     * if (!terrenos.contains(forma)) {
+     * terrenos.add(forma);
+     * }
+     * }
+     * }
+     */
+    /**
+ * Calcula los puntos que da licenciar al arqueólogo.
+ * @return 10 por nivel, más 10 si es infrecuente o 20 si es raro.
+ */
+    public int getPuntosLicencia() {
+        int puntos = 10 * nivel;
+        if (rareza == ETreasureRarity.UNCOMMON) {
+
+            puntos += 10;
+        }
+        if (rareza == ETreasureRarity.RARE) {
+            puntos += 20;
+        }
+        return puntos;
+    }
 }
