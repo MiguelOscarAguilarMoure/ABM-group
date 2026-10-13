@@ -1,16 +1,15 @@
-package Habilidades.Habilidad;
+package skills.Habilidad;
 
-import Habilidades.Skill;
-import Habilidades.SkyllType;
+import skills.Skill;
+import skills.ESkillType;
 
-
-public class Licencia extends Skill {
+public class Experiencia extends Skill {
     protected int nivel;
-    protected String nombre = "Licencia";
+    protected String nombre = "Experiencia";
     protected String descripcion =
-            "Extiende el Terreno \n (A) Vertical o Horizontalmente \n (B) Ambas dimensiones";
+            "Proabilidad de que una accion de excavar sea gratis";
 
-    public Licencia(SkyllType tipo, String dependencia, int nivel) {
+    public Experiencia(ESkillType tipo, String dependencia, int nivel) {
         super(tipo, dependencia);
         this.nivel = nivel;
     }
@@ -32,18 +31,18 @@ public class Licencia extends Skill {
      * @return
      */
 
-    public int efecto(Conocimiento habilidad) {
+    public float efecto(Experiencia habilidad) {
         int nivel = habilidad.getNivel();
 
         switch (nivel) {
             case 0 -> {
-                return 2;
+                return 1;
             }
             case 1 -> {
-                return 4;
+                return 2;
             }
             case 2 -> {
-                return 6;
+                return 3;
             }
             default -> {
                 return 0;
@@ -52,6 +51,4 @@ public class Licencia extends Skill {
         }
 
     }
-
 }
-
