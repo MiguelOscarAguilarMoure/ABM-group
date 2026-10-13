@@ -4,5 +4,7 @@ public enum SkyllType {
     Tesoro,
     Excavacion,
     Terreno,
-    Especialista
+    Especialista;
+
+
 }
