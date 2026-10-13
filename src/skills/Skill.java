@@ -1,7 +1,5 @@
 package skills;
 
-import skills.ESkillType;
-
 public class Skill {
     protected ESkillType tipo;
     protected String dependencia;

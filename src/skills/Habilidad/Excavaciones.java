@@ -1,4 +1,4 @@
-package Habilidades.Habilidad;
+package skills.Habilidad;
 
 import skills.Skill;
 import skills.ESkillType;
