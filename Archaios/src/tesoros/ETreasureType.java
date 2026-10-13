@@ -1,4 +1,4 @@
-package treasures;
+package tesoros;
 
 /**
  * El tipo del tesoro.

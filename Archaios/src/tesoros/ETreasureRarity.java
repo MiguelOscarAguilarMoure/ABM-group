@@ -1,4 +1,4 @@
-package treasures;
+package tesoros;
 
 /**
  * Las distintas rarezas de los tesoros.

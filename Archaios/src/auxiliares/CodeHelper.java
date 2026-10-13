@@ -1,4 +1,4 @@
-package helpers;
+package auxiliares;
 
 /**
  * Funciones auxiliares para la gestión de los códigos.
