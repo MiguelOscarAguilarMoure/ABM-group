@@ -6,8 +6,12 @@ import Habilidades.SkyllType;
 public class Limpieza extends Skill {
     protected int nivel;
 
-    public Limpieza(SkyllType tipo, String nombre, String descripcion, String dependencia, int nivel) {
-        super(tipo.Excavacion, nombre, descripcion, dependencia);
+    protected String nombre = "Limpieza";
+    protected String descripcion =
+            "Excava automaticamente zonas del terreno";
+
+    public Limpieza(SkyllType tipo, String dependencia, int nivel) {
+        super(tipo, dependencia);
         this.nivel = nivel;
     }
 }
