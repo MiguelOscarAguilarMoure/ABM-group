@@ -12,3 +12,4 @@ public class TerrenoAgua extends Skill {
         super(tipo, dependencia);
     }
 }
+

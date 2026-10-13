@@ -1,6 +1,6 @@
 package Habilidades;
 
-public abstract class Skill {
+public class Skill {
     protected SkyllType tipo;
     protected String dependencia;
 

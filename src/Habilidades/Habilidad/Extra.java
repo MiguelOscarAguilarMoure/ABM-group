@@ -13,4 +13,42 @@ public class Extra extends Skill {
         super(tipo, dependencia);
         this.nivel = nivel;
     }
+    // ======================================================================================
+    public int getNivel() {
+        return nivel;
+    }
+
+    public void setNivel(int nivel) {
+        this.nivel = nivel;
+    }
+
+    // ======================================================================================
+
+    /**
+     *
+     * @param habilidad
+     * @return
+     */
+
+    public int efecto(Conocimiento habilidad) {
+        int nivel = habilidad.getNivel();
+
+        switch (nivel) {
+            case 0 -> {
+                return 2;
+            }
+            case 1 -> {
+                return 4;
+            }
+            case 2 -> {
+                return 6;
+            }
+            default -> {
+                return 0;
+            }
+
+        }
+
+    }
 }
+
