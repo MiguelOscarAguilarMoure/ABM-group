@@ -6,7 +6,7 @@ import java.util.List;
 import people.Archeologist;
 
 public class Archaios {
-    private static  final String CODIGO_GRUPO="";
+    private static  final String CODIGO_GRUPO="2DAM2627";
     private final Console console = System.console();
     private String uid;
     private String nombrePartida;
