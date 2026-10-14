@@ -1,84 +1,103 @@
 package regions;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import treasures.ETreasureRarity;
-import treasures.Treasure;
 
-public abstract class Region {
-    private static final Random random = new Random();
-    private final String nombre;
-    protected ArrayList<Treasure> listaTesoros = new ArrayList<>();
 
-    public Region(String nombre) {
+
+
+/**
+ * @author Miguel Aguilar
+ * La clase Region representa una región en el juego Archaios. 
+ * Cada región tiene un nombre, un código y una lista de tesoros asociados. 
+ * Proporciona métodos para acceder a los tesoros por tipo, rareza y obtener tesoros aleatorios.
+ */
+public class Region {
+    protected final String nombre;
+    protected final String codigo;
+    protected ArrayList<Treasure> treasures = new ArrayList<>();
+
+
+    public Region(String nombre, String codigo) {
         this.nombre = nombre;
+        this.codigo = codigo;
     }
-
-    /**
-     * Método para obtener el codigo de la region
-     * 
-     * @return
-     */
-    public abstract String getCodigo();
 
     public String getNombre() {
         return nombre;
     }
-     /**
-     * Devuelve todos los tesoros de la región.
-     * @return Una copia de la lista de tesoros.
-     */
-    public List<Treasure> getTesoros() {
-        return List.copyOf(listaTesoros);
+    public String getCodigo() {
+        return codigo;
+    }
+    public ArrayList<Treasure> getTesoros() {
+        return treasures;
     }
 
-    /**
-     * Busca un tesoro de una rareza especifica
-     * 
-     * @param rareza
-     * @return
-     */
-    public List<Treasure> getTesoros(ETreasureRarity rareza) {
-        List<Treasure> resultado = new ArrayList<>();
-        for (Treasure t : listaTesoros) {
-            if (t.getRarezaTesoro() == rareza) {
-                resultado.add(t);
+    public String [] getNombreTesoros() {
+        StringBuilder sb = new StringBuilder();
+        String[] nombres = new String[treasures.size()];
+        for (int i = 0; i < treasures.size(); i++) {
+            nombres[i] = treasures.get(i).getNombre();
+        }
+        return nombres;
+    }
+    public ArrayList<Treasure> getTiposTesoros(String codigoTesoro) {
+        ArrayList<Treasure> tesorosPorTipo = new ArrayList<>();
+        for (Treasure t : treasures) {
+            if(CodeHelper.getType(t.getCodigo()).equals(codigoTesoro)) {
+                tesorosPorTipo.add(t);
             }
         }
-        return resultado;
+        return tesorosPorTipo;
     }
-    /**
-     * Devuelve un tesoro aleatorio
-     * @return
-     */
-    public Treasure getTesoroAleatorio() {
-        return listaTesoros.get(random.nextInt(listaTesoros.size()));
-    }
-      /**
-     * Devuelve un tesoro aleatorio de una rareza
-     * @return
-     */
-    public Treasure getTesoroAleatorio(ETreasureRarity rareza) {
-        List<Treasure> lista = getTesoros( rareza);
-        if(lista.isEmpty()){
-            return  null;
-        }
-        return lista.get(random.nextInt(lista.size()));
+    public ArrayList<Treasure>getTesorosPorTipo(ETreasureType codigo){
+        return getTiposTesoros(codigo.getCode());
 
     }
-    /**
-     * Busca un tesoro por su código base
-     * @param codigo
-     * @return
-     */
-      public Treasure getTesoro(String codigo) {
-        for (Treasure t : listaTesoros) {
-            if (t.getCodigo().equals(codigo)) {
+    public ArrayList<Treasure> getTesorosPorRareza(ETreasureRarity rareza){
+        ArrayList<Treasure> listaTesoros = new ArrayList<>();
+        for (Treasure t : treasures) {
+            if(t.getRarezaTesoro().equals(rareza)) {
+                listaTesoros.add(t);
+            }
+        }
+        return listaTesoros;
+    }
+    public Treasure getTesoro(String codigoTesoro) {
+        for (Treasure t : treasures) {
+            if(t.getCodigo().equals(codigoTesoro)) {
                 return t;
             }
         }
         return null;
     }
 
+    public Treasure getTesoroAleatorio() {
+        if(treasures.size() == 0) {
+            return null;
+        }
+        int index = (int) (Math.random() * treasures.size());
+        return treasures.get(index);
+    }
+    public Treasure getTesoroAleatorioPorRareza(ETreasureRarity rareza) {
+        ArrayList<Treasure> listaTesoros = getTesorosPorRareza(rareza);
+        if(listaTesoros.size() == 0) {
+            return null;
+        }
+        int index = (int) (Math.random() * listaTesoros.size());
+        return listaTesoros.get(index);
+    }
+
+    public int getNumTesoros(){
+
+        int cantidad = 0;
+        for (Treasure t : treasures) {
+            cantidad+= t.getPartes();
+        }
+        return cantidad;
+    }
+
+
+
+
+   
 }
