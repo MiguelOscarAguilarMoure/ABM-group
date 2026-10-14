@@ -36,7 +36,6 @@ public abstract class Region {
     }
 
     public String [] getNombreTesoros() {
-        StringBuilder sb = new StringBuilder();
         String[] nombres = new String[treasures.size()];
         for (int i = 0; i < treasures.size(); i++) {
             nombres[i] = treasures.get(i).getNombre();
