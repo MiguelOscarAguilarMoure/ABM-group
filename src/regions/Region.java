@@ -1,6 +1,7 @@
 package regions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import helpers.CodeHelper;
 import treasures.ETreasureRarity;
@@ -18,7 +19,6 @@ import treasures.Treasure;
  */
 public abstract class Region {
     protected final String nombre;
-    protected final String codigo;
     protected ArrayList<Treasure> treasures = new ArrayList<>();
 
 
@@ -31,8 +31,8 @@ public abstract class Region {
         return nombre;
     }
     
-    public ArrayList<Treasure> getTesoros() {
-        return treasures;
+    public List<Treasure> getTesoros() {
+        return List.copyOf(treasures);
     }
 
     public String [] getNombreTesoros() {
