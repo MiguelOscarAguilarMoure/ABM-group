@@ -14,10 +14,9 @@ public class Treasure {
     private final int puntos;
     private final int partes;
 
-    public Treasure(String codigo, String nombre, String descripcion,
-            ETreasureRarity rarezaTesoro, ETreasureType tipoTesoro,
-            int partes, int puntos) {
-        this.codigo = codigo;
+     public Treasure(String nombre, String codigoRegion, ETreasureType tipoTesoro, String numero,
+            int partes, int puntos, ETreasureRarity rarezaTesoro, String descripcion) {
+        this.codigo = codigoRegion + "_" + tipoTesoro.getCode() + "_" + numero;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.rarezaTesoro = rarezaTesoro;
