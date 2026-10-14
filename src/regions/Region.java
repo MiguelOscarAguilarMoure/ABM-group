@@ -89,13 +89,12 @@ public abstract class Region {
         return listaTesoros.get(index);
     }
 
-    public int getNumTesoros(){
-
-        int cantidad = 0;
-        for (Treasure t : treasures) {
-            cantidad+= t.getPartes();
+    public int getNumPartes(){
+        int cantidad=0;
+        for(Treasure t: treasures){
+            cantidad += t.getPartes();
         }
-        return cantidad;
+        return  cantidad;
     }
 
 
