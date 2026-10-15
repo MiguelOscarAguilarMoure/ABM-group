@@ -9,6 +9,7 @@ import javax.swing.plaf.synth.Region;
 import skills.Skill;
 import treasures.ETreasureRarity;
 
+
 public class Archeologist {
     public static final int NIVEL_MAX = 5;
     private String nombre;
@@ -89,15 +90,19 @@ public class Archeologist {
     public void setEspecializacion(Region especializacion) {
         this.especializacion = especializacion;
     }
+
     /**
      * meteodo para obtener la experiencia
+     * 
      * @return
      */
     public int getExpNecesaria() {
         return 50 + 50 * nivel;
     }
+
     /**
      * Metodo para añadir la experiencia
+     * 
      * @param exp
      * @return
      */
@@ -110,10 +115,12 @@ public class Archeologist {
         }
         return false;
     }
-     /**
-      * metodo para obtener los distintos tamñaos segunb el nivel
-      * @return
-      */   
+
+    /**
+     * metodo para obtener los distintos tamñaos segunb el nivel
+     * 
+     * @return
+     */
     public List<TerrainSize> getTamaños() {
         List<TerrainSize> tamaños = new ArrayList<>();
         tamaños.add(TerrainSize.SMALL);
@@ -123,8 +130,10 @@ public class Archeologist {
             tamaños.add(TerrainSize.LARGE);
         return tamaños;
     }
+
     /**
      * Clase para saber si arqueplogo puede aprender una habildad
+     * 
      * @param s
      * @return
      */
@@ -132,19 +141,13 @@ public class Archeologist {
         if (listaHabilidades.contains(s)) {
             return false;
         }
-        
-          for (Skill dep : s.getDependencias()) {
-          if (!listaHabilidades.contains(dep)) {
-          return false;
-          }
-          }
-         
-        /*
-         * for (Skill inc : s.getIncompatibilidades()) {
-         * if (habilidades.contains(inc)) {
-         * return false;
-         * }
-         */
+
+        for (Skill dep : s.getDependencias()) {
+            if (!listaHabilidades.contains(dep)) {
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -153,52 +156,44 @@ public class Archeologist {
      * 
      * @param s La habilidad a añadir.
      */
-    /*
-     * public void addHabilidad(Skill s) {
-     * listaHabilidades.add(s);
-     * for (TerrainShape terrenoforma : s.getTerreno()) {
-     * if (!terrenos.contains(forma)) {
-     * terrenos.add(forma);
-     * }
-     * }
-     * }
-     */
+
+    public void addHabilidad(Skill s) {
+        listaHabilidades.add(s);
+        for (TerrainShape terrenoforma : s.getTerrenos()) {
+            
+        }
+    }
+
     /**
- * Calcula los puntos que da licenciar al arqueólogo.
- * @return 10 por nivel, más 10 si es infrecuente o 20 si es raro.
- */
+     * Calcula los puntos que da licenciar al arqueólogo.
+     * 
+     * @return 10 por nivel, más 10 si es infrecuente o 20 si es raro.
+     */
     public int getPuntosLicencia() {
-        int puntos = 10 * nivel;
-        if (rareza == ETreasureRarity.UNCOMMON) {
-
-            puntos += 10;
-        }
-        if (rareza == ETreasureRarity.RARE) {
-            puntos += 20;
-        }
-        return puntos;
+        //Para hacer lo de puntos de licencia usar el numero dehabilidades, ya que dependiendo del tipo de arqueologo cambia ese numero
     }
-    public  void  mostrar(){
-       System.out.println("-------------------" + nombre + "-------------------"); 
-       System.out.println("Nivel " + nivel);
 
-       if(nivel == NIVEL_MAX){
-         System.out.println("Especializacion "  + especializacion.getName());
-         System.out.println("Exp "  + experiencia);
+    public void mostrar() {
+        System.out.println("-------------------" + nombre + "-------------------");
+        System.out.println("Nivel " + nivel);
 
-       }else{
-        System.out.println("Exp " + experiencia + " / " + getExpNecesaria());
-       }
-       System.out.println("Terrenos ");
-       for(TerrainSize t : getTamaños()){
+        if (nivel == NIVEL_MAX) {
+            System.out.println("Especializacion " + especializacion.getName());
+            System.out.println("Exp " + experiencia);
+
+        } else {
+            System.out.println("Exp " + experiencia + " / " + getExpNecesaria());
+        }
+        System.out.println("Terrenos ");
+        for (TerrainSize t : getTamaños()) {
             System.out.println("  -" + UtilsHelper.ucfirst(t.toString()));
-       }
-       if (!listaHabilidades.isEmpty()) {
-        System.out.println("Habilidades:");
-        for (Skill s : listaHabilidades) {
-            System.out.println("  -" + s.getNombre() + ":");
-            System.out.println("   " + s.getDescripcion());
         }
-    }
+        if (!listaHabilidades.isEmpty()) {
+            System.out.println("Habilidades:");
+            for (Skill s : listaHabilidades) {
+                System.out.println("  -" + s.getNombre() + ":");
+                System.out.println("   " + s.getDescripcion());
+            }
+        }
     }
 }
