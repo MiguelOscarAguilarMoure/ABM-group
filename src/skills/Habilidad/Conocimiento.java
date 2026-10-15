@@ -12,4 +12,10 @@ public class Conocimiento extends Skill {
         super(nombre, descripcion, tipo, dependecias);
         this.nivel = nivel;
     }
+
+    @Override
+    public int efecto() {
+
+    }
+
 }
