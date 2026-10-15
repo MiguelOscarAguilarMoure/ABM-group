@@ -38,7 +38,10 @@ public class ArcheologistsOperation implements  IOperation{
       } while (op!=0);
     }
     private void ver() {
-        System.out.println("(Ver arqueólogos, por hacer)");
+        Archeologist a = eligirArqueologo();
+        if(a != null){
+            a.mostrar();
+        }
     }
  
     private void contratar() {

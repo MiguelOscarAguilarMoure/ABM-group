@@ -2,6 +2,7 @@ package people;
 
 import excavation.TerrainShape;
 import excavation.TerrainSize;
+import helpers.UtilsHelper;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.plaf.synth.Region;
@@ -132,8 +133,8 @@ public class Archeologist {
             return false;
         }
         
-          for (Skill dep : s.getDependencia()) {
-          if (!habilidades.contains(dep)) {
+          for (Skill dep : s.getDependencias()) {
+          if (!listaHabilidades.contains(dep)) {
           return false;
           }
           }
@@ -176,5 +177,28 @@ public class Archeologist {
             puntos += 20;
         }
         return puntos;
+    }
+    public  void  mostrar(){
+       System.out.println("-------------------" + nombre + "-------------------"); 
+       System.out.println("Nivel " + nivel);
+
+       if(nivel == NIVEL_MAX){
+         System.out.println("Especializacion "  + especializacion.getName());
+         System.out.println("Exp "  + experiencia);
+
+       }else{
+        System.out.println("Exp " + experiencia + " / " + getExpNecesaria());
+       }
+       System.out.println("Terrenos ");
+       for(TerrainSize t : getTamaños()){
+            System.out.println("  -" + UtilsHelper.ucfirst(t.toString()));
+       }
+       if (!listaHabilidades.isEmpty()) {
+        System.out.println("Habilidades:");
+        for (Skill s : listaHabilidades) {
+            System.out.println("  -" + s.getNombre() + ":");
+            System.out.println("   " + s.getDescripcion());
+        }
+    }
     }
 }
