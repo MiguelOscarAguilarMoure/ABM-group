@@ -13,9 +13,4 @@ public class Conocimiento extends Skill {
         this.nivel = nivel;
     }
 
-    @Override
-    public int efecto() {
-
-    }
-
 }
