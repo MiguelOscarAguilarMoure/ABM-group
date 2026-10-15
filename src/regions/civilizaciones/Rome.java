@@ -14,84 +14,58 @@ public class Rome extends Region {
 
     public Rome() {
         super("Roma");
-        treasures.add(new Treasure(CODIGO + "_MON_001", "As",
-                "La moneda de la Antigua Roma de menor valor. Hecha de cobre.",
-                ETreasureRarity.COMMON, ETreasureType.COIN, 1, 1));
-        treasures.add(new Treasure(CODIGO + "_MON_002", "Dupondio",
-                "Moneda de bronce de poco valor.",
-                ETreasureRarity.COMMON, ETreasureType.COIN, 1, 1));
-        treasures.add(new Treasure(CODIGO + "_MON_003", "Sestercio",
-                "Moneda de bronce que se utilizaba como medida estándar para medir valores.",
-                ETreasureRarity.COMMON, ETreasureType.COIN, 1, 1));
-        treasures.add(new Treasure(CODIGO + "_MON_004", "Denario",
-                "Moneda de plata de gran valor que equivale a diez ases.",
-                ETreasureRarity.COMMON, ETreasureType.COIN, 1, 1));
-        treasures.add(new Treasure(CODIGO + "_MON_005", "Áureo",
-                "Moneda de oro de gran valor equivalente a veinticinco denarios.",
-                ETreasureRarity.UNCOMMON, ETreasureType.COIN, 1, 2));
-        treasures.add(new Treasure(CODIGO + "_CUE_001", "Cuenta de nácar",
-                "Perlas y conchas perforadas utilizadas para confeccionar collares y pulseras.",
-                ETreasureRarity.COMMON, ETreasureType.BEAD, 1, 1));
-        treasures.add(new Treasure(CODIGO + "_CUE_002", "Cuenta de gema",
-                "Piedras semipreciosas talladas para confeccionar adornos, pulseras y collares.",
-                ETreasureRarity.COMMON, ETreasureType.BEAD, 1, 1));
-        treasures.add(new Treasure(CODIGO + "_CUE_003", "Cuenta de metal precioso",
-                "Pequeñas piezas de oro, plata o bronce para confeccionar collares y pulseras.",
-                ETreasureRarity.COMMON, ETreasureType.BEAD, 1, 1));
-        treasures.add(new Treasure(CODIGO + "_JOY_001", "Pulseras de esferas",
-                "Juego de pulseras de oro formadas por pares de semiesferas en fila.",
-                ETreasureRarity.UNCOMMON, ETreasureType.JEWELRY, 4, 2));
-        treasures.add(new Treasure(CODIGO + "_JOY_002", "Brazalete de serpiente",
-                "Brazalete con forma de serpiente enroscada.",
-                ETreasureRarity.UNCOMMON, ETreasureType.JEWELRY, 5, 3));
-        treasures.add(new Treasure(CODIGO + "_JOY_003", "Ceñidor",
-                "Cadena decorada que se ponía sobre la ropa para ajustarla al pecho.",
-                ETreasureRarity.RARE, ETreasureType.JEWELRY, 6, 5));
-        treasures.add(new Treasure(CODIGO + "_JOY_004", "Fíbula de ballesta",
-                "Hebilla para sujetar la ropa con forma de ballesta.",
-                ETreasureRarity.UNCOMMON, ETreasureType.JEWELRY, 4, 3));
-        treasures.add(new Treasure(CODIGO + "_JOY_005", "Lúnula",
-                "Colgante con forma de luna que llevaban las mujeres hasta el día de su boda.",
-                ETreasureRarity.UNCOMMON, ETreasureType.JEWELRY, 5, 2));
-        treasures.add(new Treasure(CODIGO + "_CER_001", "Jarra en terra sigillata",
-                "Jarra creada mediante terra sigillata, cerámica estampada en un molde para decorarla.",
-                ETreasureRarity.COMMON, ETreasureType.CERAMIC, 20, 1));
-        treasures.add(new Treasure(CODIGO + "_CER_002", "Vaso en terra sigilliata",
-                "Vaso creado mediante terra sigillata, cerámica estampada en un molde para decorarla.",
-                ETreasureRarity.COMMON, ETreasureType.CERAMIC, 12, 1));
-        treasures.add(new Treasure(CODIGO + "_CER_003", "Ritón",
-                "Vaso con un agujero para realizar libaciones rituales.",
-                ETreasureRarity.RARE, ETreasureType.CERAMIC, 10, 5));
-        treasures.add(new Treasure(CODIGO + "_CER_004", "Lucerna",
-                "Pequeña lámpara de aceite confeccionada en masa durante el Imperio.",
-                ETreasureRarity.COMMON, ETreasureType.CERAMIC, 5, 1));
-        treasures.add(new Treasure(CODIGO + "_CER_005", "Ánfora vinaria",
-                "Ánfora romana para el transporte del vino.",
-                ETreasureRarity.COMMON, ETreasureType.CERAMIC, 22, 1));
-        treasures.add(new Treasure(CODIGO + "_EQP_001", "Gladius",
-                "Espada emblemática de las legiones romanas basada en la utilizada por los celtíberos.",
-                ETreasureRarity.UNCOMMON, ETreasureType.EQUIP, 18, 3));
-        treasures.add(new Treasure(CODIGO + "_EQP_002", "Pilum",
-                "Lanza de madera y hierro que formaba parte del equipo básico del legionario.",
-                ETreasureRarity.UNCOMMON, ETreasureType.EQUIP, 11, 3));
-        treasures.add(new Treasure(CODIGO + "_EQP_003", "Lorica Hamata",
-                "Cota de malla usada por las legiones desde la República hasta el Imperio.",
-                ETreasureRarity.UNCOMMON, ETreasureType.EQUIP, 37, 4));
-        treasures.add(new Treasure(CODIGO + "_EQP_004", "Lorica Squamata",
-                "Armadura de escamas utilizada durante la República por las legiones.",
-                ETreasureRarity.RARE, ETreasureType.EQUIP, 21, 6));
-        treasures.add(new Treasure(CODIGO + "_EQP_005", "Lorica Segmentata",
-                "Armadura de placas de gran protección utilizada por las legiones durante el Imperio. Hecha de hierro y acero.",
-                ETreasureRarity.UNCOMMON, ETreasureType.EQUIP, 34, 3));
-        treasures.add(new Treasure(CODIGO + "_EQP_006", "Scutum",
-                "Escudo rectangular de grandes dimensiones característico de las legiones.",
-                ETreasureRarity.UNCOMMON, ETreasureType.EQUIP, 54, 3));
-        treasures.add(new Treasure(CODIGO + "_EQP_007", "Gálea",
-                "Casco utilizado por los legionarios durante el Imperio.",
-                ETreasureRarity.UNCOMMON, ETreasureType.EQUIP, 13, 4));
-        treasures.add(new Treasure(CODIGO + "_TES_001", "Mosaico geométrico",
-                "Mosaico de estilo geométrico con diversos patrones y formas. Inspirado en los de Carmona.",
-                ETreasureRarity.COMMON, ETreasureType.TILE, 625, 1));
+        this.treasures.add(new Treasure("As", CODIGO, ETreasureType.COIN, "001", 1, 1,
+                ETreasureRarity.COMMON, "La moneda de la Antigua Roma de menor valor. Hecha de cobre."));
+        this.treasures.add(new Treasure("Dupondio", CODIGO, ETreasureType.COIN, "002", 1, 1,
+                ETreasureRarity.COMMON, "Moneda de bronce de poco valor."));
+        this.treasures.add(new Treasure("Sestercio", CODIGO, ETreasureType.COIN, "003", 1, 1,
+                ETreasureRarity.COMMON, "Moneda de bronce que se utilizaba como medida estándar para medir valores."));
+        this.treasures.add(new Treasure("Denario", CODIGO, ETreasureType.COIN, "004", 1, 1,
+                ETreasureRarity.COMMON, "Moneda de plata de gran valor que equivale a diez ases."));
+        this.treasures.add(new Treasure("Áureo", CODIGO, ETreasureType.COIN, "005", 1, 2,
+                ETreasureRarity.UNCOMMON, "Moneda de oro de gran valor equivalente a veinticinco denarios."));
+        this.treasures.add(new Treasure("Cuenta de nácar", CODIGO, ETreasureType.BEAD, "001", 1, 1,
+                ETreasureRarity.COMMON, "Perlas y conchas perforadas utilizadas para confeccionar collares y pulseras."));
+        this.treasures.add(new Treasure("Cuenta de gema", CODIGO, ETreasureType.BEAD, "002", 1, 1,
+                ETreasureRarity.COMMON, "Piedras semipreciosas talladas para confeccionar adornos, pulseras y collares."));
+        this.treasures.add(new Treasure("Cuenta de metal precioso", CODIGO, ETreasureType.BEAD, "003", 1, 1,
+                ETreasureRarity.COMMON, "Pequeñas piezas de oro, plata o bronce para confeccionar collares y pulseras."));
+        this.treasures.add(new Treasure("Pulseras de esferas", CODIGO, ETreasureType.JEWELRY, "001", 4, 2,
+                ETreasureRarity.UNCOMMON, "Juego de pulseras de oro formadas por pares de semiesferas en fila."));
+        this.treasures.add(new Treasure("Brazalete de serpiente", CODIGO, ETreasureType.JEWELRY, "002", 5, 3,
+                ETreasureRarity.UNCOMMON, "Brazalete con forma de serpiente enroscada."));
+        this.treasures.add(new Treasure("Ceñidor", CODIGO, ETreasureType.JEWELRY, "003", 6, 5,
+                ETreasureRarity.RARE, "Cadena decorada que se ponía sobre la ropa para ajustarla al pecho."));
+        this.treasures.add(new Treasure("Fíbula de ballesta", CODIGO, ETreasureType.JEWELRY, "004", 4, 3,
+                ETreasureRarity.UNCOMMON, "Hebilla para sujetar la ropa con forma de ballesta."));
+        this.treasures.add(new Treasure("Lúnula", CODIGO, ETreasureType.JEWELRY, "005", 5, 2,
+                ETreasureRarity.UNCOMMON, "Colgante con forma de luna que llevaban las mujeres hasta el día de su boda."));
+        this.treasures.add(new Treasure("Jarra en terra sigillata", CODIGO, ETreasureType.CERAMIC, "001", 20, 1,
+                ETreasureRarity.COMMON, "Jarra creada mediante terra sigillata, cerámica estampada en un molde para decorarla."));
+        this.treasures.add(new Treasure("Vaso en terra sigilliata", CODIGO, ETreasureType.CERAMIC, "002", 12, 1,
+                ETreasureRarity.COMMON, "Vaso creado mediante terra sigillata, cerámica estampada en un molde para decorarla."));
+        this.treasures.add(new Treasure("Ritón", CODIGO, ETreasureType.CERAMIC, "003", 10, 5,
+                ETreasureRarity.RARE, "Vaso con un agujero para realizar libaciones rituales."));
+        this.treasures.add(new Treasure("Lucerna", CODIGO, ETreasureType.CERAMIC, "004", 5, 1,
+                ETreasureRarity.COMMON, "Pequeña lámpara de aceite confeccionada en masa durante el Imperio."));
+        this.treasures.add(new Treasure("Ánfora vinaria", CODIGO, ETreasureType.CERAMIC, "005", 22, 1,
+                ETreasureRarity.COMMON, "Ánfora romana para el transporte del vino."));
+        this.treasures.add(new Treasure("Gladius", CODIGO, ETreasureType.EQUIP, "001", 18, 3,
+                ETreasureRarity.UNCOMMON, "Espada emblemática de las legiones romanas basada en la utilizada por los celtíberos."));
+        this.treasures.add(new Treasure("Pilum", CODIGO, ETreasureType.EQUIP, "002", 11, 3,
+                ETreasureRarity.UNCOMMON, "Lanza de madera y hierro que formaba parte del equipo básico del legionario."));
+        this.treasures.add(new Treasure("Lorica Hamata", CODIGO, ETreasureType.EQUIP, "003", 37, 4,
+                ETreasureRarity.UNCOMMON, "Cota de malla usada por las legiones desde la República hasta el Imperio."));
+        this.treasures.add(new Treasure("Lorica Squamata", CODIGO, ETreasureType.EQUIP, "004", 21, 6,
+                ETreasureRarity.RARE, "Armadura de escamas utilizada durante la República por las legiones."));
+        this.treasures.add(new Treasure("Lorica Segmentata", CODIGO, ETreasureType.EQUIP, "005", 34, 3,
+                ETreasureRarity.UNCOMMON, "Armadura de placas de gran protección utilizada por las legiones durante el Imperio. Hecha de hierro y acero."));
+        this.treasures.add(new Treasure("Scutum", CODIGO, ETreasureType.EQUIP, "006", 54, 3,
+                ETreasureRarity.UNCOMMON, "Escudo rectangular de grandes dimensiones característico de las legiones."));
+        this.treasures.add(new Treasure("Gálea", CODIGO, ETreasureType.EQUIP, "007", 13, 4,
+                ETreasureRarity.UNCOMMON, "Casco utilizado por los legionarios durante el Imperio."));
+        this.treasures.add(new Treasure("Mosaico geométrico", CODIGO, ETreasureType.TILE, "001", 625, 1,
+                ETreasureRarity.COMMON, "Mosaico de estilo geométrico con diversos patrones y formas. Inspirado en los de Carmona."));
     }
 
     @Override
