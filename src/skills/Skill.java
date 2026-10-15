@@ -3,6 +3,7 @@ package skills;
 import skills.Habilidad.*;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public abstract class Skill {
     protected String nombre;
@@ -44,7 +45,8 @@ public abstract class Skill {
     //=======================================================================================================
 
 
-    /** Instancia y agrega a una lista todas las habilidades del programa
+    /**
+     * Instancia y agrega a una lista todas las habilidades del programa
      *
      */
     public void InicializadosSkills() {
@@ -59,9 +61,9 @@ public abstract class Skill {
         Skills.add(Extra3);
 
         //Aprendiz, Experto, Maestro
-        Conocimiento aprendiz = new Conocimiento("Aprendiz","Aumenta las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, null, 1);
-        Conocimiento experto = new Conocimiento("Experto","Aumenta las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, null, 2);
-        Conocimiento maestro = new Conocimiento("Maetro","Aumenta las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, null, 3);
+        Conocimiento aprendiz = new Conocimiento("Aprendiz", "Aumenta las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, null, 1);
+        Conocimiento experto = new Conocimiento("Experto", "Aumenta las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, null, 2);
+        Conocimiento maestro = new Conocimiento("Maetro", "Aumenta las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, null, 3);
         experto.Dependecias.add(aprendiz);
         maestro.Dependecias.add(experto);
         Skills.add(aprendiz);
@@ -105,8 +107,8 @@ public abstract class Skill {
         Skills.add(escaneo);
 
         //Licencia (Incompatibles)
-        Licencia licenciaA = new Licencia("Licencia A",  "Extiende el Terreno \n (A) Vertical o Horizontalmente \n (B) Ambas dimensiones", ESkillType.TERRAIN, null, 1);
-        Licencia licenciaB = new Licencia("Licencia B",  "Extiende el Terreno \n (A) Vertical o Horizontalmente \n (B) Ambas dimensiones", ESkillType.TERRAIN, null, 1);
+        Licencia licenciaA = new Licencia("Licencia A", "Extiende el Terreno \n (A) Vertical o Horizontalmente \n (B) Ambas dimensiones", ESkillType.TERRAIN, null, 1);
+        Licencia licenciaB = new Licencia("Licencia B", "Extiende el Terreno \n (A) Vertical o Horizontalmente \n (B) Ambas dimensiones", ESkillType.TERRAIN, null, 1);
         Skills.add(licenciaA);
         Skills.add(licenciaB);
 
@@ -124,4 +126,77 @@ public abstract class Skill {
         Skills.add(oceano2);
     }
 
+    public Skill ElegirHabilidad(ArrayList<Skill> habilidadesArqueologo) {
+        final int MAXIMO_A_ELEGIR = 3;
+        Boolean tieneEspecializacion = false;
+        Boolean tieneLicencia = false;
+        ArrayList<Skill> SeleccionDeHabilidades = new ArrayList<>();
+        ArrayList<Skill> ListaPromocionDeHabilidad = new ArrayList<>();
+        ArrayList<Skill> HabilidadesRand = new ArrayList<>();
+
+        // Si el Arqueologo tiene habilidades se inicializa la busqueda de su subida de nivel
+        if (!habilidadesArqueologo.isEmpty()) {
+
+            for (Skill SkillArqueologo : habilidadesArqueologo) {
+                if (SkillArqueologo instanceof Licencia) {
+                    tieneLicencia = true;
+                }
+                if (SkillArqueologo instanceof Especialista) {
+                    tieneEspecializacion = true;
+                }
+
+                for (Skill SkillGeneral : Skills) {
+                    if (SkillArqueologo.equals(SkillGeneral.Dependecias.getFirst())) {
+                        ListaPromocionDeHabilidad.add(SkillGeneral);
+                    }
+                }
+            }
+            //Selecciona aleatoriamente una de las selecciones que cumplen y han sido añadidas a las lista de mejoras
+            int randomPromocion = (int) (Math.random() * ListaPromocionDeHabilidad.size());
+            SeleccionDeHabilidades.add(ListaPromocionDeHabilidad.get(randomPromocion));
+        }
+
+        //SELECCION DE HABILIDADES RANDOM
+
+        for (Skill SkillGeneral : Skills) {
+
+            if (!(SkillGeneral instanceof Especialista) && !tieneEspecializacion) { //Si no es una instancia Especializacion y las habilidades del arquitecto no lo tiene
+                if (!(SkillGeneral instanceof Licencia) && !tieneLicencia) { //Si no es una instancia licencia y las habilidades del arquitecto no lo tiene
+                    if (!habilidadesArqueologo.contains(SkillGeneral) && SkillGeneral.Dependecias.isEmpty()) {
+                        HabilidadesRand.add(SkillGeneral);
+                    }
+                }
+            }
+
+            do {
+                int randomPromocion = (int) (Math.random() * HabilidadesRand.size());
+                SeleccionDeHabilidades.add(HabilidadesRand.get(randomPromocion));
+            } while (SeleccionDeHabilidades.size() >= MAXIMO_A_ELEGIR);
+
+            do {
+
+
+            System.out.println("Seleccione habilidad (seleccione por numero)");
+            System.out.println("1 - " + SeleccionDeHabilidades.get(0).getNombre());
+            System.out.println("2 - " + SeleccionDeHabilidades.get(1).getNombre());
+            System.out.println("3 - " + SeleccionDeHabilidades.get(2).getNombre());
+
+            Scanner sc = new Scanner(System.in);
+            int seleccionar = sc.nextInt();
+
+            switch (seleccionar) {
+                case 1 -> {
+                    System.out.println("Habilidad seleccionada");
+                    return SeleccionDeHabilidades.get(0);}
+                case 2 -> {System.out.println("Habilidad seleccionada");
+                    System.out.println("Habilidad seleccionada");
+                    return SeleccionDeHabilidades.get(1);}
+                case 3 -> {return SeleccionDeHabilidades.get(2);}
+                default -> System.out.println("Entrada Erronea, por favor use un numero");
+            }
+
+            } while ()
+        }
+
+    }
 }
