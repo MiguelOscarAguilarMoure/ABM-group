@@ -4,13 +4,10 @@ package skills.Habilidad;
 import skills.ESkillType;
 import skills.Skill;
 
+import java.util.ArrayList;
+
 public class TerrenoDemoler extends Skill {
-
-    protected String nombre = "Demoler";
-    protected String descripcion =
-            "Permite Destruir estructuras";
-
-    public TerrenoDemoler(ESkillType tipo, String dependencia) {
-        super(tipo, dependencia);
+    public TerrenoDemoler(String nombre, String descripcion, ESkillType tipo, ArrayList<Skill> dependecias) {
+        super(nombre, descripcion, tipo, dependecias);
     }
 }
