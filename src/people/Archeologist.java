@@ -131,12 +131,13 @@ public class Archeologist {
         if (listaHabilidades.contains(s)) {
             return false;
         }
-        /*
-         * for (Skill dep : s.getDependencias()) {
-         * if (!habilidades.contains(dep)) {
-         * return false;
-         * }
-         */
+        
+          for (Skill dep : s.getDependencia()) {
+          if (!habilidades.contains(dep)) {
+          return false;
+          }
+          }
+         
         /*
          * for (Skill inc : s.getIncompatibilidades()) {
          * if (habilidades.contains(inc)) {
