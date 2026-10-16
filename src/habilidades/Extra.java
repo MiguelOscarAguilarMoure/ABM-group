@@ -1,16 +1,15 @@
 package habilidades;
 
-
 public class Extra extends Skill {
     protected int nivel;
     protected String nombre = "Extra";
-    protected String descripcion =
-            "Tesoros adicionales en el terreno";
+    protected String descripcion = "Tesoros adicionales en el terreno";
 
     public Extra(ESkillType tipo, String dependencia, int nivel) {
         super(tipo, dependencia);
         this.nivel = nivel;
     }
+
     // ======================================================================================
     public int getNivel() {
         return nivel;
@@ -47,5 +46,10 @@ public class Extra extends Skill {
 
         }
 
+    }
+
+    @Override
+    public int getTesorosAleatorios() {
+        return efecto(this);
     }
 }
