@@ -6,12 +6,20 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public abstract class Skill {
+
     protected String nombre;
     protected String descripcion;
     protected ESkillType tipo;
     protected static ArrayList<Skill> Skills = new ArrayList<>();
     protected ArrayList<Skill> Dependecias = new ArrayList<>();
 
+    /**
+     *
+     * @param nombre nombre de la habilidad
+     * @param descripcion descripcion de la habilidad
+     * @param tipo Tipo de habilidad
+     * @param dependecias Lista de habilidades necesarias para poder desbloquearla
+     */
     public Skill(String nombre, String descripcion, ESkillType tipo, ArrayList<Skill> dependecias) {
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -46,7 +54,8 @@ public abstract class Skill {
 
 
     /**
-     * Instancia y agrega a una lista todas las habilidades del programa
+     * Instancias de las clases hijas a Skill y agregar a una lista todas las habilidades del programa. al igual que sus
+     * dependencias
      *
      */
     public void InicializadosSkills() {
@@ -126,17 +135,21 @@ public abstract class Skill {
         Skills.add(oceano2);
     }
 
+    /**
+     * Proporciona 3 habilidades a seleccionar, 1 de mejora (si esta lista tiene habilidades) y 2 (3 si no se cumple la primera condición)
+     * @param habilidadesArqueologo Lista de habilidades de la clase Arqueologo
+     * @return una instancia de la clase hija de Skills
+     */
     public Skill ElegirHabilidad(ArrayList<Skill> habilidadesArqueologo) {
         final int MAXIMO_A_ELEGIR = 3;
-        Boolean tieneEspecializacion = false;
-        Boolean tieneLicencia = false;
+        boolean tieneEspecializacion = false;
+        boolean tieneLicencia = false;
         ArrayList<Skill> SeleccionDeHabilidades = new ArrayList<>();
         ArrayList<Skill> ListaPromocionDeHabilidad = new ArrayList<>();
         ArrayList<Skill> HabilidadesRand = new ArrayList<>();
 
-        // Si el Arqueologo tiene habilidades se inicializa la busqueda de su subida de nivel
+        // 1. Filtrar habilidades del arqueólogo y posibles promociones
         if (!habilidadesArqueologo.isEmpty()) {
-
             for (Skill SkillArqueologo : habilidadesArqueologo) {
                 if (SkillArqueologo instanceof Licencia) {
                     tieneLicencia = true;
@@ -146,57 +159,77 @@ public abstract class Skill {
                 }
 
                 for (Skill SkillGeneral : Skills) {
-                    if (SkillArqueologo.equals(SkillGeneral.Dependecias.getFirst())) {
-                        ListaPromocionDeHabilidad.add(SkillGeneral);
+                    // Validación para evitar NullPointerException si Dependecias está vacío
+                    if (SkillGeneral.Dependecias != null && !SkillGeneral.Dependecias.isEmpty()) {
+                        if (SkillArqueologo.equals(SkillGeneral.Dependecias.getFirst())) {
+                            ListaPromocionDeHabilidad.add(SkillGeneral);
+                        }
                     }
                 }
             }
-            //Selecciona aleatoriamente una de las selecciones que cumplen y han sido añadidas a las lista de mejoras
-            int randomPromocion = (int) (Math.random() * ListaPromocionDeHabilidad.size());
-            SeleccionDeHabilidades.add(ListaPromocionDeHabilidad.get(randomPromocion));
+            // Si hay opciones de promoción, añade una de forma aleatoria
+            if (!ListaPromocionDeHabilidad.isEmpty()) {
+                int randomPromocion = (int) (Math.random() * ListaPromocionDeHabilidad.size());
+                SeleccionDeHabilidades.add(ListaPromocionDeHabilidad.get(randomPromocion));
+            }
         }
 
-        //SELECCION DE HABILIDADES RANDOM
-
+        // 2. Recopilar habilidades aleatorias elegibles
         for (Skill SkillGeneral : Skills) {
+            boolean esEspecialista = SkillGeneral instanceof Especialista;
+            boolean esLicencia = SkillGeneral instanceof Licencia;
 
-            if (!(SkillGeneral instanceof Especialista) && !tieneEspecializacion) { //Si no es una instancia Especializacion y las habilidades del arquitecto no lo tiene
-                if (!(SkillGeneral instanceof Licencia) && !tieneLicencia) { //Si no es una instancia licencia y las habilidades del arquitecto no lo tiene
-                    if (!habilidadesArqueologo.contains(SkillGeneral) && SkillGeneral.Dependecias.isEmpty()) {
-                        HabilidadesRand.add(SkillGeneral);
-                    }
-                }
+            if ((!esEspecialista || tieneEspecializacion) &&
+                    (!esLicencia || tieneLicencia) &&
+                    !habilidadesArqueologo.contains(SkillGeneral) &&
+                    SkillGeneral.Dependecias != null &&
+                    SkillGeneral.Dependecias.isEmpty() &&
+                    !SeleccionDeHabilidades.contains(SkillGeneral)) {
+
+                HabilidadesRand.add(SkillGeneral);
             }
-
-            do {
-                int randomPromocion = (int) (Math.random() * HabilidadesRand.size());
-                SeleccionDeHabilidades.add(HabilidadesRand.get(randomPromocion));
-            } while (SeleccionDeHabilidades.size() >= MAXIMO_A_ELEGIR);
-
-            do {
-
-
-            System.out.println("Seleccione habilidad (seleccione por numero)");
-            System.out.println("1 - " + SeleccionDeHabilidades.get(0).getNombre());
-            System.out.println("2 - " + SeleccionDeHabilidades.get(1).getNombre());
-            System.out.println("3 - " + SeleccionDeHabilidades.get(2).getNombre());
-
-            Scanner sc = new Scanner(System.in);
-            int seleccionar = sc.nextInt();
-
-            switch (seleccionar) {
-                case 1 -> {
-                    System.out.println("Habilidad seleccionada");
-                    return SeleccionDeHabilidades.get(0);}
-                case 2 -> {System.out.println("Habilidad seleccionada");
-                    System.out.println("Habilidad seleccionada");
-                    return SeleccionDeHabilidades.get(1);}
-                case 3 -> {return SeleccionDeHabilidades.get(2);}
-                default -> System.out.println("Entrada Erronea, por favor use un numero");
-            }
-
-            } while ()
         }
 
+        // Rellenar hasta completar el MAXIMO_A_ELEGIR de forma aleatoria
+        while (SeleccionDeHabilidades.size() < MAXIMO_A_ELEGIR && !HabilidadesRand.isEmpty()) {
+            int randomIndex = (int) (Math.random() * HabilidadesRand.size());
+            Skill seleccionada = HabilidadesRand.get(randomIndex);
+
+            if (!SeleccionDeHabilidades.contains(seleccionada)) {
+                SeleccionDeHabilidades.add(seleccionada);
+            } else {
+                // Si ya está añadida, la removemos de la lista temporal para evitar bucles infinitos
+                HabilidadesRand.remove(randomIndex);
+            }
+        }
+
+        // Validación por si acaso no hay suficientes habilidades disponibles en el juego
+        if (SeleccionDeHabilidades.isEmpty()) {
+            System.out.println("No hay habilidades disponibles para elegir.");
+            return null;
+        }
+
+        // 3. Menú de selección interactivo
+        Scanner sc = new Scanner(System.in);
+        int seleccionar;
+
+        do {
+            System.out.println("\nSeleccione habilidad (seleccione por numero):");
+            for (int i = 0; i < SeleccionDeHabilidades.size(); i++) {
+                System.out.println((i + 1) + " - " + SeleccionDeHabilidades.get(i).getNombre());
+            }
+
+            seleccionar = sc.nextInt();
+
+            if (seleccionar >= 1 && seleccionar <= SeleccionDeHabilidades.size()) {
+                Skill elegida = SeleccionDeHabilidades.get(seleccionar - 1);
+                System.out.println("Habilidad " + elegida.getNombre() + " seleccionada");
+                return elegida; // Retorna directamente y sale del método
+            } else {
+                System.out.println("Entrada Erronea, por favor use un numero valido (1 al " + SeleccionDeHabilidades.size() + ")");
+            }
+
+        } while (true); // El bucle se repite hasta que el usuario elija una opción válida y haga return
     }
+
 }
