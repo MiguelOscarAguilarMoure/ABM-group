@@ -1,19 +1,72 @@
 package commons.operations;
+
+import commons.repositories.RegionRepository;
+import java.io.Console;
+import java.util.List;
+import regions.Region;
+import treasures.ETreasureRarity;
+import treasures.ETreasureType;
+import treasures.Treasure;
+
 /**
  * Opción Atlas: muestra las regiones con todos sus tesoros posibles.
  */
 public class AtlasOperation  implements  IOperation{
 
+    private final Console console = System.console();
+
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+        return "Atlas";
     }
 
     @Override
     public void operation() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'operation'");
+        boolean seguir = true;
+
+        while (seguir) {
+            // 1. Elegir la región
+            Region region = elegirRegion();
+            if (region == null) {
+                return;   // eligió 0: vuelve al menú principal
+            }
+
+            // 2. Mostrar sus tesoros
+            mostrarRegion(region);
+
+            // 3. ¿Volver al atlas o al menú?
+            String resp = console.readLine("¿Volver al atlas? (s/n): ");
+            seguir = resp.equalsIgnoreCase("s");
+        }
     }
-    
+    private Region elegirRegion() {
+        List<Region> regiones = RegionRepository.getTodas();
+
+        System.out.println("-------------------- Atlas --------------------");
+        for (int i = 0; i < regiones.size(); i++) {
+            System.out.println((i + 1) + ". " + regiones.get(i).getNombre());
+        }
+        System.out.println("0. Volver");
+
+        int op = Integer.parseInt(console.readLine("Región: "));
+        if (op < 1 || op > regiones.size()) {
+            return null;
+        }
+        return regiones.get(op - 1);
+    }
+    private void mostrarRegion(Region region) {
+        System.out.println("-------------------- " + region.getNombre() + " --------------------");
+        for (Treasure t : region.getTesoros()) {
+            System.out.println("-" + t.getNombre() + " (" + t.getTipoTesoro() + " " + rareza(t) + ")");
+        }
+    }
+    /** Rareza concordando en género con el tipo: "rara" en femenino, "raro" en masculino. */
+    private String rareza(Treasure t) {
+        boolean masculino = t.getTipoTesoro() == ETreasureType.EQUIP
+                || t.getTipoTesoro() == ETreasureType.FRAGMENT;
+        if (t.getRarezaTesoro() == ETreasureRarity.RARE && !masculino) {
+            return "rara";
+        }
+        return t.getRarezaTesoro().toString();
+    }
 }
