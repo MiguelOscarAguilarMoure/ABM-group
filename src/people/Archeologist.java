@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.plaf.synth.Region;
 import skills.Skill;
-import treasures.ETreasureRarity;
-
 
 public class Archeologist {
     public static final int NIVEL_MAX = 5;
@@ -16,17 +14,15 @@ public class Archeologist {
     private int experiencia;
     private int nivel;
     private ArrayList<Skill> listaHabilidades = new ArrayList<>();
-    private ETreasureRarity rareza;
     private ArrayList<TerrainShape> tipoTerreno = new ArrayList<>();
     private Region especializacion = null;
 
     public Archeologist(String nombre, int experiencia, int nivel, ArrayList<Skill> listaHabilidades,
-            ETreasureRarity rareza, ArrayList<TerrainShape> tipoTerreno, Region especializacion) {
+            ArrayList<TerrainShape> tipoTerreno, Region especializacion) {
         this.nombre = nombre;
         this.experiencia = experiencia;
         this.nivel = nivel;
         this.listaHabilidades = listaHabilidades;
-        this.rareza = rareza;
         this.tipoTerreno = tipoTerreno;
         this.especializacion = especializacion;
     }
@@ -65,14 +61,6 @@ public class Archeologist {
 
     public void setListaHabilidades(ArrayList<Skill> listaHabilidades) {
         this.listaHabilidades = listaHabilidades;
-    }
-
-    public ETreasureRarity getRareza() {
-        return rareza;
-    }
-
-    public void setRareza(ETreasureRarity rareza) {
-        this.rareza = rareza;
     }
 
     public ArrayList<TerrainShape> getTipoTerreno() {
@@ -147,7 +135,11 @@ public class Archeologist {
                 return false;
             }
         }
-
+        for (Skill inc : s.getIncompatibilidades()) {
+            if (listaHabilidades.contains(inc)) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -158,10 +150,9 @@ public class Archeologist {
      */
 
     public void addHabilidad(Skill s) {
+        // necesito la licencia para este metetodo
         listaHabilidades.add(s);
-        for (TerrainShape terrenoforma : s.getTerrenos()) {
-            
-        }
+
     }
 
     /**
@@ -170,7 +161,17 @@ public class Archeologist {
      * @return 10 por nivel, más 10 si es infrecuente o 20 si es raro.
      */
     public int getPuntosLicencia() {
-        //Para hacer lo de puntos de licencia usar el numero dehabilidades, ya que dependiendo del tipo de arqueologo cambia ese numero
+        int puntos = 10 * nivel;
+
+        
+        int iniciales = listaHabilidades.size() - nivel;
+
+        if (iniciales == 1) {
+            puntos += 10; 
+        } else if (iniciales >= 2) {
+            puntos += 20; 
+        }
+        return puntos;
     }
 
     public void mostrar() {
