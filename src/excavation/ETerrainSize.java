@@ -50,14 +50,23 @@ public enum ETerrainSize {
         return nombre;
     }
     public int getNivelMinimo() {
-        return nivelMinimo;
+        switch (tamanho) {
+        case "Pequeño":
+            return 0;
+        case "Mediano":
+            return 2;
+        default:
+            return 4;
+    }
     }
     public boolean isCuadrado() {
-        return cuadrado;
+        return nombre.equals("Cuadrado");
     }
     public int getNumeroCasillas() {
         return (fil * col);
     }
+    
+
     
 
 }
