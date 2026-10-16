@@ -71,6 +71,8 @@ public class Archaios {
     private void end() {
         System.out.println("¡Hasta pronto!");
     }
-    
+    public void addPuntos(int cantidad) {
+        puntos += cantidad;
+    }
 
 }
