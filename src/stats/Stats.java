@@ -23,7 +23,7 @@ public class Stats {
     /** Código de cada región → veces que se ha excavado allí. */
     private final HashMap<String, Integer> lugares = new HashMap<>();
 
-    // ===================================================== REGISTRAR DATOS
+    
 
     /**
      * Registra una excavación: suma una visita a la región y cada tesoro encontrado.
@@ -38,7 +38,7 @@ public class Stats {
         }
     }
 
-    // ================================================ ESTADÍSTICAS DE LUGARES
+    
 
     /**
      * Por cada región: veces visitada, tesoros distintos encontrados frente al total
@@ -64,7 +64,7 @@ public class Stats {
         }
     }
 
-    // ================================================ ESTADÍSTICAS DE TESOROS
+    
 
     /** Tesoros divididos por región y ordenados por código. */
     public void mostrarPorRegion() {
@@ -115,7 +115,7 @@ public class Stats {
         }
     }
 
-    // ========================================================== AUXILIARES
+    // AUXILIARES
 
     /** Devuelve los códigos encontrados ordenados alfabéticamente (el HashMap no los ordena). */
     private List<String> codigosOrdenados() {
