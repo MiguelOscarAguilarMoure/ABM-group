@@ -122,4 +122,8 @@ public abstract class Skill {
     public List<Skill> getIncompatibilidades() {
         return incompatibilidades;
     }
+
+    public boolean esIncompatible(Skill otra) {
+        return false;
+    }
 }

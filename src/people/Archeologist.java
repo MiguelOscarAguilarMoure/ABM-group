@@ -27,6 +27,17 @@ public class Archeologist {
         this.especializacion = especializacion;
     }
 
+    /**
+     * Crea un arqueólogo nuevo: nivel 0, sin experiencia, sin habilidades,
+     * solo con el terreno cuadrado y sin especialización.
+     * 
+     * @param nombre El nombre del arqueólogo.
+     */
+    public Archeologist(String nombre) {
+        this(nombre, 0, 0, new ArrayList<>(),
+                new ArrayList<>(List.of(TerrainShape.SQUARE)), null);
+    }
+
     public static int getNivelMax() {
         return NIVEL_MAX;
     }
@@ -163,13 +174,12 @@ public class Archeologist {
     public int getPuntosLicencia() {
         int puntos = 10 * nivel;
 
-        
         int iniciales = listaHabilidades.size() - nivel;
 
         if (iniciales == 1) {
-            puntos += 10; 
+            puntos += 10;
         } else if (iniciales >= 2) {
-            puntos += 20; 
+            puntos += 20;
         }
         return puntos;
     }
