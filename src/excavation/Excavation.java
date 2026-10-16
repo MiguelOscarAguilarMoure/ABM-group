@@ -87,7 +87,7 @@ public class Excavation {
         generarEtiquetas("");
         anchoNumFila = String.valueOf(numFilas).length();
         // Cabecera: espacios para el número de fila + etiquetas de columna
-        StringBuilder sb = new StringBuilder(" ".repeat(anchoNumFila));
+       StringBuilder sb = new StringBuilder(espacios(anchoNumFila));
         for (String etiqueta : columnas) {
             sb.append(' ').append(etiqueta);
         }
@@ -287,12 +287,18 @@ public class Excavation {
         }
         return sb.toString();
     }
-
+    private String espacios(int cantidad) {
+    String texto = "";
+    for (int i = 0; i < cantidad; i++) {
+        texto += " ";
+    }
+    return texto;
+}
     /** Centra el símbolo bajo la etiqueta de su columna. */
     private String centrar(String simbolo) {
         int relleno = anchoEtiqueta - simbolo.length();
         int izquierda = relleno / 2;
-        return " ".repeat(izquierda) + simbolo + " ".repeat(relleno - izquierda);
+        return espacios(izquierda) + simbolo + espacios(relleno - izquierda);
     }
      /** La rejilla tal y como la ve el jugador. */
     @Override
@@ -343,11 +349,11 @@ public class Excavation {
     }
 
     private void procesarEntrada(String linea) {
-        if (linea.isBlank()) {
+        if (linea.trim().isEmpty()) {
             System.out.println("No has introducido ninguna posición.");
             return;
         }
-        for (String indicacion : linea.trim().split("\\s+")) {
+        for (String indicacion : linea.trim().split(" ")) {
             if (isFinalizada()) {
                 System.out.println("Se ignoran las posiciones restantes: la excavación ha terminado.");
                 return;
