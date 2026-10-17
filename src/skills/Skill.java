@@ -1,13 +1,10 @@
 package skills;
 
-
-import skills.Habilidad.*;
-import treasures.ETreasureRarity;
-
+import commons.repositories.SkillRepository;
+import excavation.TerrainShape;
 import java.util.ArrayList;
-import java.util.Scanner;
-
-import static commons.repositories.SkillRepository.Skills;
+import java.util.List;
+import treasures.ETreasureRarity;
 
 public abstract class Skill {
 
@@ -28,8 +25,17 @@ public abstract class Skill {
         this.tipo = tipo;
     }
 
+    public void addDependencia(Skill s) {
+        dependecias.add(s);
+    }
 
-    //== GETTERS & SETTERS ==================================================================================
+    // Por defecto ninguna es incompatible; Licencia y Especialista lo sobrescriben.
+    public boolean esIncompatible(Skill otra) {
+        return false;
+    }
+
+    // == GETTERS & SETTERS
+    // ==================================================================================
 
     public String getNombre() {
         return nombre;
@@ -55,7 +61,7 @@ public abstract class Skill {
         return 0;
     }
 
-    public int getProbabilidadExtrar(ETreasureRarity rareza) {
+    public int getProbabilidadExtra(ETreasureRarity rareza) {
         return 0;
     }
 
@@ -79,12 +85,40 @@ public abstract class Skill {
         return false;
     }
 
-    public Object getDependencias() {
-        return this.dependecias;
+    public List<Skill> getDependencias() {
+        return dependecias;
     }
 
+    /** Formas de terreno que añade (solo las Licencias). */
+    public List<TerrainShape> getTerrenos() {
+        return new ArrayList<>();
+    }
 
-    //=======================================================================================================
+    // =======================================================================================================
+    /** Muestra nombre, descripción, tipo, dependencias e incompatibilidades. */
+    public static void mostrarHabilidad(Skill habilidad) {
+        System.out.println("------------------ " + habilidad.getNombre() + " ------------------");
+        System.out.println(habilidad.getDescripcion());
+        System.out.println("Tipo: " + habilidad.getTipo());
 
+        if (!habilidad.getDependencias().isEmpty()) {
+            System.out.println("Dependencias:");
+            for (Skill d : habilidad.getDependencias()) {
+                System.out.println("  -" + d.getNombre());
+            }
+        }
 
+        List<Skill> incompatibles = new ArrayList<>();
+        for (Skill otra : SkillRepository.getTodas()) {
+            if (habilidad.esIncompatible(otra)) {
+                incompatibles.add(otra);
+            }
+        }
+        if (!incompatibles.isEmpty()) {
+            System.out.println("Incompatibilidades:");
+            for (Skill otra : incompatibles) {
+                System.out.println("  -" + otra.getNombre());
+            }
+        }
+    }
 }
