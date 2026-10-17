@@ -5,7 +5,7 @@ import excavation.TerrainSize;
 import helpers.UtilsHelper;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.plaf.synth.Region;
+import regions.Region;
 import skills.Skill;
 
 public class Archeologist {
@@ -189,7 +189,8 @@ public class Archeologist {
         System.out.println("Nivel " + nivel);
 
         if (nivel == NIVEL_MAX) {
-            System.out.println("Especializacion " + especializacion.getName());
+            String region = (especializacion != null) ? especializacion.getNombre() : "Sin especialización";
+            System.out.println("Especialización: " + region);
             System.out.println("Exp " + experiencia);
 
         } else {
