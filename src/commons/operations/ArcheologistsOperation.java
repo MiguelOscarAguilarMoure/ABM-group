@@ -2,7 +2,7 @@ package commons.operations;
 
 import commons.Archaios;
 import commons.repositories.SkillRepository;
-import java.io.Console;
+import helpers.InputHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -12,7 +12,6 @@ import skills.Skill;
 public class ArcheologistsOperation implements IOperation {
     private final static int COSTE_CONTRATAR = 50;
     private Archaios juego;
-    private final Console console = System.console();
     private final Random random = new Random();
 
     public ArcheologistsOperation(Archaios juego) {
@@ -34,7 +33,8 @@ public class ArcheologistsOperation implements IOperation {
             System.out.println("2. Contratar");
             System.out.println("3. Licenciar");
             System.out.println("0. Volver");
-            op = Integer.parseInt(console.readLine("Opción: "));
+            op = InputHelper.leerEntero("Opción: ");
+            ;
 
             if (op == 1)
                 ver();
@@ -60,8 +60,7 @@ public class ArcheologistsOperation implements IOperation {
             System.out.println("No tienes puntos suficientes.");
             return;
         }
-        String resp = console.readLine("¿Contratar? (s/n): ");
-        if (!resp.equalsIgnoreCase("s")) {
+        if (!InputHelper.confirmar("¿Contratar?")) {
             return;
         }
         int numHabilidades = generarNumHabilidades();
@@ -75,7 +74,7 @@ public class ArcheologistsOperation implements IOperation {
         }
 
         // 4. Pedir el nombre, crearlo y cobrar
-        String nombre = console.readLine("Nombre del arqueólogo: ");
+        String nombre = InputHelper.leerTexto("Nombre del arqueólogo: ");
         Archeologist nuevo = new Archeologist(nombre);
         for (Skill s : iniciales) {
             nuevo.addHabilidad(s);
@@ -100,9 +99,9 @@ public class ArcheologistsOperation implements IOperation {
 
             int puntos = a.getPuntosLicencia();
             System.out.println("Licenciar a " + a.getNombre() + " te da " + puntos + " puntos.");
-            String resp = console.readLine("¿Confirmar? (s/n): ");
+            
 
-            if (resp.equalsIgnoreCase("s")) {
+            if (InputHelper.confirmar("¿Confirmar?")) {
                 juego.getArqueologos().remove(a);
                 juego.addPuntos(puntos);
                 System.out.println(a.getNombre() + " ha sido licenciado.");
@@ -120,7 +119,7 @@ public class ArcheologistsOperation implements IOperation {
             System.out.println((i + 1) + ". " + a.getNombre() + " (nivel " + a.getNivel() + ")");
         }
         System.out.println("0. Volver");
-        int op = Integer.parseInt(console.readLine("Arqueólogo: "));
+        int op = InputHelper.leerEntero("Arqueólogo: ");
         if (op < 1 || op > lista.size()) {
             return null;
         }
@@ -175,5 +174,4 @@ public class ArcheologistsOperation implements IOperation {
         return elegidas;
     }
 
-    
 }

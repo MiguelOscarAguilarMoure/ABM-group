@@ -1,7 +1,7 @@
 package commons.operations;
 
 import commons.repositories.RegionRepository;
-import java.io.Console;
+import helpers.InputHelper;
 import java.util.List;
 import regions.Region;
 import treasures.ETreasureRarity;
@@ -13,7 +13,7 @@ import treasures.Treasure;
  */
 public class AtlasOperation  implements  IOperation{
 
-    private final Console console = System.console();
+    
 
     @Override
     public String getName() {
@@ -35,8 +35,8 @@ public class AtlasOperation  implements  IOperation{
             mostrarRegion(region);
 
             // 3. ¿Volver al atlas o al menú?
-            String resp = console.readLine("¿Volver al atlas? (s/n): ");
-            seguir = resp.equalsIgnoreCase("s");
+            seguir = InputHelper.confirmar("¿Volver al atlas?");
+            
         }
     }
     private Region elegirRegion() {
@@ -48,7 +48,7 @@ public class AtlasOperation  implements  IOperation{
         }
         System.out.println("0. Volver");
 
-        int op = Integer.parseInt(console.readLine("Región: "));
+        int op = InputHelper.leerEntero("Región: ");
         if (op < 1 || op > regiones.size()) {
             return null;
         }
