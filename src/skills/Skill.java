@@ -241,7 +241,7 @@ public abstract class Skill {
      *
      * @param habilidad La instancia de {@link Skill} de la cual se desea visualizar la información.
      */
-    static void mostrarHabilidad(Skill habilidad) {
+    public static void mostrarHabilidad(Skill habilidad) {
         System.out.println("------------------ " + habilidad.getNombre() + " ------------------");
         System.out.println(habilidad.getDescripcion());
 
