@@ -1,19 +1,19 @@
 package commons;
 
-import java.io.Console;
-import java.util.ArrayList;
-import java.util.List;
-
 import commons.operations.ArcheologistsOperation;
 import commons.operations.AtlasOperation;
 import commons.operations.CatalagoTesoros;
 import commons.operations.SkillsOperation;
 import commons.operations.StatsOperation;
 import commons.repositories.RegionRepository;
+import java.io.Console;
+import java.util.ArrayList;
+import java.util.List;
 import people.Archeologist;
 import regions.civilizaciones.Greece;
 import regions.civilizaciones.Iberia;
 import regions.civilizaciones.Rome;
+import stats.Stats;
 
 public class Archaios {
     private static final String CODIGO_GRUPO = "2DAM2627";
@@ -22,6 +22,7 @@ public class Archaios {
     private String nombrePartida;
     private int puntos;
     private List<Archeologist> arqueologos = new ArrayList<>();
+    private Stats stats = new Stats();
 
      private ArcheologistsOperation arqueologosOp;
     private SkillsOperation habilidades;
@@ -29,8 +30,15 @@ public class Archaios {
     private AtlasOperation atlas;
     private CatalagoTesoros catalogo;
     //private ExcavateOperation excavar;
-    private StatsOperation estadisticas;
+    //private StatsOperation estadisticas;
     // private Stats stats;
+      public static void main(String[] args) {
+        Archaios juego = new Archaios();
+        juego.preInit();   
+        juego.init();      
+        juego.run();       
+        juego.end();       
+    }
 
     /**
      * Resgrita regiones y habilidades antes de arrancar
@@ -39,6 +47,7 @@ public class Archaios {
         RegionRepository.registrar(new Greece());
         RegionRepository.registrar(new Iberia());
         RegionRepository.registrar(new Rome());
+       
 
         // Habilidades: cuando tengas las subclases de Skill
         // SkillRepository.registrar(...);
@@ -114,7 +123,7 @@ public class Archaios {
             op = Integer.parseInt(console.readLine("Opción: "));
             switch (op) {
                 case 1: arqueologosOp.operation(); break;
-                case 2: habilidades.operation(); break;
+                //case 2: habilidades.operation(); break;
                 //case 3: licencias.operation(); break;
                 case 4: atlas.operation(); break;
                 case 5: catalogo.operation(); break;
@@ -155,9 +164,13 @@ public class Archaios {
     public StatsOperation getEstadisticas() {
         return estadisticas;
     }
+      public Stats getStats() {
+        return stats;
+    }
 
     public void addPuntos(int cantidad) {
         puntos += cantidad;
     }
+   
 
 }
