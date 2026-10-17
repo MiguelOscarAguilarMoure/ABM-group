@@ -1,13 +1,11 @@
 package regions;
 
-import helpers.CodeHelper;
 import java.util.ArrayList;
-import java.util.List;
+
+import helpers.CodeHelper;
 import treasures.ETreasureRarity;
 import treasures.ETreasureType;
 import treasures.Treasure;
-
-
 
 
 /**
@@ -16,22 +14,25 @@ import treasures.Treasure;
  * Cada región tiene un nombre, un código y una lista de tesoros asociados. 
  * Proporciona métodos para acceder a los tesoros por tipo, rareza y obtener tesoros aleatorios.
  */
-public abstract class Region {
+public class Region {
     protected final String nombre;
+    protected final String codigo;
     protected ArrayList<Treasure> treasures = new ArrayList<>();
 
 
-    public Region(String nombre) {
+    public Region(String nombre, String codigo) {
         this.nombre = nombre;
-        
+        this.codigo = codigo;
     }
-    public abstract String getCodigo();
+
     public String getNombre() {
         return nombre;
     }
-    
-    public List<Treasure> getTesoros() {
-        return List.copyOf(treasures);
+    public String getCodigo() {
+        return codigo;
+    }
+    public ArrayList<Treasure> getTesoros() {
+        return treasures;
     }
 
     public String [] getNombreTesoros() {
@@ -88,17 +89,21 @@ public abstract class Region {
         return listaTesoros.get(index);
     }
 
-    public int getNumPartes(){
+    public int getNumTesoros(){
+
+        int cantidad = 0;
+        for (Treasure t : treasures) {
+            cantidad+= t.getPartes();
+        }
+        return cantidad;
+    }
+     public int getNumPartes(){
         int cantidad=0;
         for(Treasure t: treasures){
             cantidad += t.getPartes();
         }
         return  cantidad;
     }
-
-    public boolean necesitaLicencia() {
-    return false;   // por defecto ninguna la pide
-}
 
 
 

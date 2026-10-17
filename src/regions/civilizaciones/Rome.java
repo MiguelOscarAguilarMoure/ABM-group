@@ -13,7 +13,7 @@ public class Rome extends Region {
     public static final String CODIGO = "ROM";
 
     public Rome() {
-        super("Roma");
+        super("Roma",CODIGO);
         this.treasures.add(new Treasure("As", CODIGO, ETreasureType.COIN, "001", 1, 1,
                 ETreasureRarity.COMMON, "La moneda de la Antigua Roma de menor valor. Hecha de cobre."));
         this.treasures.add(new Treasure("Dupondio", CODIGO, ETreasureType.COIN, "002", 1, 1,

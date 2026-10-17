@@ -1,16 +1,12 @@
-package skills.Habilidad;
+package habilidades;
 
-import skills.Skill;
-import skills.ESkillType;
-
-public class Especialismo extends Skill {
+public class Extra extends Skill {
     protected int nivel;
-    protected String nombre = "Especialismo";
-    protected String descripcion =
-            "Aumenta mucho las Rarezas de los tesoros en el terreno";
+    protected String nombre = "Extra";
+    protected String descripcion = "Tesoros adicionales en el terreno";
 
-    public Especialismo(ESkillType tipo, String dependencia, int nivel) {
-        super(tipo.EXCAVATION, dependencia);
+    public Extra(ESkillType tipo, String dependencia, int nivel) {
+        super(tipo, dependencia);
         this.nivel = nivel;
     }
 
@@ -31,7 +27,7 @@ public class Especialismo extends Skill {
      * @return
      */
 
-    public int efecto(Especialismo habilidad) {
+    public int efecto(Extra habilidad) {
         int nivel = habilidad.getNivel();
 
         switch (nivel) {
@@ -50,5 +46,10 @@ public class Especialismo extends Skill {
 
         }
 
+    }
+
+    @Override
+    public int getTesorosAleatorios() {
+        return efecto(this);
     }
 }

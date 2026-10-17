@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import people.Archeologist;
+import skills.Habilidad.Especialista;
+import skills.Habilidad.Licencia;
 import skills.Skill;
 import commons.repositories.RegionRepository;
 import commons.repositories.SkillRepository;
@@ -76,7 +78,7 @@ public class ArcheologistsOperation implements IOperation {
 
         // 4. Pedir el nombre, crearlo y cobrar
         String nombre = console.readLine("Nombre del arqueólogo: ");
-        Archeologist nuevo = new Archeologist(nombre); 
+        Archeologist nuevo = new Archeologist(nombre);
         for (Skill s : iniciales) {
             nuevo.addHabilidad(s);
         }
@@ -86,9 +88,8 @@ public class ArcheologistsOperation implements IOperation {
         System.out.println(nombre + " se ha unido al equipo.");
     }
 
-    
 
-     private void licenciar() {
+    private void licenciar() {
         if (juego.getArqueologos().size() == 1) {
             System.out.println("No puedes licenciar a tu único arqueólogo.");
             return;
@@ -150,29 +151,38 @@ public class ArcheologistsOperation implements IOperation {
         // 1. Candidatas: las que no dependen de ninguna otra
         List<Skill> candidatas = new ArrayList<>();
         for (Skill s : SkillRepository.getTodas()) {
-            if (s.getDependencias().isEmpty()) {
+            if (s.getDependecias().isEmpty()) {
                 candidatas.add(s);
             }
         }
+    return null;
+    }
 
-        // 2. Elegir al azar hasta tener las que tocan
-        List<Skill> elegidas = new ArrayList<>();
-        while (elegidas.size() < cantidad && !candidatas.isEmpty()) {
-            Skill s = candidatas.remove(random.nextInt(candidatas.size()));
+    /**
+     * Muestra la información de una habilidad.
+     *
+     * El método imprime el nombre, la descripción y, si existen, la lista de habilidades
+     * necesarias (dependencias) requeridas para su desbloqueo. Adicionalmente, evalúa si
+     * la habilidad pertenece a un tipo restrictivo para advertir sobre su incompatibilidad.
+     *
+     *
+     * @param habilidad La instancia de {@link Skill} de la cual se desea visualizar la información.
+     */
+    public void mostrarHabilidad(Skill habilidad) {
+        System.out.println("------------------ " + habilidad.getNombre() + " ------------------");
+        System.out.println(habilidad.getDescripcion());
 
-            // Se descarta si es incompatible con alguna ya elegida
-            boolean compatible = true;
-            for (Skill e : elegidas) {
-                if (s.esIncompatible(e)) {
-                    compatible = false;
-                }
-            }
-            if (compatible) {
-                elegidas.add(s);
+        // Verificación segura contra Null y si contiene elementos
+        if (habilidad.getDependecias() != null && !habilidad.getDependecias().isEmpty()) {
+            System.out.println("---- Dependencias ----");
+            for (Skill dependencia : habilidad.getDependecias()) {
+                System.out.println("- " + dependencia.getNombre());
             }
         }
 
-        // 3. Devolver las elegidas
-        return elegidas;
+        if ((habilidad instanceof Licencia) || habilidad instanceof Especialista) {
+            // Imprime el nombre limpio de la clase (Licencia o Especialista)
+            System.out.println("Incompatible con las habilidades " + habilidad.getClass().getSimpleName());
+        }
     }
 }
