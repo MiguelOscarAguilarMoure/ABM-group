@@ -4,7 +4,6 @@ import commons.operations.ArcheologistsOperation;
 import commons.operations.AtlasOperation;
 import commons.operations.CatalagoTesoros;
 import commons.operations.SkillsOperation;
-import commons.operations.StatsOperation;
 import commons.repositories.RegionRepository;
 import java.io.Console;
 import java.util.ArrayList;
@@ -94,7 +93,7 @@ public class Archaios {
         atlas = new AtlasOperation();
         catalogo = new CatalagoTesoros();
         //excavar = new ExcavateOperation();
-        estadisticas = new StatsOperation(this);
+        //estadisticas = new StatsOperation(this);
     }
 
     /**
@@ -128,7 +127,7 @@ public class Archaios {
                 case 4: atlas.operation(); break;
                 case 5: catalogo.operation(); break;
                 //case 6: excavar.operation(); break;
-                case 7: estadisticas.operation(); break;
+                //case 7: estadisticas.operation(); break;
                 case 0: break;
                 default: System.out.println("Opción no válida.");
             }
@@ -161,9 +160,9 @@ public class Archaios {
         return catalogo;
     }
 
-    public StatsOperation getEstadisticas() {
+    /*public StatsOperation getEstadisticas() {
         return estadisticas;
-    }
+    }*/
       public Stats getStats() {
         return stats;
     }
