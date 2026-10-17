@@ -65,6 +65,10 @@ public enum ETerrainSize {
     public int getNumeroCasillas() {
         return (fil * col);
     }
+    public  int getNivelMinimoPorTamanho() {
+        return nivelMinimo;
+    }
+   
     
 
     
