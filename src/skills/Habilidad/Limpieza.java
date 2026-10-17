@@ -26,4 +26,7 @@ public class Limpieza extends Skill {
             }
         }
     }
+    public int getLimpieza() {
+        return 0;
+    }
 }

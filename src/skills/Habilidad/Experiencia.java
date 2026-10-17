@@ -25,4 +25,8 @@ public class Experiencia extends Skill {
         }
     }
 
+    public int getPorcentajeAcciones() {
+        return 0;
+    }
+
 }

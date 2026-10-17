@@ -2,6 +2,7 @@ package skills.Habilidad;
 
 import skills.Skill;
 import skills.ESkillType;
+import treasures.ETreasureRarity;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ public class Extra extends Skill {
     }
 
     /**
-     * Añade acciones de tesoros en el terro
+     * Añade tesoros aleatorios en el terreno
      * @param nivel el nivel de la habilidad
      * @return numero de tesoros adicionales
      */
@@ -32,6 +33,18 @@ public class Extra extends Skill {
                 return 0;
             }
         }
+    }
+    @Override
+    public int getTesorosExtra() {
+        return 0;
+    }
+
+    public int getTesoroExtraRareza() {
+        return 0;
+    }
+
+    public int getProbabilidadExtra(ETreasureRarity rareza) {
+        return 0;
     }
 }
 

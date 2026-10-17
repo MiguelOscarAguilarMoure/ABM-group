@@ -34,4 +34,7 @@ public class Excavaciones extends Skill {
             }
         }
     }
+    public int getAccionesExtra() {
+        return 0;
+    }
 }

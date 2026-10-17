@@ -16,8 +16,9 @@ public class Escaneo extends Skill {
      * Indica 3 casillas, donde 1 de ellas tiene un tesoro
      * @return
      */
-    public int escaneo() {
+    public int efecto() {
         return 3;
     }
+    public int getLimpieza() {return 0; }
 }
 
