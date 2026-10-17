@@ -169,19 +169,12 @@ public class Archeologist {
      * @return El número de niveles subidos; cada uno otorga una habilidad nueva.
      */
     public int addExperiencia(int exp) {
-        if (exp < 0) {
-            return 0;
-        }
         experiencia += exp;
-
         int nivelesSubidos = 0;
         while (nivel < NIVEL_MAX && experiencia >= getExpNecesaria()) {
             experiencia -= getExpNecesaria();
             nivel++;
             nivelesSubidos++;
-        }
-        if (nivelesSubidos > 0) {
-            asegurarTerrenosBase();
         }
         return nivelesSubidos;
     }
