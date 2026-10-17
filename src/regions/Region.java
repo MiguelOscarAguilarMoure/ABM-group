@@ -1,11 +1,11 @@
-package regiones;
+package regions;
 
 import java.util.ArrayList;
 
-import auxiliares.CodeHelper;
-import tesoros.ETreasureRarity;
-import tesoros.ETreasureType;
-import tesoros.Treasure;
+import helpers.CodeHelper;
+import treasures.ETreasureRarity;
+import treasures.ETreasureType;
+import treasures.Treasure;
 
 
 /**

@@ -1,4 +1,4 @@
-package tesoros;
+package treasures;
 
 import java.util.Random;
 /**
