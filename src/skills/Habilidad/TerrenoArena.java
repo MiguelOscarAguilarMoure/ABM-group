@@ -10,4 +10,5 @@ public class TerrenoArena extends Skill {
     public TerrenoArena(String nombre, String descripcion, ESkillType tipo) {
         super(nombre, descripcion, tipo);
     }
+
 }
