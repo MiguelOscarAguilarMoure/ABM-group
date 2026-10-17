@@ -7,8 +7,6 @@ import skills.ESkillType;
 import skills.Habilidad.*;
 import skills.Skill;
 
-import static skills.Skill.AñadirDependencia;
-
 /**
  * Repositorio de todas las habilidades del sistema.
  * Las habilidades se registran una sola vez en preInit y se obtienen siempre de aquí.
