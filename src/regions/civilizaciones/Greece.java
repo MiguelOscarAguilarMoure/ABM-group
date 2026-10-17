@@ -9,7 +9,7 @@ public class Greece extends Region {
     public static final String CODIGO = "GRC";
 
     public Greece() {
-        super("Grecia");
+        super("Grecia",CODIGO);
          this.treasures.add(new Treasure("Calco griego", CODIGO, ETreasureType.COIN, "001", 1, 1, ETreasureRarity.COMMON, "Moneda griega de cobre que tenía el menor valor."));
       this.treasures.add(new Treasure("Óbolo griego", CODIGO, ETreasureType.COIN, "002", 1, 1, ETreasureRarity.COMMON, "Moneda griega de plata de poco valor."));
       this.treasures.add(new Treasure("Dracma griego", CODIGO, ETreasureType.COIN, "003", 1, 1, ETreasureRarity.COMMON, "Moneda griega de plata ampliamente usada."));
@@ -38,6 +38,6 @@ public class Greece extends Region {
     @Override
     public String getCodigo() {
         return CODIGO;
-    }
+}
 
 }
