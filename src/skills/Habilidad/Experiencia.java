@@ -3,52 +3,30 @@ package skills.Habilidad;
 import skills.Skill;
 import skills.ESkillType;
 
+import java.util.ArrayList;
+
 public class Experiencia extends Skill {
     protected int nivel;
-    protected String nombre = "Experiencia";
-    protected String descripcion =
-            "Proabilidad de que una accion de excavar sea gratis";
 
-    public Experiencia(ESkillType tipo, String dependencia, int nivel) {
-        super(tipo, dependencia);
+    public Experiencia(String nombre, String descripcion, ESkillType tipo, int nivel) {
+        super(nombre, descripcion, tipo);
         this.nivel = nivel;
     }
-
-    // ======================================================================================
-    public int getNivel() {
-        return nivel;
-    }
-
-    public void setNivel(int nivel) {
-        this.nivel = nivel;
-    }
-
-    // ======================================================================================
 
     /**
-     *
-     * @param habilidad
-     * @return
+     * Devuvelve el porcentaje decimal (en Int)
+     * @return devuelve un int reflejando el porcentaje "x * 10" (Ej: 2 = 20%)
      */
-
-    public float efecto(Experiencia habilidad) {
-        int nivel = habilidad.getNivel();
-
-        switch (nivel) {
-            case 0 -> {
-                return 1;
-            }
-            case 1 -> {
-                return 2;
-            }
-            case 2 -> {
-                return 3;
-            }
-            default -> {
-                return 0;
-            }
-
+    public int efecto() {
+        switch (this.nivel) {
+            case 1 -> {return 2;}
+            case 2 -> {return 3;}
+            default -> {return 0;}
         }
-
     }
+
+    public int getPorcentajeAcciones() {
+        return 0;
+    }
+
 }

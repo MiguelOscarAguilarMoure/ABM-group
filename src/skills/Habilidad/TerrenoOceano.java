@@ -3,14 +3,14 @@ package skills.Habilidad;
 import skills.Skill;
 import skills.ESkillType;
 
+import java.util.ArrayList;
+
 public class TerrenoOceano extends Skill {
+protected int nivel;
 
-    protected String nombre = "Oceano";
-    protected String descripcion =
-            "Permite excarvar en terrenos del tipo de la habilidad";
-
-    public TerrenoOceano(ESkillType tipo, String dependencia) {
-        super(tipo, dependencia);
+    public TerrenoOceano(String nombre, String descripcion, ESkillType tipo, int nivel) {
+        super(nombre, descripcion, tipo);
+        this.nivel = nivel;
     }
 }
 

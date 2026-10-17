@@ -3,53 +3,30 @@ package skills.Habilidad;
 import skills.Skill;
 import skills.ESkillType;
 
+import java.util.ArrayList;
+
 public class Limpieza extends Skill {
     protected int nivel;
 
-    protected String nombre = "Limpieza";
-    protected String descripcion =
-            "Excava automaticamente zonas del terreno";
-
-    public Limpieza(ESkillType tipo, String dependencia, int nivel) {
-        super(tipo, dependencia);
+    public Limpieza(String nombre, String descripcion, ESkillType tipo, int nivel) {
+        super(nombre, descripcion, tipo);
         this.nivel = nivel;
     }
 
-    // ======================================================================================
-    public int getNivel() {
-        return nivel;
-    }
-
-    public void setNivel(int nivel) {
-        this.nivel = nivel;
-    }
-
-    // ======================================================================================
-
-    /**
-     *
-     * @param habilidad
-     * @return
-     */
-
-    public int efecto(Limpieza habilidad) {
-        int nivel = habilidad.getNivel();
-
+    public int efecto(int nivel) {
         switch (nivel) {
-            case 0 -> {
-                return 2;
-            }
             case 1 -> {
-                return 4;
+                return 5;
             }
             case 2 -> {
-                return 6;
+                return 10;
             }
             default -> {
                 return 0;
             }
-
         }
-
+    }
+    public int getLimpieza() {
+        return 0;
     }
 }

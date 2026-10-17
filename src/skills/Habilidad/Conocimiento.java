@@ -2,59 +2,37 @@ package skills.Habilidad;
 
 import skills.Skill;
 import skills.ESkillType;
+import treasures.ETreasureRarity;
+
+
+import java.util.ArrayList;
 
 public class Conocimiento extends Skill {
-    protected String nombre = "conocimiento";
-    protected String descripcion =
-            "Aumenta las Rarezas de los tesoros en el terreno";
     protected int nivel;
 
-    /**
-     *
-     * @param tipo
-     * @param dependencia
-     * @param nombre
-     */
-    public Conocimiento(ESkillType tipo, String dependencia, String nombre) {
-        super(tipo.TREASURE, dependencia);
-        this.nivel = nivel;
-    }
-    //GETTERS & SETTER (NIVEL) ===========================================
-
-
-    public int getNivel() {
-        return nivel;
-    }
-
-    public void setNivel(int nivel) {
+    public Conocimiento(String nombre, String descripcion, ESkillType tipo, int nivel) {
+        super(nombre, descripcion, tipo);
         this.nivel = nivel;
     }
 
-    // ==================================================================
-
     /**
-     * Efecto de la habilidad
-     * @param habilidad
-     * @return
+     * Devuelve la cantidad de tesoros del tipo de rareza
+     * @return [COMMON,UNCOMMON, RARE]
      */
-
-    public int efecto(Conocimiento habilidad) {
-        int nivel = habilidad.getNivel();
-
-        switch (nivel) {
-            case 0 -> {
-                return 1;
-            }
+    public int[] efecto() {
+        switch (this.nivel) {
             case 1 -> {
-                return 2;
+                return new int[]{5, 0, 0};
             }
             case 2 -> {
-                return 4;
+                return new int[]{5, 5, 0};
+            }
+            case 3 -> {
+                return new int[]{0, 5, 2};
             }
             default -> {
-                return 0;
+                return new int[]{0, 0, 0};
             }
-
         }
     }
 }

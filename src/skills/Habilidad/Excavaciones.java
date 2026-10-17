@@ -3,50 +3,38 @@ package skills.Habilidad;
 import skills.Skill;
 import skills.ESkillType;
 
+import java.util.ArrayList;
+
 public class Excavaciones extends Skill {
     protected int nivel;
-    protected String nombre = "Excavacion";
-    protected String descripcion =
-            "Aumenta las Rarezas de los tesoros en el terreno";
 
-    public Excavaciones(ESkillType tipo, String dependencia, int nivel) {
-        super(tipo, dependencia);
-        this.nivel = nivel;
-    }// ======================================================================================
-    public int getNivel() {
-        return nivel;
-    }
-
-    public void setNivel(int nivel) {
+    public Excavaciones(String nombre, String descripcion, ESkillType tipo, int nivel) {
+        super(nombre, descripcion, tipo);
         this.nivel = nivel;
     }
-
-    // ======================================================================================
 
     /**
-     *
-     * @param habilidad
-     * @return
+     * Amplia en numero de acciones de excarvar
+     * @param nivel
+     * @return numero de acciones adicionales
      */
-
-    public int efecto(Excavaciones habilidad) {
-        int nivel = habilidad.getNivel();
-
+    public int efecto(int nivel) {
         switch (nivel) {
-            case 0 -> {
-                return 2;
-            }
             case 1 -> {
-                return 4;
+                return 5;
             }
             case 2 -> {
-                return 6;
+                return 10;
+            }
+            case 3 -> {
+                return 15;
             }
             default -> {
                 return 0;
             }
-
         }
-
+    }
+    public int getAccionesExtra() {
+        return 0;
     }
 }

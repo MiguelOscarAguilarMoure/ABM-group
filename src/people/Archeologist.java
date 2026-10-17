@@ -197,37 +197,10 @@ public class Archeologist {
     }
 
     /**
-     * Añade una habilidad si puede aprenderla.
-     *
-     * @param skill La habilidad a añadir.
-     * @return true si se añadió; false si es nula o no puede aprenderla.
+     * Añade una habilidad y, si desbloquea formas de terreno, las añade también.
+     * 
+     * @param s La habilidad a añadir.
      */
-    public boolean addHabilidad(Skill skill) {
-        if (!puedeAprender(skill)) {
-            return false;
-        }
-        listaHabilidades.add(skill);
-        return true;
-    }
-
-    public List<Skill> getListaHabilidades() {
-        return new ArrayList<>(listaHabilidades);
-    }
-
-    // ===================== LICENCIA =====================
-
-    /** @return 10 por nivel, más 10 si es infrecuente o 20 si es raro. */
-    public int getPuntosLicencia() {
-        int puntos = 10 * nivel;
-        if (rareza == ETreasureRarity.UNCOMMON) {
-            puntos += 10;
-        } else if (rareza == ETreasureRarity.RARE) {
-            puntos += 20;
-        }
-        return puntos;
-    }
-
-    // ===================== GETTERS / SETTERS =====================
 
     public static int getNivelMax() {
         return NIVEL_MAX;
