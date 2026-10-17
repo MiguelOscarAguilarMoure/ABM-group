@@ -1,9 +1,10 @@
 package excavation;
 
-import auxiliares.UtilsHelper;
-import regiones.Region;
-import tesoros.ETreasureRarity;
-import tesoros.Treasure;
+import helpers.UtilsHelper;
+import people.Archeologist;
+import regions.Region;
+import treasures.ETreasureRarity;
+import treasures.Treasure;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +24,10 @@ public class Excavation {
             'U', 'V', 'W', 'X', 'Y', 'Z'};
     private static final Random RANDOM = new Random();
 
+    private static final String ADORNO = "::::::::::::::::::::";
+    private static final String SEPARADOR_TURNO = "----------------------------------------";
+    private static final String SEPARADOR_FIN = "::::::::::::::::::::::::::::::::::::::::";
+
     private static final String SIN_EXCAVAR = "·";
     private static final String VACIO = "x";
 
@@ -36,6 +41,7 @@ public class Excavation {
 
     private final ETerrainSize terreno;
     private final Region region;
+    private final Archeologist arqueologo;
     private final int numColumnas;
     private final int numFilas;
 
@@ -52,13 +58,17 @@ public class Excavation {
     private int cavarRestantes;
     private int puntos;
 
-    // TODO Añadir el arqueólogo que realiza la excavación y aplicar sus habilidades.
-     public Excavation(ETerrainSize terreno, Region region) {
-        if (terreno == null || region == null) {
-            throw new IllegalArgumentException("El terreno y la región no pueden ser nulos.");
+    public Excavation(ETerrainSize terreno, Region region, Archeologist arqueologo) {
+        if (terreno == null || region == null || arqueologo == null) {
+            throw new IllegalArgumentException("El terreno, la región y el arqueólogo no pueden ser nulos.");
+        }
+        if (!arqueologo.puedeExcavar(terreno)) {
+            throw new IllegalArgumentException(arqueologo.getNombre() + " no puede excavar el terreno "
+                    + terreno.getTamanho() + " (" + terreno.getNombre() + ").");
         }
         this.terreno = terreno;
         this.region = region;
+        this.arqueologo = arqueologo;
         // En ETerrainSize "AxB" es ancho x alto: A = columnas (letras), B = filas (números).
         this.numColumnas = terreno.getFil();
         this.numFilas = terreno.getCol();
@@ -69,7 +79,7 @@ public class Excavation {
     }
 
     // ===== Generación =====================================================
-    // genera la rejilla de casillas y las etiquetas de columna (A, B, C... AA, AB...)
+
     private void generarRejilla() {
         int total = numColumnas * numFilas;
         for (int i = 0; i < total; i++) {
@@ -86,8 +96,8 @@ public class Excavation {
         }
         generarEtiquetas("");
         anchoNumFila = String.valueOf(numFilas).length();
-        // Cabecera: espacios para el número de fila + etiquetas de columna
-       StringBuilder sb = new StringBuilder(espacios(anchoNumFila));
+
+        StringBuilder sb = new StringBuilder(espacios(anchoNumFila));
         for (String etiqueta : columnas) {
             sb.append(' ').append(etiqueta);
         }
@@ -104,7 +114,7 @@ public class Excavation {
             generarEtiquetas(actual + LETRAS[i]);
         }
     }
-    // genera la lista de tesoros a enterrar y los coloca en las casillas aleatoriamente
+
     private void generarTesoros() {
         int total = numColumnas * numFilas;
         int cantidad = Math.max(1, (int) Math.ceil(total / 10.0)); // 10 %, redondeando hacia arriba
@@ -129,11 +139,12 @@ public class Excavation {
         }
 
         // Después, hasta completar la cantidad, con rareza aleatoria
-        boolean permiteRaros = ! (terreno.getTamanho().equals(PEQUENO)) ;
+        boolean permiteRaros = !terreno.getTamanho().equals(PEQUENO);
         while (rarezas.size() < cantidad) {
             rarezas.add(tirarRareza(permiteRaros));
         }
         // TODO Extras del arqueólogo (raros, infrecuentes, comunes y aleatorios) sin pasar del 50 % de casillas.
+        //      Pendiente de que Archeologist ofrezca sus bonos.
 
         // Por último, se colocan en casillas distintas al azar
         List<Integer> posiciones = UtilsHelper.genRandomIdxs(rarezas.size(), total);
@@ -221,7 +232,7 @@ public class Excavation {
             throw new IllegalArgumentException("La columna " + posicion.getCol() + " no existe ("
                     + columnas.get(0) + "-" + columnas.get(numColumnas - 1) + ").");
         }
-        return ( (fila - 1) * numColumnas + columna) ;
+        return (fila - 1) * numColumnas + columna;
     }
 
     /** Símbolo de lo que hay enterrado en la casilla: C, I, R o x. */
@@ -233,7 +244,7 @@ public class Excavation {
     // ===== Estado =========================================================
 
     public boolean isFinalizada() {
-        return ((acciones <= 0) || (tesorosRestantes <= 0)) ;
+        return acciones <= 0 || tesorosRestantes <= 0;
     }
 
     public int getAccionesRestantes() {
@@ -242,6 +253,29 @@ public class Excavation {
 
     public int getTesorosRestantes() {
         return tesorosRestantes;
+    }
+
+    /** @return Cuántos tesoros de esa rareza quedan por encontrar. */
+    public int getTesorosRestantes(ETreasureRarity rareza) {
+        int cantidad = 0;
+        for (Integer indice : tesoros.keySet()) {
+            Treasure tesoro = tesoros.get(indice);
+            if (tesoro.getRarezaTesoro() == rareza && casillas.get(indice).equals(SIN_EXCAVAR)) {
+                cantidad++;
+            }
+        }
+        return cantidad;
+    }
+
+    /** @return Cuántos tesoros de esa rareza hay en total en la rejilla. */
+    public int getTotalTesoros(ETreasureRarity rareza) {
+        int cantidad = 0;
+        for (Treasure tesoro : tesoros.values()) {
+            if (tesoro.getRarezaTesoro() == rareza) {
+                cantidad++;
+            }
+        }
+        return cantidad;
     }
 
     public int getPosicionesRestantes() {
@@ -273,34 +307,13 @@ public class Excavation {
         return region;
     }
 
+    public Archeologist getArqueologo() {
+        return arqueologo;
+    }
+
     // ===== Rejilla ========================================================
 
-   
-    private String dibujar(ArrayList<String> simbolos) {
-        StringBuilder sb = new StringBuilder(cabecera);
-        for (int fila = 0; fila < numFilas; fila++) {
-            sb.append(System.lineSeparator());
-            sb.append(String.format("%" + anchoNumFila + "d", fila + 1));
-            for (int col = 0; col < numColumnas; col++) {
-                sb.append(' ').append(centrar(simbolos.get(fila * numColumnas + col)));
-            }
-        }
-        return sb.toString();
-    }
-    private String espacios(int cantidad) {
-    String texto = "";
-    for (int i = 0; i < cantidad; i++) {
-        texto += " ";
-    }
-    return texto;
-}
-    /** Centra el símbolo bajo la etiqueta de su columna. */
-    private String centrar(String simbolo) {
-        int relleno = anchoEtiqueta - simbolo.length();
-        int izquierda = relleno / 2;
-        return espacios(izquierda) + simbolo + espacios(relleno - izquierda);
-    }
-     /** La rejilla tal y como la ve el jugador. */
+    /** La rejilla tal y como la ve el jugador. */
     @Override
     public String toString() {
         return dibujar(casillas);
@@ -315,6 +328,32 @@ public class Excavation {
         return dibujar(reveladas);
     }
 
+    private String dibujar(ArrayList<String> simbolos) {
+        StringBuilder sb = new StringBuilder(cabecera);
+        for (int fila = 0; fila < numFilas; fila++) {
+            sb.append(System.lineSeparator());
+            sb.append(String.format("%" + anchoNumFila + "d", fila + 1));
+            for (int col = 0; col < numColumnas; col++) {
+                sb.append(' ').append(centrar(simbolos.get(fila * numColumnas + col)));
+            }
+        }
+        return sb.toString();
+    }
+
+    private String espacios(int cantidad) {
+        String texto = "";
+        for (int i = 0; i < cantidad; i++) {
+            texto += " ";
+        }
+        return texto;
+    }
+
+    /** Centra el símbolo bajo la etiqueta de su columna. */
+    private String centrar(String simbolo) {
+        int relleno = anchoEtiqueta - simbolo.length();
+        int izquierda = relleno / 2;
+        return espacios(izquierda) + simbolo + espacios(relleno - izquierda);
+    }
 
     // ===== Proceso por consola ============================================
 
@@ -329,11 +368,9 @@ public class Excavation {
         if (sc == null) {
             throw new IllegalArgumentException("El Scanner no puede ser nulo.");
         }
+        System.out.println(ADORNO + " Excavación en " + region.getNombre() + " " + ADORNO);
         while (!isFinalizada()) {
-            System.out.println();
-            System.out.println("Acciones restantes: " + acciones);
-            System.out.println(this);
-            System.out.print("Posiciones a excavar (ej. 3B 4C): ");
+            mostrarTurno();
 
             String linea;
             try {
@@ -343,9 +380,19 @@ public class Excavation {
                 break;
             }
             procesarEntrada(linea);
+            if (!isFinalizada()) {
+                System.out.println(SEPARADOR_TURNO);
+            }
         }
         mostrarFinal();
         return getCodigosEncontrados();
+    }
+
+    private void mostrarTurno() {
+        System.out.println(this);
+        System.out.println("Número de acciones restantes: " + acciones);
+        System.out.println("Tesoros: " + tesoros.size());
+        System.out.print("Conjunto de coordenadas a excavar separadas por espacios: ");
     }
 
     private void procesarEntrada(String linea) {
@@ -354,16 +401,17 @@ public class Excavation {
             return;
         }
         for (String indicacion : linea.trim().split(" ")) {
+            if (indicacion.isEmpty()) {
+                continue; // varios espacios seguidos generan cadenas vacías
+            }
             if (isFinalizada()) {
                 System.out.println("Se ignoran las posiciones restantes: la excavación ha terminado.");
                 return;
             }
             try {
-                Position posicion = leerPosicion(indicacion);
-                boolean hallazgo = excavar(posicion);
-                System.out.println("  " + posicion + ": " + (hallazgo ? "¡tesoro encontrado!" : "nada"));
+                excavar(leerPosicion(indicacion));
             } catch (IllegalArgumentException e) {
-                System.out.println("  " + indicacion + ": " + e.getMessage());
+                System.out.println(indicacion + ": " + e.getMessage());
             }
         }
     }
@@ -384,16 +432,27 @@ public class Excavation {
             throw new IllegalArgumentException("el número de fila no es válido.");
         }
     }
-    // Finaliza la excavación mostrando el estado final y la rejilla descubierta.
+
     private void mostrarFinal() {
-        System.out.println();
+        System.out.println(SEPARADOR_FIN);
+        System.out.println("Excavación terminada");
         if (tesorosRestantes == 0) {
             System.out.println("¡Has encontrado todos los tesoros!");
         }
-        System.out.println("Estado final de la rejilla:");
         System.out.println(this);
-        System.out.println();
-        System.out.println("Rejilla descubierta:");
         System.out.println(getRejillaDescubierta());
+        System.out.println("Se han encontrado:");
+        mostrarResumen(ETreasureRarity.COMMON, "comunes");
+        mostrarResumen(ETreasureRarity.UNCOMMON, "infrecuentes");
+        mostrarResumen(ETreasureRarity.RARE, "raros");
+    }
+
+    /** Muestra "encontrados/total" de una rareza, solo si en la rejilla había alguno. */
+    private void mostrarResumen(ETreasureRarity rareza, String plural) {
+        int total = getTotalTesoros(rareza);
+        if (total > 0) {
+            int encontrados = total - getTesorosRestantes(rareza);
+            System.out.println(encontrados + "/" + total + " tesoros " + plural + ".");
+        }
     }
 }
