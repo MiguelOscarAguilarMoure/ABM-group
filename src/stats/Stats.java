@@ -1,13 +1,12 @@
 package stats;
 
+import commons.repositories.RegionRepository;
+import helpers.CodeHelper;
+import helpers.UtilsHelper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
-import commons.repositories.RegionRepository;
-import helpers.CodeHelper;
-import helpers.UtilsHelper;
 import regions.Region;
 import treasures.Treasure;
 
@@ -34,7 +33,7 @@ public class Stats {
     public void registrar(Region region, List<String> codigos) {
         lugares.merge(region.getCodigo(), 1, Integer::sum);
         for (String codigo : codigos) {
-            tesoros.merge(codigo, 1, Integer::sum);
+            tesoros.merge(codigo, 1, Integer::sum); //la lista de códigos que has encontrado en una excavación y le suma 1 a cada uno en el mapa
         }
     }
 
@@ -57,7 +56,7 @@ public class Stats {
             int posibles = r.getNumPartes();   // cada parte cuenta como un tesoro distinto
 
             System.out.println("-------------------- " + r.getNombre() + " --------------------");
-            System.out.println("Veces visitada: " + lugares.getOrDefault(r.getCodigo(), 0));
+            System.out.println("Veces visitada: " + lugares.getOrDefault(r.getCodigo(), 0));//busca en el mapa lugares cuántas veces has visitado esa región, y si nunca has ido devuelve 0.
             System.out.println("Tesoros encontrados: " + distintos + "/" + posibles
                     + " (" + UtilsHelper.getPercent(distintos, posibles) + "%)");
             System.out.println("Total de tesoros excavados: " + total);

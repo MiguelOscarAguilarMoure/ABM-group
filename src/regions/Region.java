@@ -1,9 +1,8 @@
 package regions;
 
+import helpers.CodeHelper;
 import java.util.ArrayList;
 import java.util.List;
-
-import helpers.CodeHelper;
 import treasures.ETreasureRarity;
 import treasures.ETreasureType;
 import treasures.Treasure;
@@ -96,6 +95,10 @@ public abstract class Region {
         }
         return  cantidad;
     }
+
+    public boolean necesitaLicencia() {
+    return false;   // por defecto ninguna la pide
+}
 
 
 
