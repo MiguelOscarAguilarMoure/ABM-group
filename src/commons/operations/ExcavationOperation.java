@@ -16,7 +16,8 @@ import java.util.Scanner;
 
 /**
  * Opción Excavar del menú principal.
- * Pide el arqueólogo, la región y el terreno, realiza la excavación y muestra el resultado.
+ * Pide el arqueólogo, la región y el terreno, realiza la excavación y muestra
+ * el resultado.
  */
 public class ExcavationOperation implements IOperation {
 
@@ -28,7 +29,8 @@ public class ExcavationOperation implements IOperation {
 
     public ExcavationOperation(Scanner sc, List<Archeologist> arqueologos, List<Region> regiones) {
         if (sc == null || arqueologos == null || regiones == null) {
-            throw new IllegalArgumentException("El Scanner y las listas de arqueólogos y regiones no pueden ser nulos.");
+            throw new IllegalArgumentException(
+                    "El Scanner y las listas de arqueólogos y regiones no pueden ser nulos.");
         }
         this.sc = sc;
         this.arqueologos = arqueologos;
@@ -65,13 +67,17 @@ public class ExcavationOperation implements IOperation {
         List<String> codigos = excavacion.ejecutar(sc);
 
         mostrarTesoros(region, codigos);
-        // TODO Enviar los códigos al museo con Zeraf (librería Terra) y mostrar el mensaje que devuelva.
+        // TODO Enviar los códigos al museo con Zeraf (librería Terra) y mostrar el
+        // mensaje que devuelva.
         System.out.println("Puntos conseguidos: " + excavacion.getPuntosObtenidos());
-        // TODO Sumar los puntos conseguidos a los del jugador (pendiente de saber dónde se guardan).
+        // TODO Sumar los puntos conseguidos a los del jugador (pendiente de saber dónde
+        // se guardan).
         System.out.println("El arqueólogo " + arqueologo.getNombre() + " ha conseguido "
                 + excavacion.getExperienciaObtenida() + " puntos de experiencia.");
-        // TODO addExperiencia devuelve los niveles subidos: por cada uno, elegir una habilidad entre tres
-        //      (sin opción de salir) y, al llegar al nivel máximo, elegir la región de especialización.
+        // TODO addExperiencia devuelve los niveles subidos: por cada uno, elegir una
+        // habilidad entre tres
+        // (sin opción de salir) y, al llegar al nivel máximo, elegir la región de
+        // especialización.
         arqueologo.addExperiencia(excavacion.getExperienciaObtenida());
     }
 
@@ -103,7 +109,10 @@ public class ExcavationOperation implements IOperation {
         return (indice < 0) ? null : regiones.get(indice);
     }
 
-    /** Primero el tamaño y, si el arqueólogo tiene varias formas de ese tamaño, la forma. */
+    /**
+     * Primero el tamaño y, si el arqueólogo tiene varias formas de ese tamaño, la
+     * forma.
+     */
     private ETerrainSize elegirTerreno(Archeologist arqueologo) {
         List<ETerrainSize> terrenos = arqueologo.getTerrenosExcavables();
         if (terrenos.isEmpty()) {
@@ -154,18 +163,23 @@ public class ExcavationOperation implements IOperation {
 
     private int leerOpcion(String peticion, int max) {
         String aviso = "Opción no válida, introduce un número entre 0 y " + max + ".";
-        while (true) {
+        int opcion = -1;
+
+        while (opcion < 0 || opcion > max) {
             System.out.print(peticion);
+
             try {
-                int opcion = Integer.parseInt(sc.nextLine().trim());
-                if (opcion >= 0 && opcion <= max) {
-                    return opcion;
-                }
-                System.out.println(aviso);
+                opcion = Integer.parseInt(sc.nextLine().trim());
             } catch (NumberFormatException e) {
+                opcion = -1;
+            }
+
+            if (opcion < 0 || opcion > max) {
                 System.out.println(aviso);
             }
         }
+
+        return opcion;
     }
 
     // ===== Resultado ======================================================
@@ -189,7 +203,9 @@ public class ExcavationOperation implements IOperation {
         }
     }
 
-    /** Nombre, descripción, código, y tipo y rareza con la concordancia de género. */
+    /**
+     * Nombre, descripción, código, y tipo y rareza con la concordancia de género.
+     */
     private void mostrarTesoro(Treasure tesoro, String codigo) {
         boolean femenino = esFemenino(tesoro.getTipoTesoro());
         System.out.println(tesoro.getNombre());
