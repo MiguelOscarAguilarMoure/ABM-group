@@ -1,17 +1,15 @@
 package excavation;
 
 import helpers.UtilsHelper;
+import java.io.Console;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 import people.Archeologist;
 import regions.Region;
 import treasures.ETreasureRarity;
 import treasures.Treasure;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
-import java.util.Scanner;
 
 /**
  * Una excavación: genera la rejilla y los tesoros enterrados, y controla
@@ -391,26 +389,18 @@ public class Excavation {
 
     // ===== Proceso por consola ============================================
 
-    /**
+       /**
      * Ejecuta el proceso de excavación hasta quedarse sin acciones o sin tesoros.
-     * El Scanner lo crea y lo cierra quien llama (cerrarlo aquí cerraría
-     * System.in).
      *
-     * @param sc Scanner sobre la entrada del usuario.
      * @return Los códigos completos de los tesoros encontrados.
      */
-    public List<String> ejecutar(Scanner sc) {
-        if (sc == null) {
-            throw new IllegalArgumentException("El Scanner no puede ser nulo.");
-        }
+    public List<String> ejecutar() {
+        Console console = System.console();
         System.out.println(ADORNO + " Excavación en " + region.getNombre() + " " + ADORNO);
         while (!isFinalizada()) {
             mostrarTurno();
-
-            String linea;
-            try {
-                linea = sc.nextLine();
-            } catch (NoSuchElementException e) {
+            String linea = console.readLine();
+            if (linea == null) {
                 System.out.println("No hay entrada disponible. Se interrumpe la excavación.");
                 break;
             }

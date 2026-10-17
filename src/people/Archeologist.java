@@ -348,6 +348,15 @@ public class Archeologist {
             licencias.add(codigoRegion);
         }
     }
+        /**
+     * Comprueba si puede excavar en una región: si no pide licencia, siempre;
+     * si la pide, solo si la tiene.
+     * @param r La región.
+     * @return true si puede excavar en ella.
+     */
+    public boolean puedeExcavarEn(Region r) {
+        return !r.necesitaLicencia() || licencias.contains(r.getCodigo());
+    }
 
     /**
      * Comprueba si puede excavar en una región: si no pide licencia, siempre;

@@ -1,8 +1,7 @@
 package regions;
 
-import java.util.ArrayList;
-
 import helpers.CodeHelper;
+import java.util.ArrayList;
 import treasures.ETreasureRarity;
 import treasures.ETreasureType;
 import treasures.Treasure;
@@ -103,6 +102,14 @@ public class Region {
             cantidad += t.getPartes();
         }
         return  cantidad;
+    }
+      /**
+     * Indica si hace falta licencia para excavar en esta región.
+     * Por defecto ninguna la pide; una región difícil lo sobrescribiría devolviendo true.
+     * @return false por defecto.
+     */
+    public boolean necesitaLicencia() {
+        return false;
     }
 
 
