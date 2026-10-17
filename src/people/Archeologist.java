@@ -2,8 +2,8 @@ package people;
 
 import excavation.ETerrainSize;
 import habilidades.Skill;
-import regiones.Region;
-import tesoros.ETreasureRarity;
+import regions.Region;
+import treasures.ETreasureRarity;
 
 import java.util.ArrayList;
 import java.util.List;
