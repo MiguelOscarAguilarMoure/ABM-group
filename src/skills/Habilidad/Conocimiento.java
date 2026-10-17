@@ -1,11 +1,8 @@
 package skills.Habilidad;
 
-import skills.Skill;
 import skills.ESkillType;
+import skills.Skill;
 import treasures.ETreasureRarity;
-
-
-import java.util.ArrayList;
 
 public class Conocimiento extends Skill {
     protected int nivel;
@@ -34,5 +31,20 @@ public class Conocimiento extends Skill {
                 return new int[]{0, 0, 0};
             }
         }
+    }
+        /**
+     * Tesoros extra de una rareza, según el nivel de la habilidad.
+     * Lo usa Archeologist al sumar los bonos de todas sus habilidades.
+     */
+    @Override
+    public int getTesorosExtra(ETreasureRarity rareza) {
+        int[] e = efecto();   // [común, infrecuente, raro]
+        if (rareza == ETreasureRarity.COMMON) {
+            return e[0];
+        }
+        if (rareza == ETreasureRarity.UNCOMMON) {
+            return e[1];
+        }
+        return e[2];   // RARE
     }
 }

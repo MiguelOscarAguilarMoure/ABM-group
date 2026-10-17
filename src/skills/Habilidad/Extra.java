@@ -1,13 +1,14 @@
 package skills.Habilidad;
 
-import skills.Skill;
 import skills.ESkillType;
-import treasures.ETreasureRarity;
+import skills.Skill;
 
-import java.util.ArrayList;
-
+/**
+ * Extra I, II o III: añade tesoros aleatorios al terreno.
+ */
 public class Extra extends Skill {
-    protected int nivel;
+
+    protected final int nivel;   // 1, 2 o 3
 
     public Extra(String nombre, String descripcion, ESkillType tipo, int nivel) {
         super(nombre, descripcion, tipo);
@@ -19,32 +20,25 @@ public class Extra extends Skill {
     }
 
     /**
-     * Añade tesoros aleatorios en el terreno
-     * @param nivel el nivel de la habilidad
-     * @return numero de tesoros adicionales
+     * Tesoros aleatorios adicionales según el nivel.
+     * @return 3, 7 o 10.
      */
-
-    public int efecto(int nivel) {
+    public int efecto() {
         switch (nivel) {
-            case 1 -> {return 5;}
-            case 2 -> {return 10;}
-            case 3 -> {return 15;}
-            default -> {
+            case 1:
+                return 3;
+            case 2:
+                return 7;
+            case 3:
+                return 10;
+            default:
                 return 0;
-            }
         }
     }
+
+    /** Tesoros aleatorios extra (lo suma Archeologist.getTesorosExtra). */
     @Override
     public int getTesorosExtra() {
-        return 0;
-    }
-
-    public int getTesoroExtraRareza() {
-        return 0;
-    }
-
-    public int getProbabilidadExtra(ETreasureRarity rareza) {
-        return 0;
+        return efecto();
     }
 }
-

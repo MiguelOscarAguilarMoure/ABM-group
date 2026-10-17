@@ -81,7 +81,7 @@ public abstract class Skill {
         return 0;
     }
 
-    public Boolean isInvestigacion() {
+    public boolean isInvestigacion() {
         return false;
     }
 
