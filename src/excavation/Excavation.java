@@ -19,9 +19,9 @@ import java.util.Scanner;
  */
 public class Excavation {
 
-    private static final char[] LETRAS = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+    private static final char[] LETRAS = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
             'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-            'U', 'V', 'W', 'X', 'Y', 'Z'};
+            'U', 'V', 'W', 'X', 'Y', 'Z' };
     private static final Random RANDOM = new Random();
 
     private static final String ADORNO = "::::::::::::::::::::";
@@ -45,9 +45,9 @@ public class Excavation {
     private final int numColumnas;
     private final int numFilas;
 
-    private final ArrayList<String> columnas = new ArrayList<>();        // A, B... AA, AB...
-    private final ArrayList<String> casillas = new ArrayList<>();        // lo que ve el jugador
-    private final HashMap<Integer, Treasure> tesoros = new HashMap<>();  // casilla -> tesoro enterrado
+    private final ArrayList<String> columnas = new ArrayList<>(); // A, B... AA, AB...
+    private final ArrayList<String> casillas = new ArrayList<>(); // lo que ve el jugador
+    private final HashMap<Integer, Treasure> tesoros = new HashMap<>(); // casilla -> tesoro enterrado
     private final ArrayList<String> codigosEncontrados = new ArrayList<>();
 
     private String cabecera;
@@ -69,7 +69,8 @@ public class Excavation {
         this.terreno = terreno;
         this.region = region;
         this.arqueologo = arqueologo;
-        // En ETerrainSize "AxB" es ancho x alto: A = columnas (letras), B = filas (números).
+        // En ETerrainSize "AxB" es ancho x alto: A = columnas (letras), B = filas
+        // (números).
         this.numColumnas = terreno.getFil();
         this.numFilas = terreno.getCol();
 
@@ -104,7 +105,10 @@ public class Excavation {
         cabecera = sb.toString();
     }
 
-    /** Genera recursivamente las etiquetas de columna sin pasarse del número necesario. */
+    /**
+     * Genera recursivamente las etiquetas de columna sin pasarse del número
+     * necesario.
+     */
     private void generarEtiquetas(String actual) {
         if (actual.length() == anchoEtiqueta) {
             columnas.add(actual);
@@ -143,9 +147,21 @@ public class Excavation {
         while (rarezas.size() < cantidad) {
             rarezas.add(tirarRareza(permiteRaros));
         }
-        // TODO Extras del arqueólogo (raros, infrecuentes, comunes y aleatorios) sin pasar del 50 % de casillas.
-        //      Pendiente de que Archeologist ofrezca sus bonos.
-
+        // TODO Extras del arqueólogo (raros, infrecuentes, comunes y aleatorios) sin
+        // pasar del 50 % de casillas.
+        // Pendiente de que Archeologist ofrezca sus bonos.
+        int maximo = total / 2;
+        if (permiteRaros) {
+            anadirHasta(rarezas, ETreasureRarity.RARE, arqueologo.getTesorosExtra(ETreasureRarity.RARE, region),
+                    maximo);
+        }
+        anadirHasta(rarezas, ETreasureRarity.UNCOMMON, arqueologo.getTesorosExtra(ETreasureRarity.UNCOMMON, region),
+                maximo);
+        anadirHasta(rarezas, ETreasureRarity.COMMON, arqueologo.getTesorosExtra(ETreasureRarity.COMMON, region),
+                maximo);
+        for (int i = 0; i < arqueologo.getTesorosExtra(region) && rarezas.size() < maximo; i++) {
+            rarezas.add(tirarRareza(permiteRaros));
+        }
         // Por último, se colocan en casillas distintas al azar
         List<Integer> posiciones = UtilsHelper.genRandomIdxs(rarezas.size(), total);
         for (int i = 0; i < rarezas.size(); i++) {
@@ -164,23 +180,37 @@ public class Excavation {
         }
     }
 
-    /** 60 % común, 30 % infrecuente, 10 % rara (los terrenos pequeños no tienen raros). */
-    private ETreasureRarity tirarRareza(boolean permiteRaros) {
-        int tirada = RANDOM.nextInt(100);
-        if (tirada < 60) {
-            return ETreasureRarity.COMMON;
+    private void anadirHasta(ArrayList<ETreasureRarity> lista, ETreasureRarity rareza, int veces, int maximo) {
+        for (int i = 0; i < veces && lista.size() < maximo; i++) {
+            lista.add(rareza);
         }
-        if (tirada < 90) {
+    }
+
+    /**
+     * 60 % común, 30 % infrecuente, 10 % rara, más la probabilidad extra del
+     * arqueólogo
+     * para infrecuentes y raros (se le quita a los comunes). Los pequeños no tienen
+     * raros.
+     */
+    private ETreasureRarity tirarRareza(boolean permiteRaros) {
+        int raro = permiteRaros ? 10 + arqueologo.getProbabilidadExtra(ETreasureRarity.RARE) : 0;
+        int infrecuente = 30 + arqueologo.getProbabilidadExtra(ETreasureRarity.UNCOMMON);
+
+        int tirada = RANDOM.nextInt(100);
+        if (tirada < raro) {
+            return ETreasureRarity.RARE;
+        }
+        if (tirada < raro + infrecuente) {
             return ETreasureRarity.UNCOMMON;
         }
-        return permiteRaros ? ETreasureRarity.RARE : ETreasureRarity.COMMON;
+        return ETreasureRarity.COMMON;
     }
 
     /** (25 % de la rejilla + extra) * factor, entre 1 y el 75 % de la rejilla. */
     private int calcularAcciones() {
         int total = numColumnas * numFilas;
-        int extra = 0;        // TODO Extra del arqueólogo
-        double factor = 1.0;  // TODO Producto de los factores de sus habilidades
+        int extra = arqueologo.getAccionesExtra(region); // TODO Extra del arqueólogo
+        double factor = arqueologo.getFactorAcciones(); // TODO Producto de los factores de sus habilidades
         int calculadas = (int) Math.round((total * ACCIONES_MIN + extra) * factor);
         int maximo = (int) (total * ACCIONES_MAX);
         return Math.max(1, Math.min(calculadas, maximo));
@@ -193,7 +223,8 @@ public class Excavation {
      *
      * @param posicion La posición a excavar.
      * @return <code>true</code> si había un tesoro.
-     * @throws IllegalArgumentException Si la posición es nula, no existe o ya está excavada.
+     * @throws IllegalArgumentException Si la posición es nula, no existe o ya está
+     *                                  excavada.
      * @throws IllegalStateException    Si la excavación ya ha terminado.
      */
     public boolean excavar(Position posicion) {
@@ -298,7 +329,10 @@ public class Excavation {
         }
     }
 
-    /** @return Una copia con los códigos completos (con parte) de los tesoros encontrados. */
+    /**
+     * @return Una copia con los códigos completos (con parte) de los tesoros
+     *         encontrados.
+     */
     public List<String> getCodigosEncontrados() {
         return new ArrayList<>(codigosEncontrados);
     }
@@ -359,7 +393,8 @@ public class Excavation {
 
     /**
      * Ejecuta el proceso de excavación hasta quedarse sin acciones o sin tesoros.
-     * El Scanner lo crea y lo cierra quien llama (cerrarlo aquí cerraría System.in).
+     * El Scanner lo crea y lo cierra quien llama (cerrarlo aquí cerraría
+     * System.in).
      *
      * @param sc Scanner sobre la entrada del usuario.
      * @return Los códigos completos de los tesoros encontrados.
@@ -392,6 +427,11 @@ public class Excavation {
         System.out.println(this);
         System.out.println("Número de acciones restantes: " + acciones);
         System.out.println("Tesoros: " + tesoros.size());
+        if (arqueologo.isInvestigacion()) {
+            System.out.println("Quedan " + getTesorosRestantes(ETreasureRarity.COMMON) + " comunes, "
+                    + getTesorosRestantes(ETreasureRarity.UNCOMMON) + " infrecuentes y "
+                    + getTesorosRestantes(ETreasureRarity.RARE) + " raros.");
+        }
         System.out.print("Conjunto de coordenadas a excavar separadas por espacios: ");
     }
 
@@ -447,7 +487,10 @@ public class Excavation {
         mostrarResumen(ETreasureRarity.RARE, "raros");
     }
 
-    /** Muestra "encontrados/total" de una rareza, solo si en la rejilla había alguno. */
+    /**
+     * Muestra "encontrados/total" de una rareza, solo si en la rejilla había
+     * alguno.
+     */
     private void mostrarResumen(ETreasureRarity rareza, String plural) {
         int total = getTotalTesoros(rareza);
         if (total > 0) {
