@@ -17,7 +17,7 @@ public class Licencia extends Skill {
 
     /**
      * Recibe el tipo de licencia y devuelve las lineas que hay que ampliar en el terreno
-     *
+     * [Horizontal o  Vertical]
      * @param nivel
      * @return los numeros a sumar en los vertices
      */

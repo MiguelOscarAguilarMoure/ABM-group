@@ -12,4 +12,18 @@ public class Limpieza extends Skill {
         super(nombre, descripcion, tipo);
         this.nivel = nivel;
     }
+
+    public int efecto(int nivel) {
+        switch (nivel) {
+            case 1 -> {
+                return 5;
+            }
+            case 2 -> {
+                return 10;
+            }
+            default -> {
+                return 0;
+            }
+        }
+    }
 }

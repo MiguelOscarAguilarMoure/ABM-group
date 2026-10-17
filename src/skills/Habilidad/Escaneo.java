@@ -10,7 +10,14 @@ public class Escaneo extends Skill {
 
     public Escaneo(String nombre, String descripcion, ESkillType tipo, int nivel) {
         super(nombre, descripcion, tipo);
-        this.nivel = nivel;
+    }
+
+    /**
+     * Indica 3 casillas, donde 1 de ellas tiene un tesoro
+     * @return
+     */
+    public int escaneo() {
+        return 3;
     }
 }
 

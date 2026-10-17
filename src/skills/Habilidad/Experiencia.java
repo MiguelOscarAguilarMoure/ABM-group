@@ -12,4 +12,17 @@ public class Experiencia extends Skill {
         super(nombre, descripcion, tipo);
         this.nivel = nivel;
     }
+
+    /**
+     * Devuvelve el porcentaje decimal (en Int)
+     * @return devuelve un int reflejando el porcentaje "x * 10" (Ej: 2 = 20%)
+     */
+    public int efecto() {
+        switch (this.nivel) {
+            case 1 -> {return 2;}
+            case 2 -> {return 3;}
+            default -> {return 0;}
+        }
+    }
+
 }
