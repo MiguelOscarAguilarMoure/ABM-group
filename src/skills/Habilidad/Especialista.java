@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class Especialista extends Skill {
     protected int nivel;
 
-    public Especialista(String nombre, String descripcion, ESkillType tipo, ArrayList<Skill> dependecias, int nivel) {
-        super(nombre, descripcion, tipo, dependecias);
+    public Especialista(String nombre, String descripcion, ESkillType tipo, int nivel) {
+        super(nombre, descripcion, tipo);
         this.nivel = nivel;
     }
 }

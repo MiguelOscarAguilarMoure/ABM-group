@@ -7,8 +7,8 @@ import skills.Skill;
 import java.util.ArrayList;
 
 public class TerrenoAgua extends Skill {
-    public TerrenoAgua(String nombre, String descripcion, ESkillType tipo, ArrayList<Skill> dependecias) {
-        super(nombre, descripcion, tipo, dependecias);
+    public TerrenoAgua(String nombre, String descripcion, ESkillType tipo) {
+        super(nombre, descripcion, tipo);
     }
 }
 

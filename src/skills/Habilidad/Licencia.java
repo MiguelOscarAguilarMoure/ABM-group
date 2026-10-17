@@ -10,8 +10,8 @@ import java.util.Random;
 public class Licencia extends Skill {
     protected int nivel;
 
-    public Licencia(String nombre, String descripcion, ESkillType tipo, ArrayList<Skill> dependecias, int nivel) {
-        super(nombre, descripcion, tipo, dependecias);
+    public Licencia(String nombre, String descripcion, ESkillType tipo, int nivel) {
+        super(nombre, descripcion, tipo);
         this.nivel = nivel;
     }
 

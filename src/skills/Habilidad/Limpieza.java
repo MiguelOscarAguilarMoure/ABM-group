@@ -8,8 +8,8 @@ import java.util.ArrayList;
 public class Limpieza extends Skill {
     protected int nivel;
 
-    public Limpieza(String nombre, String descripcion, ESkillType tipo, ArrayList<Skill> dependecias, int nivel) {
-        super(nombre, descripcion, tipo, dependecias);
+    public Limpieza(String nombre, String descripcion, ESkillType tipo, int nivel) {
+        super(nombre, descripcion, tipo);
         this.nivel = nivel;
     }
 }

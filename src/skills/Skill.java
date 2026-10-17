@@ -1,7 +1,7 @@
 package skills;
 
-import skills.Habilidad.*;
 
+import skills.Habilidad.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -15,16 +15,14 @@ public abstract class Skill {
 
     /**
      *
-     * @param nombre nombre de la habilidad
+     * @param nombre      nombre de la habilidad
      * @param descripcion descripcion de la habilidad
-     * @param tipo Tipo de habilidad
-     * @param dependecias Lista de habilidades necesarias para poder desbloquearla
+     * @param tipo        Tipo de habilidad
      */
-    public Skill(String nombre, String descripcion, ESkillType tipo, ArrayList<Skill> dependecias) {
+    public Skill(String nombre, String descripcion, ESkillType tipo) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.tipo = tipo;
-        Dependecias = dependecias;
     }
 
 
@@ -60,9 +58,9 @@ public abstract class Skill {
      */
     public void InicializadosSkills() {
         //EXTRA
-        Extra Extra1 = new Extra("Extra I", "Tesoros adicionales en el terreno", ESkillType.TREASURE, null, 1);
-        Extra Extra2 = new Extra("Extra II", "Tesoros adicionales en el terreno", ESkillType.TREASURE, null, 2);
-        Extra Extra3 = new Extra("Extra III", "Tesoros adicionales en el terreno", ESkillType.TREASURE, null, 3);
+        Extra Extra1 = new Extra("Extra I", "Tesoros adicionales en el terreno", ESkillType.TREASURE, 1);
+        Extra Extra2 = new Extra("Extra II", "Tesoros adicionales en el terreno", ESkillType.TREASURE, 2);
+        Extra Extra3 = new Extra("Extra III", "Tesoros adicionales en el terreno", ESkillType.TREASURE, 3);
         Extra2.Dependecias.add(Extra1);
         Extra3.Dependecias.add(Extra2);
         Skills.add(Extra1);
@@ -70,9 +68,9 @@ public abstract class Skill {
         Skills.add(Extra3);
 
         //Aprendiz, Experto, Maestro
-        Conocimiento aprendiz = new Conocimiento("Aprendiz", "Aumenta las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, null, 1);
-        Conocimiento experto = new Conocimiento("Experto", "Aumenta las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, null, 2);
-        Conocimiento maestro = new Conocimiento("Maetro", "Aumenta las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, null, 3);
+        Conocimiento aprendiz = new Conocimiento("Aprendiz", "Aumenta las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, 1);
+        Conocimiento experto = new Conocimiento("Experto", "Aumenta las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, 2);
+        Conocimiento maestro = new Conocimiento("Maetro", "Aumenta las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, 3);
         experto.Dependecias.add(aprendiz);
         maestro.Dependecias.add(experto);
         Skills.add(aprendiz);
@@ -80,17 +78,17 @@ public abstract class Skill {
         Skills.add(maestro);
 
         //Especialista (Incompatibles)
-        Especialista especialistaU = new Especialista("EspecialistaU", "Aumenta mucho las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, null, 1);
-        Especialista especialistaR = new Especialista("EspecialistaR", "Aumenta mucho las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, null, 2);
-        Especialista especialistaM = new Especialista("EspecialistaM", "Aumenta mucho las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, null, 3);
+        Especialista especialistaU = new Especialista("EspecialistaU", "Aumenta mucho las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, 1);
+        Especialista especialistaR = new Especialista("EspecialistaR", "Aumenta mucho las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, 2);
+        Especialista especialistaM = new Especialista("EspecialistaM", "Aumenta mucho las Rarezas de los tesoros en el terreno", ESkillType.TREASURE, 3);
         Skills.add(especialistaM);
         Skills.add(especialistaR);
         Skills.add(especialistaU);
 
         //Excavacion
-        Excavaciones excavacion1 = new Excavaciones("Excavacion I", "Se pueden excarvar más veces", ESkillType.EXCAVATION, null, 5);
-        Excavaciones excavacion2 = new Excavaciones("Excavacion II", "Se pueden excarvar más veces", ESkillType.EXCAVATION, null, 10);
-        Excavaciones excavacion3 = new Excavaciones("Excavacion III", "Se pueden excarvar más veces", ESkillType.EXCAVATION, null, 15);
+        Excavaciones excavacion1 = new Excavaciones("Excavacion I", "Se pueden excarvar más veces", ESkillType.EXCAVATION, 5);
+        Excavaciones excavacion2 = new Excavaciones("Excavacion II", "Se pueden excarvar más veces", ESkillType.EXCAVATION, 10);
+        Excavaciones excavacion3 = new Excavaciones("Excavacion III", "Se pueden excarvar más veces", ESkillType.EXCAVATION, 15);
         excavacion2.Dependecias.add(excavacion1);
         excavacion3.Dependecias.add(excavacion2);
         Skills.add(excavacion1);
@@ -98,35 +96,35 @@ public abstract class Skill {
         Skills.add(excavacion3);
 
         //Experiencia
-        Experiencia experiencia1 = new Experiencia("Experiencia I", "Proabilidad de que una accion de excavar sea gratis", ESkillType.EXCAVATION, null, 1);
-        Experiencia experiencia2 = new Experiencia("Experiencia II", "Proabilidad de que una accion de excavar sea gratis", ESkillType.EXCAVATION, null, 2);
+        Experiencia experiencia1 = new Experiencia("Experiencia I", "Proabilidad de que una accion de excavar sea gratis", ESkillType.EXCAVATION, 1);
+        Experiencia experiencia2 = new Experiencia("Experiencia II", "Proabilidad de que una accion de excavar sea gratis", ESkillType.EXCAVATION, 2);
         experiencia2.Dependecias.add(experiencia1);
         Skills.add(experiencia1);
         Skills.add(experiencia2);
 
         //Limpieza
-        Limpieza limpieza1 = new Limpieza("Limpieza I", "Excava automaticamente zonas del terreno", ESkillType.EXCAVATION, null, 1);
-        Limpieza limpieza2 = new Limpieza("Limpieza II", "Excava automaticamente zonas del terreno", ESkillType.EXCAVATION, null, 2);
+        Limpieza limpieza1 = new Limpieza("Limpieza I", "Excava automaticamente zonas del terreno", ESkillType.EXCAVATION, 1);
+        Limpieza limpieza2 = new Limpieza("Limpieza II", "Excava automaticamente zonas del terreno", ESkillType.EXCAVATION, 2);
         limpieza2.Dependecias.add(limpieza1);
         Skills.add(limpieza1);
         Skills.add(limpieza2);
 
         //Escaneo
-        Escaneo escaneo = new Escaneo("Escaneo", "Marca casillas con \"?\" indicando que puede haber un tesoro ", ESkillType.EXCAVATION, null, 1);
+        Escaneo escaneo = new Escaneo("Escaneo", "Marca casillas con \"?\" indicando que puede haber un tesoro ", ESkillType.EXCAVATION, 1);
         Skills.add(escaneo);
 
         //Licencia (Incompatibles)
-        Licencia licenciaA = new Licencia("Licencia A", "Extiende el Terreno \n (A) Vertical o Horizontalmente \n (B) Ambas dimensiones", ESkillType.TERRAIN, null, 1);
-        Licencia licenciaB = new Licencia("Licencia B", "Extiende el Terreno \n (A) Vertical o Horizontalmente \n (B) Ambas dimensiones", ESkillType.TERRAIN, null, 1);
+        Licencia licenciaA = new Licencia("Licencia A", "Extiende el Terreno \n (A) Vertical o Horizontalmente \n (B) Ambas dimensiones", ESkillType.TERRAIN, 1);
+        Licencia licenciaB = new Licencia("Licencia B", "Extiende el Terreno \n (A) Vertical o Horizontalmente \n (B) Ambas dimensiones", ESkillType.TERRAIN, 1);
         Skills.add(licenciaA);
         Skills.add(licenciaB);
 
         //Especialista
-        TerrenoAgua agua = new TerrenoAgua("Agua", "Permite excarvar en este tipo de terreno", ESkillType.EXPERT, null);
-        TerrenoAguaProf aguaProf = new TerrenoAguaProf("Agua Profunda", "Permite excarvar en este tipo de terreno", ESkillType.EXPERT, null);
-        TerrenoArena arena = new TerrenoArena("Arena", "Permite excarvar en este tipo de terreno", ESkillType.EXPERT, null);
-        TerrenoOceano oceano1 = new TerrenoOceano("Oceano I", "Permite excarvar en este tipo de terreno", ESkillType.EXPERT, null, 1);
-        TerrenoOceano oceano2 = new TerrenoOceano("OCEANO II", "Permite excarvar en este tipo de terreno", ESkillType.EXPERT, null, 2);
+        TerrenoAgua agua = new TerrenoAgua("Agua", "Permite excarvar en este tipo de terreno", ESkillType.EXPERT);
+        TerrenoAguaProf aguaProf = new TerrenoAguaProf("Agua Profunda", "Permite excarvar en este tipo de terreno", ESkillType.EXPERT);
+        TerrenoArena arena = new TerrenoArena("Arena", "Permite excarvar en este tipo de terreno", ESkillType.EXPERT);
+        TerrenoOceano oceano1 = new TerrenoOceano("Oceano I", "Permite excarvar en este tipo de terreno", ESkillType.EXPERT, 1);
+        TerrenoOceano oceano2 = new TerrenoOceano("OCEANO II", "Permite excarvar en este tipo de terreno", ESkillType.EXPERT, 2);
         oceano2.Dependecias.add(oceano1);
         Skills.add(agua);
         Skills.add(aguaProf);
@@ -137,6 +135,7 @@ public abstract class Skill {
 
     /**
      * Proporciona 3 habilidades a seleccionar, 1 de mejora (si esta lista tiene habilidades) y 2 (3 si no se cumple la primera condición)
+     *
      * @param habilidadesArqueologo Lista de habilidades de la clase Arqueologo
      * @return una instancia de la clase hija de Skills
      */
@@ -232,4 +231,31 @@ public abstract class Skill {
         } while (true); // El bucle se repite hasta que el usuario elija una opción válida y haga return
     }
 
+    /**
+     * Muestra la información de una habilidad.
+     *
+     * El método imprime el nombre, la descripción y, si existen, la lista de habilidades
+     * necesarias (dependencias) requeridas para su desbloqueo. Adicionalmente, evalúa si
+     * la habilidad pertenece a un tipo restrictivo para advertir sobre su incompatibilidad.
+     *
+     *
+     * @param habilidad La instancia de {@link Skill} de la cual se desea visualizar la información.
+     */
+    static void mostrarHabilidad(Skill habilidad) {
+        System.out.println("------------------ " + habilidad.getNombre() + " ------------------");
+        System.out.println(habilidad.getDescripcion());
+
+        // Verificación segura contra Null y si contiene elementos
+        if (habilidad.getDependecias() != null && !habilidad.getDependecias().isEmpty()) {
+            System.out.println("---- Dependencias ----");
+            for (Skill dependencia : habilidad.getDependecias()) {
+                System.out.println("- " + dependencia.getNombre());
+            }
+        }
+
+        if ((habilidad instanceof Licencia) || habilidad instanceof Especialista) {
+            // Imprime el nombre limpio de la clase (Licencia o Especialista)
+            System.out.println("Incompatible con las habilidades " + habilidad.getClass().getSimpleName());
+        }
+    }
 }
