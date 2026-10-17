@@ -8,7 +8,7 @@ import treasures.Treasure;
 public class Iberia extends Region {
    public static final String CODIGO = "IBR";
    public Iberia(){
-    super("Iberia");
+    super("Iberia",CODIGO);
     this.treasures.add(new Treasure("Denario ibérico", CODIGO, ETreasureType.COIN, "001", 1, 1, ETreasureRarity.COMMON, "Moneda de plata con influencia griega y fenicia"));
       this.treasures.add(new Treasure("Cuentas de hueso", CODIGO, ETreasureType.BEAD, "001", 1, 1, ETreasureRarity.COMMON, "Hueso pulido con diversas formas y tamaños para formar parte de un colgante."));
       this.treasures.add(new Treasure("Fíbula La Tène", CODIGO, ETreasureType.JEWELRY, "001", 3, 2, ETreasureRarity.UNCOMMON, "Hebilla para sujetar la ropa con forma de arco con un lado vuelto sobre sí mismo."));
