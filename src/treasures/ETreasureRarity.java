@@ -6,7 +6,7 @@ package treasures;
  */
 public enum ETreasureRarity {
     
-    COMMON("común", "C"),
+    COMMON("comun", "C"),
 	UNCOMMON("infrecuente", "I"),
 	RARE("raro", "R");
 
