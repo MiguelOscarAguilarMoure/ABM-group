@@ -160,7 +160,7 @@ public class ExcavationOperation implements IOperation {
         System.out.println("0.- Volver");
         return leerOpcion(peticion, opciones.size()) - 1;
     }
-
+    // Mejor usar aqui parseInt porque asi no limpio el buffer
     private int leerOpcion(String peticion, int max) {
         String aviso = "Opción no válida, introduce un número entre 0 y " + max + ".";
         int opcion = -1;
