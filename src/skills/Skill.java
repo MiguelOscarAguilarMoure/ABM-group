@@ -6,6 +6,7 @@ import treasures.ETreasureRarity;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+
 import static commons.repositories.SkillRepository.Skills;
 
 public abstract class Skill {
@@ -40,10 +41,6 @@ public abstract class Skill {
 
     public ESkillType getTipo() {
         return tipo;
-    }
-
-    public static ArrayList<Skill> getSkills() {
-        return Skills;
     }
 
     public ArrayList<Skill> getDependecias() {
@@ -82,36 +79,12 @@ public abstract class Skill {
         return false;
     }
 
-
+    public Object getDependencias() {
+        return this.dependecias;
+    }
 
 
     //=======================================================================================================
 
-    /**
-     * Muestra la información de una habilidad.
-     *
-     * El método imprime el nombre, la descripción y, si existen, la lista de habilidades
-     * necesarias (dependencias) requeridas para su desbloqueo. Adicionalmente, evalúa si
-     * la habilidad pertenece a un tipo restrictivo para advertir sobre su incompatibilidad.
-     *
-     *
-     * @param habilidad La instancia de {@link Skill} de la cual se desea visualizar la información.
-     */
-    public static void mostrarHabilidad(Skill habilidad) {
-        System.out.println("------------------ " + habilidad.getNombre() + " ------------------");
-        System.out.println(habilidad.getDescripcion());
 
-        // Verificación segura contra Null y si contiene elementos
-        if (habilidad.getDependecias() != null && !habilidad.getDependecias().isEmpty()) {
-            System.out.println("---- Dependencias ----");
-            for (Skill dependencia : habilidad.getDependecias()) {
-                System.out.println("- " + dependencia.getNombre());
-            }
-        }
-
-        if ((habilidad instanceof Licencia) || habilidad instanceof Especialista) {
-            // Imprime el nombre limpio de la clase (Licencia o Especialista)
-            System.out.println("Incompatible con las habilidades " + habilidad.getClass().getSimpleName());
-        }
-    }
 }

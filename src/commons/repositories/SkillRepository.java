@@ -105,6 +105,10 @@ public class SkillRepository {
     /** Lista con todas las habilidades registradas. */
     public static ArrayList<Skill> Skills = new ArrayList<>();
 
+    public static ArrayList<Skill> getSkills() {
+        return Skills;
+    }
+
     /**
      * Registra una habilidad en el repositorio.
      * @param s La habilidad a registrar.
@@ -148,15 +152,11 @@ public class SkillRepository {
 
     /**
      * Busca una habilidad por su nombre.
+     *
      * @param nombre El nombre de la habilidad, por ejemplo "Extra I".
      * @return La habilidad con ese nombre, o null si no existe.
      */
     public static Skill get(String nombre) {
-        for (Skill s : Skills) {
-            if (s.getNombre().equals(nombre)) {
-                return s;
-            }
-        }
         return null;
     }
 }

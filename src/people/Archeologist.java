@@ -131,30 +131,6 @@ public class Archeologist {
     }
 
     /**
-     * Clase para saber si arqueplogo puede aprender una habildad
-     * 
-     * @param s
-     * @return
-     */
-    public boolean puedeAprender(Skill s) {
-        if (listaHabilidades.contains(s)) {
-            return false;
-        }
-
-        for (Skill dep : s.getDependencias()) {
-            if (!listaHabilidades.contains(dep)) {
-                return false;
-            }
-        }
-        for (Skill inc : s.getIncompatibilidades()) {
-            if (listaHabilidades.contains(inc)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Añade una habilidad y, si desbloquea formas de terreno, las añade también.
      * 
      * @param s La habilidad a añadir.
