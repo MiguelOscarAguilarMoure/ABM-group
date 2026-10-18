@@ -12,8 +12,20 @@ import treasures.ETreasureRarity;
 import treasures.Treasure;
 
 /**
- * Una excavación: genera la rejilla y los tesoros enterrados, y controla
- * el estado del proceso (acciones, tesoros y posiciones restantes).
+ * Representa una excavación dentro del juego.
+ * <p>
+ * La clase genera el tablero de trabajo, distribuye los tesoros ocultos y
+ * controla el estado general de la partida durante la exploración. También
+ * gestiona la información visible para el jugador, el número de acciones
+ * disponibles, los tesoros restantes y la puntuación acumulada.
+ * <p>
+ * Cada excavación puede tratarse como una instancia
+ * independiente con sus propias dimensiones, región, arqueólogo y progreso.
+ *
+ * @author Miguel Aguilar
+ * @author Borja Abal
+ * @version 1.0
+ * @since 2026-10-18
  */
 public class Excavation {
 
@@ -21,7 +33,7 @@ public class Excavation {
             'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
             'U', 'V', 'W', 'X', 'Y', 'Z' };
     private static final Random RANDOM = new Random();
-
+    // ! Elementos esteticos
     private static final String ADORNO = "::::::::::::::::::::";
     private static final String SEPARADOR_TURNO = "----------------------------------------";
     private static final String SEPARADOR_FIN = "::::::::::::::::::::::::::::::::::::::::";
@@ -58,8 +70,25 @@ public class Excavation {
     private int cavarRestantes;
     private int puntos;
 
+    /**
+     * Crea una excavación para el terreno, la región y el arqueólogo indicados.
+     * Inicializa la rejilla, coloca los tesoros y calcula las acciones y
+     * revelaciones iniciales.
+     *
+     * @param terreno    configuración y dimensiones del terreno.
+     * @param region     región cuyos tesoros pueden aparecer en la excavación.
+     * @param arqueologo arqueólogo que realizará la excavación.
+     * @throws IllegalArgumentException si algún parámetro es null o el arqueólogo
+     *                                  no puede excavar el terreno.
+     */
     public Excavation(ETerrainSize terreno, Region region, Archeologist arqueologo) {
-        
+        if (terreno == null || region == null || arqueologo == null) {
+            throw new IllegalArgumentException("El terreno, la región y el arqueólogo no pueden ser nulos.");
+        }
+        if (!arqueologo.puedeExcavar(terreno)) {
+            throw new IllegalArgumentException(arqueologo.getNombre() + " no puede excavar el terreno "
+                    + terreno.getTamanho() + " (" + terreno.getNombre() + ").");
+        }
         this.terreno = terreno;
         this.region = region;
         this.arqueologo = arqueologo;
@@ -77,7 +106,12 @@ public class Excavation {
 
     // ===== Generación =====================================================
 
+    /**
+     * Inicializa las casillas de la rejilla y prepara las etiquetas de filas y
+     * columnas que se mostrarán al jugador.
+     */
     private void generarRejilla() {
+        // dimensiond de la rejilla
         int total = numColumnas * numFilas;
         for (int i = 0; i < total; i++) {
             casillas.add(SIN_EXCAVAR);
@@ -93,7 +127,7 @@ public class Excavation {
         }
         generarEtiquetas("");
         anchoNumFila = String.valueOf(numFilas).length();
-
+        // String builder en vez de concatenar strings (mas eficiente)
         StringBuilder sb = new StringBuilder(espacios(anchoNumFila));
         for (String etiqueta : columnas) {
             sb.append(' ').append(etiqueta);
@@ -102,8 +136,9 @@ public class Excavation {
     }
 
     /**
-     * Genera recursivamente las etiquetas de columna sin pasarse del número
-     * necesario.
+     * Genera las etiquetas de las columnas hasta alcanzar la cantidad necesaria.
+     *
+     * @param actual prefijo de la etiqueta que se está formando.
      */
     private void generarEtiquetas(String actual) {
         if (actual.length() == anchoEtiqueta) {
@@ -115,8 +150,14 @@ public class Excavation {
         }
     }
 
+    /**
+     * Determina las rarezas de tesoros que habrá en la excavación, selecciona los
+     * tesoros
+     * correspondientes y los coloca en posiciones aleatorias.
+     *
+     *  @throws IllegalStateException si el tamaño del terreno no está reconocido.
+     */
     private void generarTesoros() {
-        
         int total = numColumnas * numFilas;
         int cantidad = Math.max(1, (int) Math.ceil(total / 10.0)); // 10 %, redondeando hacia arriba
 
@@ -136,7 +177,7 @@ public class Excavation {
                 anadir(rarezas, ETreasureRarity.RARE, 1);
                 break;
             default:
-                System.out.println("Tamaño de terreno desconocido: ");
+                throw new IllegalStateException("Tamaño de terreno desconocido: " + terreno.getTamanho());
         }
 
         // Después, hasta completar la cantidad, con rareza aleatoria
@@ -164,20 +205,34 @@ public class Excavation {
         for (int i = 0; i < rarezas.size(); i++) {
             Treasure tesoro = region.getTesoroAleatorioPorRareza(rarezas.get(i));
             if (tesoro == null) {
-               
-                continue;
+                continue; // la región no tiene tesoros de esa rareza: la casilla queda vacía
             }
             tesoros.put(posiciones.get(i), tesoro);
         }
         tesorosRestantes = tesoros.size();
     }
 
+    /**
+     * Añade varias veces una rareza a la lista indicada.
+     *
+     * @param lista  lista de rarezas que se va a completar.
+     * @param rareza rareza que se añadirá.
+     * @param veces  número de veces que se añadirá.
+     */
     private void anadir(ArrayList<ETreasureRarity> lista, ETreasureRarity rareza, int veces) {
         for (int i = 0; i < veces; i++) {
             lista.add(rareza);
         }
     }
 
+    /**
+     * Añade una rareza a la lista sin superar el tamaño máximo permitido.
+     *
+     * @param lista  lista de rarezas que se va a completar.
+     * @param rareza rareza que se añadirá.
+     * @param veces  número máximo de veces que se intentará añadir.
+     * @param maximo cantidad máxima de elementos permitida en la lista.
+     */
     private void anadirHasta(ArrayList<ETreasureRarity> lista, ETreasureRarity rareza, int veces, int maximo) {
         for (int i = 0; i < veces && lista.size() < maximo; i++) {
             lista.add(rareza);
@@ -185,10 +240,11 @@ public class Excavation {
     }
 
     /**
-     * 60 % común, 30 % infrecuente, 10 % rara, más la probabilidad extra del
-     * arqueólogo
-     * para infrecuentes y raros (se le quita a los comunes). Los pequeños no tienen
-     * raros.
+     * Selecciona aleatoriamente una rareza teniendo en cuenta las probabilidades
+     * base y los modificadores del arqueólogo.
+     *
+     * @param permiteRaros indica si se pueden seleccionar tesoros raros.
+     * @return la rareza seleccionada.
      */
     private ETreasureRarity tirarRareza(boolean permiteRaros) {
         int raro = permiteRaros ? 10 + arqueologo.getProbabilidadExtra(ETreasureRarity.RARE) : 0;
@@ -204,7 +260,13 @@ public class Excavation {
         return ETreasureRarity.COMMON;
     }
 
-    /** (25 % de la rejilla + extra) * factor, entre 1 y el 75 % de la rejilla. */
+    /**
+     * Calcula las acciones disponibles según el tamaño de la rejilla y las
+     * bonificaciones del arqueólogo. El resultado queda limitado entre una acción
+     * y el 75 % de las casillas.
+     *
+     * @return número de acciones disponibles al comenzar la excavación.
+     */
     private int calcularAcciones() {
         int total = numColumnas * numFilas;
         int extra = arqueologo.getAccionesExtra(region); // habilidades + especialización
@@ -215,9 +277,9 @@ public class Excavation {
     }
 
     /**
-     * Aplica las habilidades de revelación antes de empezar, sin gastar acciones:
-     * primero la limpieza y después la suposición. Entre las dos no revelan
-     * más del 25 % de las casillas.
+     * Aplica las revelaciones iniciales del arqueólogo sin consumir acciones.
+     * Primero limpia casillas vacías y después marca posibles posiciones de
+     * tesoros, sin superar el límite establecido para la rejilla.
      */
     private void aplicarRevelacion() {
         int total = numColumnas * numFilas;
@@ -227,11 +289,12 @@ public class Excavation {
     }
 
     /**
-     * Limpieza: destapa casillas sin tesoro al azar (quedan como 'x').
-     * 
-     * @param cantidad Casillas que quiere destapar el arqueólogo.
-     * @param maximo   Casillas que se pueden revelar como mucho.
-     * @return Las casillas destapadas.
+     * Revela al azar casillas vacías, representándolas con el símbolo
+     * correspondiente.
+     *
+     * @param cantidad número de casillas vacías que se desea revelar.
+     * @param maximo   número máximo de casillas que se permite revelar.
+     * @return cantidad de casillas que se han revelado.
      */
     private int limpiar(int cantidad, int maximo) {
         List<Integer> vacias = new ArrayList<>();
@@ -251,14 +314,11 @@ public class Excavation {
     }
 
     /**
-     * Suposición: cada escaneo marca con '?' tres casillas al azar, una con tesoro
-     * y dos sin él.
-     * Se aplica después de la limpieza: si una de las casillas vacías elegidas ya
-     * estaba
-     * destapada, se queda como 'x' y no se elige otra, así que salen menos '?'.
-     * 
-     * @param escaneos Número de escaneos (cada uno marca hasta 3 casillas).
-     * @param maximo   Casillas que se pueden marcar como mucho.
+     * Marca posibles ubicaciones de tesoros y casillas vacías mediante el símbolo
+     * de suposición.
+     *
+     * @param escaneos número de escaneos que se realizarán.
+     * @param maximo   número máximo de casillas que se podrán marcar.
      */
     private void suponer(int escaneos, int maximo) {
         List<Integer> conTesoro = new ArrayList<>(tesoros.keySet());
@@ -288,30 +348,38 @@ public class Excavation {
     }
 
     /**
-     * true si la casilla todavía no se ha excavado (sin tocar o marcada con '?').
+     * Comprueba si una casilla todavía puede excavarse.
+     *
+     * @param indice índice de la casilla en la rejilla.
+     * @return true si no se ha excavado o solo está marcada como suposición.
      */
     private boolean sinExcavar(int indice) {
         String c = casillas.get(indice);
         return c.equals(SIN_EXCAVAR) || c.equals(SUPOSICION);
     }
 
-    // ===== Excavar ========================================================
+    // !===== Excavar ========================================================
 
     /**
-     * Excava una posición, consumiendo una acción.
+     * Excava la posición indicada y consume una acción. Si encuentra un tesoro,
+     * actualiza los tesoros restantes, la puntuación y los códigos encontrados.
      *
-     * @param posicion La posición a excavar.
-     * @return <code>true</code> si había un tesoro.
-     *  Si la excavación ya ha terminado.
+     * @param posicion posición que se desea excavar.
+     * @return true si la casilla contenía un tesoro; false si estaba vacía.
+     * @throws IllegalArgumentException si la posición es null, no pertenece a la
+     *                                  rejilla o ya se había excavado.
+     * @throws IllegalStateException    si la excavación ya ha finalizado.
      */
     public boolean excavar(Position posicion) {
-        int indice = getIndice(posicion);
-        if (indice == -1) {
-            return false; // getIndice ya ha mostrado el mensaje
+        if (posicion == null) {
+            throw new IllegalArgumentException("La posición no puede ser nula.");
         }
+        if (isFinalizada()) {
+            throw new IllegalStateException("La excavación ya ha terminado.");
+        }
+        int indice = getIndice(posicion);
         if (!sinExcavar(indice)) {
-            System.out.println(posicion.getFil() + posicion.getCol() + ": ya está excavada.");
-            return false;
+            throw new IllegalArgumentException("ya está excavada.");
         }
 
         acciones--;
@@ -328,22 +396,33 @@ public class Excavation {
         return true;
     }
 
+    /**
+     * Convierte una posición de fila y columna en el índice correspondiente de
+     * la rejilla.
+     *
+     * @param posicion posición que se desea convertir.
+     * @return índice de la casilla dentro de las colecciones internas.
+     * @throws IllegalArgumentException si la fila o la columna no existen.
+     */
     private int getIndice(Position posicion) {
         int fila = posicion.getFil();
         int columna = columnas.indexOf(posicion.getCol());
         if (fila < 1 || fila > numFilas) {
-            System.out.println(fila + posicion.getCol() + ": la fila " + fila + " no existe (1-" + numFilas + ").");
-            return -1;
+            throw new IllegalArgumentException("La fila " + fila + " no existe (1-" + numFilas + ").");
         }
         if (columna < 0) {
-            System.out.println(fila + posicion.getCol() + ": la columna " + posicion.getCol() + " no existe ("
+            throw new IllegalArgumentException("La columna " + posicion.getCol() + " no existe ("
                     + columnas.get(0) + "-" + columnas.get(numColumnas - 1) + ").");
-            return -1;
         }
         return (fila - 1) * numColumnas + columna;
     }
 
-    /** Símbolo de lo que hay enterrado en la casilla: C, I, R o x. */
+    /**
+     * Obtiene el símbolo que representa el contenido oculto de una casilla.
+     *
+     * @param indice índice de la casilla en la rejilla.
+     * @return código de rareza del tesoro o el símbolo de casilla vacía.
+     */
     private String getSimbolo(int indice) {
         Treasure tesoro = tesoros.get(indice);
         return (tesoro == null) ? VACIO : tesoro.getRarezaTesoro().getCode();
@@ -351,19 +430,40 @@ public class Excavation {
 
     // ===== Estado =========================================================
 
+    /**
+     * Comprueba si la excavación ha terminado por falta de acciones o porque ya
+     * no quedan tesoros por encontrar.
+     *
+     * @return true si se cumple alguna de las condiciones de finalización.
+     */
     public boolean isFinalizada() {
         return acciones <= 0 || tesorosRestantes <= 0;
     }
 
+    /**
+     * Devuelve el número de acciones que todavía se pueden realizar.
+     *
+     * @return acciones restantes.
+     */
     public int getAccionesRestantes() {
         return acciones;
     }
 
+    /**
+     * Devuelve el número total de tesoros que aún no se han encontrado.
+     *
+     * @return tesoros restantes.
+     */
     public int getTesorosRestantes() {
         return tesorosRestantes;
     }
 
-    /** @return Cuántos tesoros de esa rareza quedan por encontrar. */
+    /**
+     * Cuenta los tesoros todavía sin excavar de la rareza indicada.
+     *
+     * @param rareza rareza que se desea consultar.
+     * @return cantidad de tesoros restantes de esa rareza.
+     */
     public int getTesorosRestantes(ETreasureRarity rareza) {
         int cantidad = 0;
         for (Integer indice : tesoros.keySet()) {
@@ -375,7 +475,12 @@ public class Excavation {
         return cantidad;
     }
 
-    /** @return Cuántos tesoros de esa rareza hay en total en la rejilla. */
+    /**
+     * Cuenta los tesoros de la rareza indicada que se colocaron al inicio.
+     *
+     * @param rareza rareza que se desea consultar.
+     * @return cantidad total de tesoros de esa rareza en la rejilla.
+     */
     public int getTotalTesoros(ETreasureRarity rareza) {
         int cantidad = 0;
         for (Treasure tesoro : tesoros.values()) {
@@ -386,15 +491,30 @@ public class Excavation {
         return cantidad;
     }
 
+    /**
+     * Devuelve cuántas casillas quedan por excavar.
+     *
+     * @return número de posiciones sin excavar.
+     */
     public int getPosicionesRestantes() {
         return cavarRestantes;
     }
 
+    /**
+     * Devuelve los puntos obtenidos al encontrar tesoros.
+     *
+     * @return puntuación acumulada durante la excavación.
+     */
     public int getPuntosObtenidos() {
         return puntos;
     }
 
-    /** Puntos de los tesoros más el extra por el tamaño del terreno (2, 5 o 10). */
+    /**
+     * Calcula la experiencia obtenida sumando los puntos de los tesoros y la
+     * bonificación correspondiente al tamaño del terreno.
+     *
+     * @return experiencia total obtenida.
+     */
     public int getExperienciaObtenida() {
         switch (terreno.getTamanho()) {
             case PEQUENO:
@@ -407,30 +527,50 @@ public class Excavation {
     }
 
     /**
-     * @return Una copia con los códigos completos (con parte) de los tesoros
-     *         encontrados.
+     * Devuelve una copia de los códigos completos de los tesoros encontrados.
+     *
+     * @return lista independiente con los códigos de los tesoros y sus partes.
      */
     public List<String> getCodigosEncontrados() {
         return new ArrayList<>(codigosEncontrados);
     }
 
+    /**
+     * Devuelve la región asociada a esta excavación.
+     *
+     * @return región cuyos tesoros se utilizan en la excavación.
+     */
     public Region getRegion() {
         return region;
     }
 
+    /**
+     * Devuelve el arqueólogo que participa en esta excavación.
+     *
+     * @return arqueólogo asociado a la excavación.
+     */
     public Archeologist getArqueologo() {
         return arqueologo;
     }
 
     // ===== Rejilla ========================================================
 
-    /** La rejilla tal y como la ve el jugador. */
+    /**
+     * Devuelve una representación textual de la rejilla tal como la ve el
+     * jugador, con las casillas aún ocultas.
+     *
+     * @return rejilla visible durante la excavación.
+     */
     @Override
     public String toString() {
         return dibujar(casillas);
     }
 
-    /** La rejilla con todo el contenido revelado. */
+    /**
+     * Devuelve la rejilla mostrando el contenido de todas sus casillas.
+     *
+     * @return representación textual de la rejilla completamente revelada.
+     */
     public String getRejillaDescubierta() {
         ArrayList<String> reveladas = new ArrayList<>();
         for (int i = 0; i < casillas.size(); i++) {
@@ -439,6 +579,13 @@ public class Excavation {
         return dibujar(reveladas);
     }
 
+    /**
+     * Construye la representación textual de la rejilla usando los símbolos
+     * proporcionados.
+     *
+     * @param simbolos símbolos que se mostrarán en cada casilla.
+     * @return rejilla formateada con etiquetas de filas y columnas.
+     */
     private String dibujar(ArrayList<String> simbolos) {
         StringBuilder sb = new StringBuilder(cabecera);
         for (int fila = 0; fila < numFilas; fila++) {
@@ -451,6 +598,12 @@ public class Excavation {
         return sb.toString();
     }
 
+    /**
+     * Crea una cadena formada por la cantidad de espacios indicada.
+     *
+     * @param cantidad número de espacios que se añadirán.
+     * @return cadena con los espacios solicitados.
+     */
     private String espacios(int cantidad) {
         String texto = "";
         for (int i = 0; i < cantidad; i++) {
@@ -459,7 +612,12 @@ public class Excavation {
         return texto;
     }
 
-    /** Centra el símbolo bajo la etiqueta de su columna. */
+    /**
+     * Centra un símbolo en el espacio reservado para una etiqueta de columna.
+     *
+     * @param simbolo texto que se desea centrar.
+     * @return símbolo con los espacios necesarios a ambos lados.
+     */
     private String centrar(String simbolo) {
         int relleno = anchoEtiqueta - simbolo.length();
         int izquierda = relleno / 2;
@@ -469,11 +627,12 @@ public class Excavation {
     // ===== Proceso por consola ============================================
 
     /**
-     * Ejecuta el proceso de excavación hasta quedarse sin acciones o sin tesoros.
+     * Ejecuta la excavación por consola hasta que se agoten las acciones, se
+     * encuentren todos los tesoros o se interrumpa la entrada.
      *
-     * @return Los códigos completos de los tesoros encontrados.
+     * @return lista de códigos completos de los tesoros encontrados.
      */
-       public List<String> ejecutar() {
+    public List<String> ejecutar() {
         System.out.println(ADORNO + " Excavación en " + region.getNombre() + " " + ADORNO);
         while (!isFinalizada()) {
             mostrarTurno();
@@ -487,6 +646,9 @@ public class Excavation {
         return getCodigosEncontrados();
     }
 
+    /**
+     * Muestra la rejilla y la información correspondiente al turno actual.
+     */
     private void mostrarTurno() {
         System.out.println(this);
         System.out.println("Número de acciones restantes: " + acciones);
@@ -498,7 +660,12 @@ public class Excavation {
         System.out.print("Conjunto de coordenadas a excavar separadas por espacios: ");
     }
 
-        private void procesarEntrada(String linea) {
+    /**
+     * Procesa las posiciones introducidas por el jugador en una línea de texto.
+     *
+     * @param linea texto que contiene una o varias posiciones.
+     */
+    private void procesarEntrada(String linea) {
         if (linea.trim().isEmpty()) {
             System.out.println("No has introducido ninguna posición.");
             return;
@@ -511,27 +678,41 @@ public class Excavation {
                 System.out.println("Se ignoran las posiciones restantes: la excavación ha terminado.");
                 return;
             }
-            Position posicion = leerPosicion(indicacion);
-            if (posicion != null) {
-                excavar(posicion);
+            try {
+                excavar(leerPosicion(indicacion));
+            } catch (IllegalArgumentException e) {
+                System.out.println(indicacion + ": " + e.getMessage());
             }
         }
     }
 
-    /** Convierte un texto como "12AB" en una posición (fila 12, columna AB). */
+    /**
+     * Convierte un texto con formato de fila y columna en un objeto Position.
+     *
+     * @param texto coordenada introducida, por ejemplo, "12AB".
+     * @return posición representada por el texto.
+     * @throws IllegalArgumentException si el texto no tiene el formato esperado
+     *                                  o la fila no es un número válido.
+     */
     private Position leerPosicion(String texto) {
         int i = 0;
         while (i < texto.length() && Character.isDigit(texto.charAt(i))) {
             i++;
         }
         String letras = texto.substring(i).toUpperCase();
-        // i > 3: ningún terreno tiene más de 40 filas, así se evita un número enorme
-        if (i == 0 || i > 3 || letras.isEmpty()) {
-            System.out.println(texto + ": formato no válido, usa número y letra (ej. 3B).");
-            return null;
+        if (i == 0 || letras.isEmpty()) {
+            throw new IllegalArgumentException("formato no válido, usa número y letra (ej. 3B).");
         }
-        return new Position(Integer.parseInt(texto.substring(0, i)), letras);
+        try {
+            return new Position(Integer.parseInt(texto.substring(0, i)), letras);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("el número de fila no es válido.");
+        }
     }
+
+    /**
+     * Muestra en consola el resultado final y el resumen de tesoros encontrados.
+     */
     private void mostrarFinal() {
         System.out.println(SEPARADOR_FIN);
         System.out.println("Excavación terminada");
@@ -547,8 +728,11 @@ public class Excavation {
     }
 
     /**
-     * Muestra "encontrados/total" de una rareza, solo si en la rejilla había
-     * alguno.
+     * Muestra el resumen de cuántos tesoros de una rareza se encontraron respecto al total,
+     * siempre que hubiera alguno en la rejilla.
+     *
+     * @param rareza rareza de los tesoros que se resumirán.
+     * @param plural nombre en plural de la rareza para mostrar en el resumen.
      */
     private void mostrarResumen(ETreasureRarity rareza, String plural) {
         int total = getTotalTesoros(rareza);
