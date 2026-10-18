@@ -1,6 +1,7 @@
 package helpers;
 
 import java.io.Console;
+import java.util.Scanner;
 
 /**
  * Lectura de datos por consola sin que el programa se caiga si el usuario se
@@ -9,20 +10,32 @@ import java.io.Console;
 public class InputHelper {
 
     private static final Console console = System.console();
+     private static final Scanner scanner = new Scanner(System.in);
 
     private InputHelper() {
     }
 
-    /**
-     * Lee una línea. Si no hay entrada (Ctrl+D / Ctrl+Z), devuelve "" en vez de
-     * null.
-     */
-    /**
-     * Lee una línea. Si no hay entrada (Ctrl+D / Ctrl+Z), cierra el programa
+        /**
+     * Lee una línea. Usa Console si hay terminal y Scanner si no (Run del IDE).
+     * Si se cierra la entrada (Ctrl+D / Ctrl+Z), cierra el programa
      * en vez de quedarse en un bucle infinito.
      */
     private static String leer(String mensaje) {
-        String texto = console.readLine(mensaje);
+        String texto;
+
+        // 1. Elegir cómo leer
+        if (console != null) {
+            texto = console.readLine(mensaje);
+        } else {
+            System.out.print(mensaje);
+            if (scanner.hasNextLine()) {
+                texto = scanner.nextLine();
+            } else {
+                texto = null;
+            }
+        }
+
+        // 2. Comprobar si se ha cerrado la entrada
         if (texto == null) {
             System.out.println();
             System.out.println("Se ha cerrado la entrada. ¡Hasta pronto!");
