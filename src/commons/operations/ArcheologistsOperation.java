@@ -66,7 +66,7 @@ public class ArcheologistsOperation implements IOperation {
             System.out.println("3. Licenciar");
             System.out.println("0. Volver");
             op = InputHelper.leerEntero("Opción: ");
-            ;
+            
 
             if (op == 1)
                 ver();
@@ -76,7 +76,9 @@ public class ArcheologistsOperation implements IOperation {
                 licenciar();
         } while (op != 0);
     }
-
+    /**
+     * Pide un arqueólogo y muestra sus datos.
+     */
     private void ver() {
         Archeologist a = eligirArqueologo();
         if (a != null) {
@@ -142,12 +144,12 @@ public class ArcheologistsOperation implements IOperation {
             }
 
             int puntos = a.getPuntosLicencia();
-            System.out.println("Se ha licenciado a " + a.getNombre() + ".");
+            System.out.println("Licenciar a " + a.getNombre() + " te da " + puntos + " puntos.");
 
             if (InputHelper.confirmar("¿Confirmar?")) {
                 juego.getArqueologos().remove(a);
                 juego.addPuntos(puntos);
-                System.out.println(a.getNombre() + " ha sido licenciado.");
+                System.out.println("Se ha licenciado a " + a.getNombre() + ".");
                 return; // vuelve al menú de arqueólogos
             }
             // si dice que no, vuelve a mostrar la lista
@@ -167,7 +169,7 @@ public class ArcheologistsOperation implements IOperation {
             System.out.println((i + 1) + ". " + a.getNombre() + " (nivel " + a.getNivel() + ")");
         }
         System.out.println("0. Volver");
-        int op = InputHelper.leerEntero("Arqueólogo: ");
+        int op = InputHelper.leerOpcion("Arqueólogo: ", lista.size());
         if (op < 1 || op > lista.size()) {
             return null;
         }

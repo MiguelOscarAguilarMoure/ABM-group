@@ -68,7 +68,7 @@ public class AtlasOperation implements IOperation {
         }
         System.out.println("0. Volver");
 
-        int op = InputHelper.leerEntero("Región: ");
+        int op = InputHelper.leerOpcion("Región: ",regiones.size());
         if (op < 1 || op > regiones.size()) {
             return null;
         }

@@ -79,6 +79,22 @@ public class InputHelper {
         }
         return numero;
     }
+        /**
+     * Pide una opción de menú entre 0 y un máximo. Si está fuera de rango,
+     * avisa con "Opción no válida." y vuelve a preguntar.
+     *
+     * @param mensaje El texto que se muestra (por ejemplo "Región: ").
+     * @param max     La opción más alta válida.
+     * @return La opción elegida (0 significa volver).
+     */
+    public static int leerOpcion(String mensaje, int max) {
+        int op = leerEntero(mensaje);
+        while (op < 0 || op > max) {
+            System.out.println("Opción no válida.");
+            op = leerEntero(mensaje);
+        }
+        return op;
+    }
 
     /**
      * Lee una línea que puede estar vacía. La usa la excavación en cada turno,
