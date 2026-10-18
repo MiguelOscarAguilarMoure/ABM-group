@@ -3,7 +3,8 @@ package helpers;
 import java.io.Console;
 
 /**
- * Lectura de datos por consola sin que el programa se caiga si el usuario se equivoca.
+ * Lectura de datos por consola sin que el programa se caiga si el usuario se
+ * equivoca.
  */
 public class InputHelper {
 
@@ -13,15 +14,27 @@ public class InputHelper {
     }
 
     /**
-     * Lee una línea. Si no hay entrada (Ctrl+D / Ctrl+Z), devuelve "" en vez de null.
+     * Lee una línea. Si no hay entrada (Ctrl+D / Ctrl+Z), devuelve "" en vez de
+     * null.
+     */
+    /**
+     * Lee una línea. Si no hay entrada (Ctrl+D / Ctrl+Z), cierra el programa
+     * en vez de quedarse en un bucle infinito.
      */
     private static String leer(String mensaje) {
         String texto = console.readLine(mensaje);
-        return (texto == null) ? "" : texto.trim();
+        if (texto == null) {
+            System.out.println();
+            System.out.println("Se ha cerrado la entrada. ¡Hasta pronto!");
+            System.exit(0);
+        }
+        return texto.trim();
     }
 
     /**
-     * Pide un número entero. Si escribe algo que no es un número, vuelve a preguntar.
+     * Pide un número entero. Si escribe algo que no es un número, vuelve a
+     * preguntar.
+     * 
      * @param mensaje El texto que se muestra (por ejemplo "Opción: ").
      * @return El número escrito.
      */
@@ -41,6 +54,7 @@ public class InputHelper {
 
     /**
      * Pide un texto que no puede estar vacío.
+     * 
      * @param mensaje El texto que se muestra.
      * @return Lo que ha escrito, sin espacios al principio ni al final.
      */
@@ -55,6 +69,7 @@ public class InputHelper {
 
     /**
      * Pregunta de sí o no. Repite hasta que responda s o n.
+     * 
      * @param mensaje La pregunta (sin el "(s/n)").
      * @return true si responde s; false si responde n.
      */
