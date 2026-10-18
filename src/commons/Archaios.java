@@ -102,7 +102,7 @@ public class Archaios {
         System.out.println("2. Habilidades");
         System.out.println("3. Licencias");
         System.out.println("4. Atlas");
-        System.out.println("5. Catalago tesoros");
+        System.out.println("5. Catálogo de tesoros");
         System.out.println("6. Excavar");
         System.out.println("7. Estadísticas");
         System.out.println("0. Salir");

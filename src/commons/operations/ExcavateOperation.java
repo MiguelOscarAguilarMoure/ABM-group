@@ -78,9 +78,9 @@ public class ExcavateOperation implements IOperation {
         List<Region> regiones = RegionRepository.getTodas();
         System.out.println("-------------------- Regiones --------------------");
         for (int i = 0; i < regiones.size(); i++) {
-            System.out.println((i + 1) + ".- " + regiones.get(i).getNombre());
+            System.out.println((i + 1) + ". " + regiones.get(i).getNombre());
         }
-        System.out.println("0.- Volver");
+        System.out.println("0. Volver");
         int op = InputHelper.leerEntero("Región en la que realizar la excavación: ");
         if (op < 1 || op > regiones.size()) {
             return null;
@@ -104,9 +104,9 @@ public class ExcavateOperation implements IOperation {
         System.out.println("-------------------- Arqueólogos --------------------");
         for (int i = 0; i < disponibles.size(); i++) {
             Archeologist a = disponibles.get(i);
-            System.out.println((i + 1) + ".- " + a.getNombre() + " (nivel " + a.getNivel() + ")");
+            System.out.println((i + 1) + ". " + a.getNombre() + " (nivel " + a.getNivel() + ")");
         }
-        System.out.println("0.- Volver");
+        System.out.println("0. Volver");
         int op = InputHelper.leerEntero("Arqueólogo que realiza la excavación: ");
         if (op < 1 || op > disponibles.size()) {
             return null;
@@ -126,10 +126,10 @@ public class ExcavateOperation implements IOperation {
         System.out.println("-------------------- Terreno --------------------");
         for (int i = 0; i < disponibles.size(); i++) {
             ETerrainSize t = disponibles.get(i);
-            System.out.println((i + 1) + ".- " + t.getTamanho() + " " + t.getNombre()
+            System.out.println((i + 1) + ". " + t.getTamanho() + " " + t.getNombre()
                     + " (" + t.getFil() + "x" + t.getCol() + ")");
         }
-        System.out.println("0.- Volver");
+        System.out.println("0. Volver");
         int op = InputHelper.leerEntero("Terreno a excavar: ");
         if (op < 1 || op > disponibles.size()) {
             return null;
