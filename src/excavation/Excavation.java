@@ -1,7 +1,7 @@
 package excavation;
 
+import helpers.InputHelper;
 import helpers.UtilsHelper;
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -155,9 +155,7 @@ public class Excavation {
      * tesoros
      * correspondientes y los coloca en posiciones aleatorias.
      *
-     * @throws IllegalStateException si el tamaño del terreno no está reconocido
-     *                               o la región no contiene un tesoro de la
-     *                               rareza necesaria.
+     *  @throws IllegalStateException si el tamaño del terreno no está reconocido.
      */
     private void generarTesoros() {
         int total = numColumnas * numFilas;
@@ -207,7 +205,7 @@ public class Excavation {
         for (int i = 0; i < rarezas.size(); i++) {
             Treasure tesoro = region.getTesoroAleatorioPorRareza(rarezas.get(i));
             if (tesoro == null) {
-                throw new IllegalStateException("La región no tiene tesoros de rareza " + rarezas.get(i) + ".");
+                continue; // la región no tiene tesoros de esa rareza: la casilla queda vacía
             }
             tesoros.put(posiciones.get(i), tesoro);
         }
@@ -635,15 +633,10 @@ public class Excavation {
      * @return lista de códigos completos de los tesoros encontrados.
      */
     public List<String> ejecutar() {
-        Console console = System.console();
         System.out.println(ADORNO + " Excavación en " + region.getNombre() + " " + ADORNO);
         while (!isFinalizada()) {
             mostrarTurno();
-            String linea = console.readLine();
-            if (linea == null) {
-                System.out.println("No hay entrada disponible. Se interrumpe la excavación.");
-                break;
-            }
+            String linea = InputHelper.leerLinea();
             procesarEntrada(linea);
             if (!isFinalizada()) {
                 System.out.println(SEPARADOR_TURNO);

@@ -109,7 +109,7 @@ public class ExcavateOperation implements IOperation {
             System.out.println((i + 1) + ". " + regiones.get(i).getNombre());
         }
         System.out.println("0. Volver");
-        int op = InputHelper.leerEntero("Región en la que realizar la excavación: ");
+        int op = InputHelper.leerOpcion("Región en la que realizar la excavación: ",regiones.size());
         if (op < 1 || op > regiones.size()) {
             return null;
         }
@@ -146,7 +146,7 @@ public class ExcavateOperation implements IOperation {
             System.out.println((i + 1) + ". " + a.getNombre() + " (nivel " + a.getNivel() + ")");
         }
         System.out.println("0. Volver");
-        int op = InputHelper.leerEntero("Arqueólogo que realiza la excavación: ");
+        int op = InputHelper.leerOpcion("Arqueólogo que realiza la excavación: ", disponibles.size());
         if (op < 1 || op > disponibles.size()) {
             return null;
         }
@@ -176,7 +176,7 @@ public class ExcavateOperation implements IOperation {
                     + " (" + t.getFil() + "x" + t.getCol() + ")");
         }
         System.out.println("0. Volver");
-        int op = InputHelper.leerEntero("Terreno a excavar: ");
+                int op = InputHelper.leerOpcion("Terreno a excavar: ", disponibles.size());
         if (op < 1 || op > disponibles.size()) {
             return null;
         }

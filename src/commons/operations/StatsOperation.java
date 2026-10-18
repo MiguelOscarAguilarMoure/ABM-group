@@ -49,7 +49,7 @@ public class StatsOperation implements IOperation {
             System.out.println("1. Lugares");
             System.out.println("2. Tesoros");
             System.out.println("0. Volver");
-            op = InputHelper.leerEntero("Opción: ");
+            op = InputHelper.leerOpcion("Opción: ", 2);
 
             if (op == 1) {
                 stats.mostrarLugares();
@@ -71,7 +71,7 @@ public class StatsOperation implements IOperation {
         System.out.println("1. Por región");
         System.out.println("2. Por tipo");
         System.out.println("0. Volver");
-        int op = InputHelper.leerEntero("Opción: ");
+        int op = InputHelper.leerOpcion("Opción: ", 2);
 
         if (op == 1)
             stats.mostrarPorRegion();

@@ -123,8 +123,8 @@ public class SkillsOperation implements IOperation {
             System.out.println((i + 1) + ". " + lista.get(i).getNombre());
         }
         System.out.println("0. Volver");
-
-        int op = InputHelper.leerEntero("Habilidad: ");
+        int op = InputHelper.leerOpcion("Habilidad: ", lista.size());
+        
         if (op < 1 || op > lista.size()) {
             return null;
         }

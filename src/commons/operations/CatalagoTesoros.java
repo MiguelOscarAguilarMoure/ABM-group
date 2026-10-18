@@ -94,7 +94,7 @@ public class CatalagoTesoros implements IOperation {
         }
         System.out.println("0. Volver");
 
-        int op = InputHelper.leerEntero("Región: ");
+         int op = InputHelper.leerOpcion("Región: ", regiones.size());
         if (op < 1 || op > regiones.size()) {
             return null;
         }
@@ -116,7 +116,7 @@ public class CatalagoTesoros implements IOperation {
         }
         System.out.println("0. Volver");
 
-                int op = InputHelper.leerEntero("Tesoro: ");
+        int op = InputHelper.leerOpcion("Tesoro: ",tesoros.size());
         if (op < 1 || op > tesoros.size()) {
             return null;
         }
