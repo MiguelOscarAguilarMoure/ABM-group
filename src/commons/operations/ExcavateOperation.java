@@ -202,7 +202,7 @@ public class ExcavateOperation implements IOperation {
         System.out.println("-------------------- Nueva habilidad --------------------");
         for (int i = 0; i < opciones.size(); i++) {
             Skill s = opciones.get(i);
-            System.out.println((i + 1) + ".- " + s.getNombre() + ": " + s.getDescripcion());
+            System.out.println((i + 1) + ". " + s.getNombre() + ": " + s.getDescripcion());
         }
         int op;
         do {
@@ -217,7 +217,7 @@ public class ExcavateOperation implements IOperation {
         List<Region> regiones = RegionRepository.getTodas();
         System.out.println(a.getNombre() + " ha llegado al nivel máximo. Elige su especialización:");
         for (int i = 0; i < regiones.size(); i++) {
-            System.out.println((i + 1) + ".- " + regiones.get(i).getNombre());
+            System.out.println((i + 1) + ". " + regiones.get(i).getNombre());
         }
         int op;
         do {

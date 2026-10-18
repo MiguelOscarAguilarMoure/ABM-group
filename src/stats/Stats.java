@@ -22,53 +22,58 @@ public class Stats {
     /** Código de cada región → veces que se ha excavado allí. */
     private final HashMap<String, Integer> lugares = new HashMap<>();
 
-    
-
     /**
-     * Registra una excavación: suma una visita a la región y cada tesoro encontrado.
+     * Registra una excavación: suma una visita a la región y cada tesoro
+     * encontrado.
      * Se llama desde la excavación al terminar.
-     * @param region   La región excavada.
-     * @param codigos  Los códigos completos de los tesoros encontrados ("GRC_CER_001_0005").
+     * 
+     * @param region  La región excavada.
+     * @param codigos Los códigos completos de los tesoros encontrados
+     *                ("GRC_CER_001_0005").
      */
     public void registrar(Region region, List<String> codigos) {
         lugares.merge(region.getCodigo(), 1, Integer::sum);
         for (String codigo : codigos) {
-            tesoros.merge(codigo, 1, Integer::sum); //la lista de códigos que has encontrado en una excavación y le suma 1 a cada uno en el mapa
+            tesoros.merge(codigo, 1, Integer::sum); // la lista de códigos que has encontrado en una excavación y le
+                                                    // suma 1 a cada uno en el mapa
         }
     }
 
-    
-
     /**
-     * Por cada región: veces visitada, tesoros distintos encontrados frente al total
+     * Por cada región: veces visitada, tesoros distintos encontrados frente al
+     * total
      * (con porcentaje) y total de tesoros excavados.
      */
     public void mostrarLugares() {
         for (Region r : RegionRepository.getTodas()) {
-            int distintos = 0;   // códigos distintos encontrados en esa región
-            int total = 0;       // suma de las veces que se han encontrado
+            int distintos = 0; // códigos distintos encontrados en esa región
+            int total = 0; // suma de las veces que se han encontrado
             for (String codigo : tesoros.keySet()) {
                 if (CodeHelper.getRegion(codigo).equals(r.getCodigo())) {
                     distintos++;
                     total += tesoros.get(codigo);
                 }
             }
-            int posibles = r.getNumPartes();   // cada parte cuenta como un tesoro distinto
+            int posibles = r.getNumPartes(); // cada parte cuenta como un tesoro distinto
 
             System.out.println("-------------------- " + r.getNombre() + " --------------------");
-            System.out.println("Veces visitada: " + lugares.getOrDefault(r.getCodigo(), 0));//busca en el mapa lugares cuántas veces has visitado esa región, y si nunca has ido devuelve 0.
+            System.out.println("Veces visitada: " + lugares.getOrDefault(r.getCodigo(), 0));// busca en el mapa lugares
+                                                                                            // cuántas veces has
+                                                                                            // visitado esa región, y si
+                                                                                            // nunca has ido devuelve 0.
             System.out.println("Tesoros encontrados: " + distintos + "/" + posibles
                     + " (" + UtilsHelper.getPercent(distintos, posibles) + "%)");
             System.out.println("Total de tesoros excavados: " + total);
         }
     }
 
-    
-
     /** Tesoros divididos por región y ordenados por código. */
     public void mostrarPorRegion() {
         List<String> codigos = codigosOrdenados();
-
+        if (codigos.isEmpty()) {
+            System.out.println("Todavía no has encontrado tesoros.");
+            return;
+        }
         for (Region r : RegionRepository.getTodas()) {
             // Los códigos de esta región, ya en orden
             List<String> deLaRegion = new ArrayList<>();
@@ -82,6 +87,7 @@ public class Stats {
                 mostrarGrupo(deLaRegion);
             }
         }
+        
     }
 
     /** Tesoros divididos por tipo y luego ordenados por código. */
@@ -116,7 +122,10 @@ public class Stats {
 
     // AUXILIARES
 
-    /** Devuelve los códigos encontrados ordenados alfabéticamente (el HashMap no los ordena). */
+    /**
+     * Devuelve los códigos encontrados ordenados alfabéticamente (el HashMap no los
+     * ordena).
+     */
     private List<String> codigosOrdenados() {
         List<String> codigos = new ArrayList<>(tesoros.keySet());
         Collections.sort(codigos);
@@ -133,7 +142,7 @@ public class Stats {
         for (String codigo : codigos) {
             Treasure t = RegionRepository.getTesoro(codigo);
             if (t == null) {
-                continue;   // código que no corresponde a ningún tesoro registrado
+                continue; // código que no corresponde a ningún tesoro registrado
             }
             int veces = tesoros.get(codigo);
 

@@ -98,7 +98,7 @@ public class ArcheologistsOperation implements IOperation {
             }
 
             int puntos = a.getPuntosLicencia();
-            System.out.println("Licenciar a " + a.getNombre() + " te da " + puntos + " puntos.");
+            System.out.println("Se ha licenciado a " + a.getNombre() + ".");
             
 
             if (InputHelper.confirmar("¿Confirmar?")) {
