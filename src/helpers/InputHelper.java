@@ -4,26 +4,42 @@ import java.io.Console;
 import java.util.Scanner;
 
 /**
- * Lectura de datos por consola sin que el programa se caiga si el usuario se
+ * Lectura de datos por teclado sin que el programa se caiga si el usuario se
  * equivoca.
+ * <p>
+ * Toda la lectura del proyecto pasa por esta clase. Usa {@link Console} si el
+ * programa
+ * se ejecuta desde una terminal y {@link Scanner} si no hay consola (por
+ * ejemplo,
+ * con el botón Run del IDE, donde {@code System.console()} devuelve
+ * {@code null}).
+ * Nunca se usan los dos a la vez.
+ * </p>
+ *
+ * @author Borja Abal Dios
+ * @version 1.0
  */
 public class InputHelper {
-
+    /** Consola del sistema ({@code null} si no se ejecuta desde una terminal). */
     private static final Console console = System.console();
-     private static final Scanner scanner = new Scanner(System.in);
+    /** Lector alternativo para cuando no hay consola. */
+    private static final Scanner scanner = new Scanner(System.in);
 
+    /** Clase de métodos estáticos: no se crean objetos de ella. */
     private InputHelper() {
     }
 
-        /**
+    /**
      * Lee una línea. Usa Console si hay terminal y Scanner si no (Run del IDE).
-     * Si se cierra la entrada (Ctrl+D / Ctrl+Z), cierra el programa
+     * Si se cierra la entrada (Ctrl+D / Ctrl+Z), termina el programa
      * en vez de quedarse en un bucle infinito.
+     *
+     * @param mensaje El texto que se muestra antes de leer.
+     * @return Lo que ha escrito, sin espacios al principio ni al final.
      */
     private static String leer(String mensaje) {
         String texto;
 
-        // 1. Elegir cómo leer
         if (console != null) {
             texto = console.readLine(mensaje);
         } else {
@@ -35,7 +51,6 @@ public class InputHelper {
             }
         }
 
-        // 2. Comprobar si se ha cerrado la entrada
         if (texto == null) {
             System.out.println();
             System.out.println("Se ha cerrado la entrada. ¡Hasta pronto!");
@@ -63,6 +78,16 @@ public class InputHelper {
             }
         }
         return numero;
+    }
+
+    /**
+     * Lee una línea que puede estar vacía. La usa la excavación en cada turno,
+     * que ya comprueba por su cuenta si lo escrito es válido.
+     *
+     * @return Lo que ha escrito, sin espacios al principio ni al final.
+     */
+    public static String leerLinea() {
+        return leer("");
     }
 
     /**

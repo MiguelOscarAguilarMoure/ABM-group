@@ -6,13 +6,35 @@ import skills.ESkillType;
 import skills.Skill;
 
 /**
- * Licencia A o B: habilidad modificadora de terreno. No da bonos,
- * desbloquea nuevas formas de terreno. Son incompatibles entre sí.
+ * Habilidades modificadoras de terreno: Licencia A y B.
+ * <p>
+ * No dan bonos a la excavación: desbloquean nuevas formas de terreno.
+ * </p>
+ * <ul>
+ *   <li>Nivel 1 (Licencia A): fila y columna.</li>
+ *   <li>Nivel 2 (Licencia B): horizontal y vertical.</li>
+ * </ul>
+ * <p>
+ * Son incompatibles entre sí: un arqueólogo solo puede tener una Licencia.
+ * </p>
+ *
+ * @author Borja Abal Dios
+ * @author Alberto Ameneiros
+ * @version 1.0
+ * @see Skill#getTerrenos()
+ * @see Skill#esIncompatible(Skill)
  */
 public class Licencia extends Skill {
-
-    protected final int nivel;   // 1 = A, 2 = B
-
+    /** Nivel de la habilidad (1 = A, 2 = B). */
+    protected final int nivel;   
+     /**
+     * Crea una habilidad de licencia.
+     *
+     * @param nombre      Nombre de la habilidad.
+     * @param descripcion Descripción de la habilidad.
+     * @param tipo        Tipo de la habilidad.
+     * @param nivel       Nivel de la habilidad (1 = A, 2 = B).
+     */
     public Licencia(String nombre, String descripcion, ESkillType tipo, int nivel) {
         super(nombre, descripcion, tipo);
         this.nivel = nivel;
@@ -20,6 +42,8 @@ public class Licencia extends Skill {
 
     /**
      * Formas de terreno que desbloquea (las añade Archeologist.addHabilidad).
+     * Las añade {@code Archeologist.addHabilidad()} a los terrenos del arqueólogo.
+     * 
      * @return A: fila y columna. B: horizontal y vertical.
      */
     @Override
@@ -30,7 +54,13 @@ public class Licencia extends Skill {
         return List.of(TerrainShape.HORIZONTAL, TerrainShape.VERTICAL);     // Licencia B
     }
 
-    /** Un arqueólogo solo puede tener una Licencia. */
+     /**
+     * Indica si es incompatible con otra habilidad.
+     * Un arqueólogo solo puede tener una Licencia.
+     *
+     * @param otra La habilidad con la que se compara.
+     * @return {@code true} si la otra también es una Licencia (y no es esta misma).
+     */
     @Override
     public boolean esIncompatible(Skill otra) {
         return otra instanceof Licencia && otra != this;

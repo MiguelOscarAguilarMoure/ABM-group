@@ -7,8 +7,18 @@ import skills.Habilidad.*;
 import skills.Skill;
 
 /**
- * Repositorio de todas las habilidades del sistema.
- * Las habilidades se crean y registran una sola vez en preInit y se obtienen siempre de aquí.
+ * Repositorio de todas las habilidades del juego.
+ * <p>
+ * Las habilidades se crean y se registran una sola vez en {@code preInit} y se obtienen
+ * siempre de aquí, así cada habilidad existe como un único objeto en todo el programa.
+ * Gracias a eso, {@code Archeologist} puede comprobar con {@code contains} si ya tiene
+ * una habilidad o sus dependencias.
+ * </p>
+ *
+ * @author Borja Abal Dios
+ * @author Alberto Ameneiros
+ * @version 1.0
+ * @see skills.Skill
  */
 public class SkillRepository {
 
