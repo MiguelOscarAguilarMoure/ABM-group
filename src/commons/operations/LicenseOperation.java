@@ -6,14 +6,13 @@ public class LicenseOperation implements IOperation {
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+        return "Licencias";
     }
 
     @Override
     public void operation() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'operation'");
+        System.out.println("-------------------- Licencias --------------------");
+        System.out.println("Las licencias no están disponibles en esta entrega.");
     }
     
 }

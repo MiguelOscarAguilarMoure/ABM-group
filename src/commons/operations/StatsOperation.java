@@ -1,10 +1,8 @@
 
 package commons.operations;
-
-import java.io.Console;
-
 import commons.Archaios;
-import stats.Stats;;
+import helpers.InputHelper;
+import stats.Stats;
 
 /**
  * Opción Estadísticas: muestra los menús y pide al usuario qué quiere ver.
@@ -13,7 +11,7 @@ import stats.Stats;;
 public class StatsOperation implements IOperation {
 
     private final Archaios juego;
-    private final Console console = System.console();
+    
 
     public StatsOperation(Archaios juego) {
         this.juego = juego;
@@ -34,7 +32,7 @@ public class StatsOperation implements IOperation {
             System.out.println("1. Lugares");
             System.out.println("2. Tesoros");
             System.out.println("0. Volver");
-            op = Integer.parseInt(console.readLine("Opción: "));
+             op = InputHelper.leerEntero("Opción: ");
 
             if (op == 1) stats.mostrarLugares();
             if (op == 2) menuTesoros(stats);
@@ -49,7 +47,7 @@ public class StatsOperation implements IOperation {
         System.out.println("1. Por región");
         System.out.println("2. Por tipo");
         System.out.println("0. Volver");
-        int op = Integer.parseInt(console.readLine("Opción: "));
+        int op = InputHelper.leerEntero("Opción: ");
 
         if (op == 1) stats.mostrarPorRegion();
         if (op == 2) stats.mostrarPorTipo();

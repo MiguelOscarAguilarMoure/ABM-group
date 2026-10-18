@@ -1,8 +1,8 @@
 package commons.operations;
 
 import commons.repositories.RegionRepository;
+import helpers.InputHelper;
 import helpers.UtilsHelper;
-import java.io.Console;
 import java.util.List;
 import regions.Region;
 import treasures.ETreasureRarity;
@@ -14,7 +14,7 @@ import treasures.Treasure;
  */
 public class CatalagoTesoros implements IOperation {
 
-   private final Console console = System.console();
+  
 
     @Override
     public String getName() {
@@ -54,8 +54,8 @@ public class CatalagoTesoros implements IOperation {
             mostrarFicha(t);
 
             // ¿Consultar otro tesoro de esta región o volver al menú principal?
-            String resp = console.readLine("¿Consultar otro tesoro de " + region.getNombre() + "? (s/n): ");
-            if (!resp.equalsIgnoreCase("s")) {
+            
+            if (!InputHelper.confirmar("¿Consultar otro tesoro de " + region.getNombre() + "?")) {
                 return true;
             }
         }
@@ -73,7 +73,7 @@ public class CatalagoTesoros implements IOperation {
         }
         System.out.println("0. Volver");
 
-        int op = Integer.parseInt(console.readLine("Región: "));
+        int op = InputHelper.leerEntero("Región: ");
         if (op < 1 || op > regiones.size()) {
             return null;
         }
@@ -90,7 +90,7 @@ public class CatalagoTesoros implements IOperation {
         }
         System.out.println("0. Volver");
 
-        int op = Integer.parseInt(console.readLine("Tesoro: "));
+                int op = InputHelper.leerEntero("Tesoro: ");
         if (op < 1 || op > tesoros.size()) {
             return null;
         }

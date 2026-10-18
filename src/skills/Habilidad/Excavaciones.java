@@ -1,9 +1,7 @@
 package skills.Habilidad;
 
-import skills.Skill;
 import skills.ESkillType;
-
-import java.util.ArrayList;
+import skills.Skill;
 
 public class Excavaciones extends Skill {
     protected int nivel;
@@ -18,7 +16,7 @@ public class Excavaciones extends Skill {
      * @param nivel
      * @return numero de acciones adicionales
      */
-    public int efecto(int nivel) {
+    public int efecto() {
         switch (nivel) {
             case 1 -> {
                 return 5;
@@ -34,7 +32,9 @@ public class Excavaciones extends Skill {
             }
         }
     }
+   /** Acciones extra de excavación (lo suma Archeologist.getAccionesExtra). */
+    @Override
     public int getAccionesExtra() {
-        return 0;
+        return efecto();
     }
 }

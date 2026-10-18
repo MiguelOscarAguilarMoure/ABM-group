@@ -50,24 +50,31 @@ public enum ETerrainSize {
         return nombre;
     }
     public int getNivelMinimo() {
-        switch (tamanho) {
-        case "Pequeño":
-            return 0;
-        case "Mediano":
-            return 2;
-        default:
-            return 4;
+        return nivelMinimo;
     }
-    }
+
     public boolean isCuadrado() {
-        return nombre.equals("Cuadrado");
+        return cuadrado;
     }
     public int getNumeroCasillas() {
         return (fil * col);
     }
-    public  int getNivelMinimoPorTamanho() {
-        return nivelMinimo;
+     /** La forma de este terreno, para compararla con las formas del arqueólogo. */
+    public TerrainShape getForma() {
+        switch (nombre) {
+            case "Fila":
+                return TerrainShape.ROW;
+            case "Horizontal":
+                return TerrainShape.HORINZOTAL;
+            case "Columna":
+                return TerrainShape.COLUMN;
+            case "Vertical":
+                return TerrainShape.VERTICAL;
+            default:
+                return TerrainShape.SQUARE;
+        }
     }
+    
    
     
 

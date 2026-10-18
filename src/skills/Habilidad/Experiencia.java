@@ -1,12 +1,14 @@
 package skills.Habilidad;
 
-import skills.Skill;
 import skills.ESkillType;
+import skills.Skill;
 
-import java.util.ArrayList;
-
+/**
+ * Experiencia I o II: aumenta en un porcentaje las acciones de excavación.
+ */
 public class Experiencia extends Skill {
-    protected int nivel;
+
+    protected final int nivel;   // 1 o 2
 
     public Experiencia(String nombre, String descripcion, ESkillType tipo, int nivel) {
         super(nombre, descripcion, tipo);
@@ -14,19 +16,23 @@ public class Experiencia extends Skill {
     }
 
     /**
-     * Devuvelve el porcentaje decimal (en Int)
-     * @return devuelve un int reflejando el porcentaje "x * 10" (Ej: 2 = 20%)
+     * Porcentaje de aumento de acciones según el nivel.
+     * @return 20 o 30 (por ciento).
      */
     public int efecto() {
-        switch (this.nivel) {
-            case 1 -> {return 2;}
-            case 2 -> {return 3;}
-            default -> {return 0;}
+        switch (nivel) {
+            case 1:
+                return 20;
+            case 2:
+                return 30;
+            default:
+                return 0;
         }
     }
 
+    /** Porcentaje de aumento de acciones (lo usa Archeologist.getFactorAcciones). */
+    @Override
     public int getPorcentajeAcciones() {
-        return 0;
+        return efecto();
     }
-
 }

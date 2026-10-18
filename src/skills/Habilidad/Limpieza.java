@@ -1,9 +1,7 @@
 package skills.Habilidad;
 
-import skills.Skill;
 import skills.ESkillType;
-
-import java.util.ArrayList;
+import skills.Skill;
 
 public class Limpieza extends Skill {
     protected int nivel;
@@ -13,7 +11,7 @@ public class Limpieza extends Skill {
         this.nivel = nivel;
     }
 
-    public int efecto(int nivel) {
+    public int efecto() {
         switch (nivel) {
             case 1 -> {
                 return 5;
@@ -26,7 +24,9 @@ public class Limpieza extends Skill {
             }
         }
     }
+   /** Casillas vacías a destapar (lo suma Archeologist.getLimpieza). */
+    @Override
     public int getLimpieza() {
-        return 0;
+        return efecto();
     }
 }
