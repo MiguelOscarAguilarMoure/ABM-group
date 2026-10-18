@@ -7,15 +7,13 @@ import excavation.ETerrainSize;
 import excavation.Excavation;
 import helpers.CodeHelper;
 import helpers.InputHelper;
-import helpers.UtilsHelper;
+import helpers.TreasureHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import people.Archeologist;
 import regions.Region;
 import skills.Skill;
-import treasures.ETreasureRarity;
-import treasures.ETreasureType;
 import treasures.Treasure;
 
 /**
@@ -80,9 +78,9 @@ public class ExcavateOperation implements IOperation {
         List<Region> regiones = RegionRepository.getTodas();
         System.out.println("-------------------- Regiones --------------------");
         for (int i = 0; i < regiones.size(); i++) {
-            System.out.println((i + 1) + ".- " + regiones.get(i).getNombre());
+            System.out.println((i + 1) + ". " + regiones.get(i).getNombre());
         }
-        System.out.println("0.- Volver");
+        System.out.println("0. Volver");
         int op = InputHelper.leerEntero("Región en la que realizar la excavación: ");
         if (op < 1 || op > regiones.size()) {
             return null;
@@ -106,9 +104,9 @@ public class ExcavateOperation implements IOperation {
         System.out.println("-------------------- Arqueólogos --------------------");
         for (int i = 0; i < disponibles.size(); i++) {
             Archeologist a = disponibles.get(i);
-            System.out.println((i + 1) + ".- " + a.getNombre() + " (nivel " + a.getNivel() + ")");
+            System.out.println((i + 1) + ". " + a.getNombre() + " (nivel " + a.getNivel() + ")");
         }
-        System.out.println("0.- Volver");
+        System.out.println("0. Volver");
         int op = InputHelper.leerEntero("Arqueólogo que realiza la excavación: ");
         if (op < 1 || op > disponibles.size()) {
             return null;
@@ -128,10 +126,10 @@ public class ExcavateOperation implements IOperation {
         System.out.println("-------------------- Terreno --------------------");
         for (int i = 0; i < disponibles.size(); i++) {
             ETerrainSize t = disponibles.get(i);
-            System.out.println((i + 1) + ".- " + t.getTamanho() + " " + t.getNombre()
+            System.out.println((i + 1) + ". " + t.getTamanho() + " " + t.getNombre()
                     + " (" + t.getFil() + "x" + t.getCol() + ")");
         }
-        System.out.println("0.- Volver");
+        System.out.println("0. Volver");
         int op = InputHelper.leerEntero("Terreno a excavar: ");
         if (op < 1 || op > disponibles.size()) {
             return null;
@@ -151,29 +149,15 @@ public class ExcavateOperation implements IOperation {
         for (String codigo : codigos) {
             Treasure t = region.getTesoro(CodeHelper.getFullTreasure(codigo));
             if (t != null) {
-                System.out.println(t.getNombre());
-                System.out.println(t.getDescripcion());
-                System.out.println("Código: " + codigo);
-                System.out.println(UtilsHelper.ucfirst(t.getTipoTesoro().toString()) + " "
-                        + getRareza(t.getRarezaTesoro(), esFemenino(t.getTipoTesoro())));
+                TreasureHelper.mostrar(t, codigo); 
                 System.out.println();
             }
         }
     }
 
-    private boolean esFemenino(ETreasureType tipo) {
-        return tipo != ETreasureType.EQUIP && tipo != ETreasureType.FRAGMENT;
-    }
+    
 
-    private String getRareza(ETreasureRarity rareza, boolean femenino) {
-        if (rareza == ETreasureRarity.COMMON) {
-            return "común";
-        }
-        if (rareza == ETreasureRarity.UNCOMMON) {
-            return "infrecuente";
-        }
-        return femenino ? "rara" : "raro";
-    }
+    
 
     // ========================================================== SUBIR DE NIVEL
 
@@ -218,7 +202,7 @@ public class ExcavateOperation implements IOperation {
         System.out.println("-------------------- Nueva habilidad --------------------");
         for (int i = 0; i < opciones.size(); i++) {
             Skill s = opciones.get(i);
-            System.out.println((i + 1) + ".- " + s.getNombre() + ": " + s.getDescripcion());
+            System.out.println((i + 1) + ". " + s.getNombre() + ": " + s.getDescripcion());
         }
         int op;
         do {
@@ -233,7 +217,7 @@ public class ExcavateOperation implements IOperation {
         List<Region> regiones = RegionRepository.getTodas();
         System.out.println(a.getNombre() + " ha llegado al nivel máximo. Elige su especialización:");
         for (int i = 0; i < regiones.size(); i++) {
-            System.out.println((i + 1) + ".- " + regiones.get(i).getNombre());
+            System.out.println((i + 1) + ". " + regiones.get(i).getNombre());
         }
         int op;
         do {

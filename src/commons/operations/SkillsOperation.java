@@ -103,13 +103,7 @@ public class SkillsOperation implements IOperation {
 
         /** Muestra las habilidades del tipo por orden alfabético y devuelve la elegida, o null si elige 0. */
     private Skill elegirHabilidad(ESkillType tipo) {
-        List<Skill> lista = new ArrayList<>();
-        for (Skill s : SkillRepository.getTodas()) {
-            if (s.getTipo() == tipo) {
-                lista.add(s);
-            }
-        }
-        lista.sort((a, b) -> a.getNombre().compareTo(b.getNombre()));   // orden alfabético
+        List<Skill> lista = SkillRepository.getPorTipo(tipo);
 
         for (int i = 0; i < lista.size(); i++) {
             System.out.println((i + 1) + ". " + lista.get(i).getNombre());

@@ -1,18 +1,20 @@
 package excavation;
 
-public enum  TerrainShape {
+public enum TerrainShape {
+    SQUARE("cuadrado"),
     ROW("fila"),
-    HORINZOTAL("horizintal"),
-     COLUMN("columna"),
-    VERTICAL("vertical"),
-    SQUARE("cuadrado");
-    private final String txt;
+    COLUMN("columna"),
+    HORIZONTAL("horizontal"),
+    VERTICAL("vertical");
 
-    private TerrainShape(String txt) {
-        this.txt = txt;
+    private final String nombre;
+
+    TerrainShape(String nombre) {
+        this.nombre = nombre;
     }
-    @Override 
-    public  String toString(){
-        return txt;
+
+    @Override
+    public String toString() {
+        return nombre;
     }
 }

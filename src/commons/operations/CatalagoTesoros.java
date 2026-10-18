@@ -2,11 +2,9 @@ package commons.operations;
 
 import commons.repositories.RegionRepository;
 import helpers.InputHelper;
-import helpers.UtilsHelper;
+import helpers.TreasureHelper;
 import java.util.List;
 import regions.Region;
-import treasures.ETreasureRarity;
-import treasures.ETreasureType;
 import treasures.Treasure;
 
 /**
@@ -51,7 +49,7 @@ public class CatalagoTesoros implements IOperation {
                 return false;   // eligió 0: vuelve a las regiones
             }
 
-            mostrarFicha(t);
+            TreasureHelper.mostrar(t);
 
             // ¿Consultar otro tesoro de esta región o volver al menú principal?
             
@@ -97,35 +95,9 @@ public class CatalagoTesoros implements IOperation {
         return tesoros.get(op - 1);
     }
 
-    /**
-     * Muestra la ficha de un tesoro con el formato del PDF:
-     * nombre, descripción, código, tipo, rareza y partes (si son más de una).
-     */
-    private void mostrarFicha(Treasure t) {
-        System.out.println("-------------------- " + t.getNombre() + " --------------------");
-        System.out.println(t.getDescripcion());
-        System.out.println("Código: " + t.getCodigo());
+    
+   
 
-        // "Moneda común" / "Cerámica común dividida en 10 partes" / "Equipo raro dividido en 21 partes"
-        String linea = UtilsHelper.ucfirst(t.getTipoTesoro().toString()) + " " + rareza(t);
-        if (t.getPartes() > 1) {
-            String dividido = esFemenino(t.getTipoTesoro()) ? "dividida" : "dividido";
-            linea += " " + dividido + " en " + t.getPartes() + " partes";
-        }
-        System.out.println(linea);
-    }
-
-    /** Rareza concordando en género con el tipo: "rara" en femenino, "raro" en masculino. */
-    private String rareza(Treasure t) {
-        if (t.getRarezaTesoro() == ETreasureRarity.RARE && esFemenino(t.getTipoTesoro())) {
-            return "rara";
-        }
-        return t.getRarezaTesoro().toString();
-    }
-
-    /** Equipo y fragmento son masculinos; el resto de tipos son femeninos. */
-    private boolean esFemenino(ETreasureType tipo) {
-        return tipo != ETreasureType.EQUIP && tipo != ETreasureType.FRAGMENT;
-    }
+    
     
 }

@@ -59,8 +59,8 @@ public class SkillRepository {
         registrar(excavacion3);
 
         // Experiencia
-        Experiencia experiencia1 = new Experiencia("Experiencia I", "Probabilidad de que una acción de excavar sea gratis", ESkillType.EXCAVATION, 1);
-        Experiencia experiencia2 = new Experiencia("Experiencia II", "Probabilidad de que una acción de excavar sea gratis", ESkillType.EXCAVATION, 2);
+        Experiencia experiencia1 = new Experiencia("Experiencia I", "Aumenta en un porcentaje las acciones de excavación", ESkillType.EXCAVATION, 1);
+        Experiencia experiencia2 = new Experiencia("Experiencia II", "Aumenta en un porcentaje las acciones de excavación", ESkillType.EXCAVATION, 2);
         experiencia2.addDependencia(experiencia1);
         registrar(experiencia1);
         registrar(experiencia2);
@@ -84,6 +84,9 @@ public class SkillRepository {
         Licencia licenciaB = new Licencia("Licencia B", "Añade los terrenos horizontal y vertical", ESkillType.TERRAIN, 2);
         registrar(licenciaA);
         registrar(licenciaB);
+          // Investigación
+        registrar(new Investigacion("Investigación",
+                "Hace un desglose de cuántos tesoros de cada rareza hay", ESkillType.EXCAVATION));
 
         // Los especialistas de terreno (agua, arena, océano...) son de las ampliaciones
     }

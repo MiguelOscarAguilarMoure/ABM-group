@@ -28,6 +28,7 @@ public class Excavation {
 
     private static final String SIN_EXCAVAR = "·";
     private static final String VACIO = "x";
+    private static final String SUPOSICION = "?"; 
 
     // Valores de ETerrainSize.getTamanho()
     private static final String PEQUENO = "Pequeño";
@@ -36,6 +37,7 @@ public class Excavation {
 
     private static final double ACCIONES_MIN = 0.25; // 25 % de la rejilla
     private static final double ACCIONES_MAX = 0.75; // 75 % de la rejilla
+    private static final double REVELACION_MAX = 0.25; // 25 % de la rejilla como mucho 
 
     private final ETerrainSize terreno;
     private final Region region;
@@ -75,6 +77,8 @@ public class Excavation {
         generarRejilla();
         generarTesoros();
         this.acciones = calcularAcciones();
+        aplicarRevelacion();
+
     }
 
     // ===== Generación =====================================================
@@ -207,12 +211,84 @@ public class Excavation {
     /** (25 % de la rejilla + extra) * factor, entre 1 y el 75 % de la rejilla. */
     private int calcularAcciones() {
         int total = numColumnas * numFilas;
-        int extra = arqueologo.getAccionesExtra(region); // TODO Extra del arqueólogo
-        double factor = arqueologo.getFactorAcciones(); // TODO Producto de los factores de sus habilidades
+        int extra = arqueologo.getAccionesExtra(region); // habilidades + especialización
+        double factor = arqueologo.getFactorAcciones(); // porcentajes multiplicados entre sí
         int calculadas = (int) Math.round((total * ACCIONES_MIN + extra) * factor);
         int maximo = (int) (total * ACCIONES_MAX);
         return Math.max(1, Math.min(calculadas, maximo));
     }
+    /**
+     * Aplica las habilidades de revelación antes de empezar, sin gastar acciones:
+     * primero la limpieza y después la suposición. Entre las dos no revelan
+     * más del 25 % de las casillas.
+     */
+    private void aplicarRevelacion() {
+        int total = numColumnas * numFilas;
+        int maximo = (int) (total * REVELACION_MAX);
+        int reveladas = limpiar(arqueologo.getLimpieza(), maximo);
+        suponer(arqueologo.getSuposicion() / 3, maximo - reveladas);
+    }
+     /**
+     * Limpieza: destapa casillas sin tesoro al azar (quedan como 'x').
+     * @param cantidad Casillas que quiere destapar el arqueólogo.
+     * @param maximo   Casillas que se pueden revelar como mucho.
+     * @return Las casillas destapadas.
+     */
+    private int limpiar(int cantidad, int maximo) {
+        List<Integer> vacias = new ArrayList<>();
+        for (int i = 0; i < casillas.size(); i++) {
+            if (!tesoros.containsKey(i)) {
+                vacias.add(i);
+            }
+        }
+        int destapadas = 0;
+        while (destapadas < cantidad && destapadas < maximo && !vacias.isEmpty()) {
+            int indice = vacias.remove(RANDOM.nextInt(vacias.size()));
+            casillas.set(indice, VACIO);
+            cavarRestantes--;
+            destapadas++;
+        }
+        return destapadas;
+    }
+     /**
+     * Suposición: cada escaneo marca con '?' tres casillas al azar, una con tesoro y dos sin él.
+     * Se aplica después de la limpieza: si una de las casillas vacías elegidas ya estaba
+     * destapada, se queda como 'x' y no se elige otra, así que salen menos '?'.
+     * @param escaneos Número de escaneos (cada uno marca hasta 3 casillas).
+     * @param maximo   Casillas que se pueden marcar como mucho.
+     */
+    private void suponer(int escaneos, int maximo) {
+        List<Integer> conTesoro = new ArrayList<>(tesoros.keySet());
+        List<Integer> sinTesoro = new ArrayList<>();
+        for (int i = 0; i < casillas.size(); i++) {
+            if (!tesoros.containsKey(i)) {
+                sinTesoro.add(i);
+            }
+        }
+
+        int marcadas = 0;
+        for (int e = 0; e < escaneos && marcadas < maximo && !conTesoro.isEmpty(); e++) {
+            // Una casilla con tesoro
+            int indice = conTesoro.remove(RANDOM.nextInt(conTesoro.size()));
+            casillas.set(indice, SUPOSICION);
+            marcadas++;
+
+            // Dos casillas sin tesoro (si ya estaban destapadas, se quedan como 'x')
+            for (int j = 0; j < 2 && marcadas < maximo && !sinTesoro.isEmpty(); j++) {
+                indice = sinTesoro.remove(RANDOM.nextInt(sinTesoro.size()));
+                if (casillas.get(indice).equals(SIN_EXCAVAR)) {
+                    casillas.set(indice, SUPOSICION);
+                    marcadas++;
+                }
+            }
+        }
+    }
+    /** true si la casilla todavía no se ha excavado (sin tocar o marcada con '?'). */
+    private boolean sinExcavar(int indice) {
+        String c = casillas.get(indice);
+        return c.equals(SIN_EXCAVAR) || c.equals(SUPOSICION);
+    }
+
 
     // ===== Excavar ========================================================
 
@@ -233,8 +309,8 @@ public class Excavation {
             throw new IllegalStateException("La excavación ya ha terminado.");
         }
         int indice = getIndice(posicion);
-        if (!casillas.get(indice).equals(SIN_EXCAVAR)) {
-            throw new IllegalArgumentException("La posición " + posicion + " ya está excavada.");
+        if (!sinExcavar(indice)) {
+            throw new IllegalArgumentException("ya está excavada.");
         }
 
         acciones--;
@@ -289,7 +365,7 @@ public class Excavation {
         int cantidad = 0;
         for (Integer indice : tesoros.keySet()) {
             Treasure tesoro = tesoros.get(indice);
-            if (tesoro.getRarezaTesoro() == rareza && casillas.get(indice).equals(SIN_EXCAVAR)) {
+            if (tesoro.getRarezaTesoro() == rareza && sinExcavar(indice)) {
                 cantidad++;
             }
         }
@@ -416,7 +492,6 @@ public class Excavation {
     private void mostrarTurno() {
         System.out.println(this);
         System.out.println("Número de acciones restantes: " + acciones);
-        System.out.println("Tesoros: " + tesoros.size());
         if (arqueologo.isInvestigacion()) {
             System.out.println("Quedan " + getTesorosRestantes(ETreasureRarity.COMMON) + " comunes, "
                     + getTesorosRestantes(ETreasureRarity.UNCOMMON) + " infrecuentes y "

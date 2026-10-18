@@ -1,8 +1,5 @@
 package helpers;
-/**
- * Funciones auxiliares para mostrar tesoros.
- * Se usa en el catálogo y al terminar una excavación.
- */
+
 import treasures.ETreasureRarity;
 import treasures.ETreasureType;
 import treasures.Treasure;
@@ -26,14 +23,14 @@ public class TreasureHelper {
         return t.getRarezaTesoro().toString();
     }
 
-    /**
-     * Muestra la ficha de un tesoro: nombre, descripción, código, tipo, rareza
-     * y número de partes si son más de una.
+        /**
+     * Muestra la ficha de un tesoro con un código concreto
+     * (al excavar, el código lleva la parte encontrada).
      */
-    public static void mostrar(Treasure t) {
+    public static void mostrar(Treasure t, String codigo) {
         System.out.println("-------------------- " + t.getNombre() + " --------------------");
         System.out.println(t.getDescripcion());
-        System.out.println("Código: " + t.getCodigo());
+        System.out.println("Código: " + codigo);
 
         String linea = UtilsHelper.ucfirst(t.getTipoTesoro().toString()) + " " + getRareza(t);
         if (t.getPartes() > 1) {
@@ -41,5 +38,10 @@ public class TreasureHelper {
             linea += " " + dividido + " en " + t.getPartes() + " partes";
         }
         System.out.println(linea);
+    }
+
+    /** Ficha con el código base del tesoro (la usa el Catálogo). */
+    public static void mostrar(Treasure t) {
+        mostrar(t, t.getCodigo());
     }
 }

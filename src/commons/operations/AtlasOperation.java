@@ -2,10 +2,9 @@ package commons.operations;
 
 import commons.repositories.RegionRepository;
 import helpers.InputHelper;
+import helpers.TreasureHelper;
 import java.util.List;
 import regions.Region;
-import treasures.ETreasureRarity;
-import treasures.ETreasureType;
 import treasures.Treasure;
 
 /**
@@ -57,16 +56,8 @@ public class AtlasOperation  implements  IOperation{
     private void mostrarRegion(Region region) {
         System.out.println("-------------------- " + region.getNombre() + " --------------------");
         for (Treasure t : region.getTesoros()) {
-            System.out.println("-" + t.getNombre() + " (" + t.getTipoTesoro() + " " + rareza(t) + ")");
+            System.out.println("-" + t.getNombre() + " (" + t.getTipoTesoro() + " " + TreasureHelper.getRareza(t) + ")");
         }
     }
-    /** Rareza concordando en género con el tipo: "rara" en femenino, "raro" en masculino. */
-    private String rareza(Treasure t) {
-        boolean masculino = t.getTipoTesoro() == ETreasureType.EQUIP
-                || t.getTipoTesoro() == ETreasureType.FRAGMENT;
-        if (t.getRarezaTesoro() == ETreasureRarity.RARE && !masculino) {
-            return "rara";
-        }
-        return t.getRarezaTesoro().toString();
-    }
+    
 }
