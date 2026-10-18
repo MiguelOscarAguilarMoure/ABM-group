@@ -18,6 +18,7 @@ import treasures.Treasure;
  * a la información de cada región sin modificar la lógica interna del programa.
  *
  * @author Miguel Aguilar
+ * @author Borja Abal
  * @version 1.0
  * @since 2026-10-18
  */
