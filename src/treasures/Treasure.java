@@ -1,10 +1,13 @@
 package treasures;
 
 import java.util.Random;
-
+/**
+ * @author Borja Abal
+ * Treasure
+ */
 public class Treasure {
     private static final Random random = new Random();
-    // los hacemos final porque solo se pueden asignar una vez
+    // los hacemos final porque oslo se puden asignar una vez
 
     private final String codigo;
     private final String nombre;
@@ -14,19 +17,6 @@ public class Treasure {
     private final int puntos;
     private final int partes;
 
-    /**
-     * Constructor que usan las regiones: monta el código con región + tipo + número.
-     
-     */
-    public Treasure(String nombre, String codigoRegion, ETreasureType tipoTesoro, String numero,
-            int partes, int puntos, ETreasureRarity rarezaTesoro, String descripcion) {
-        this(codigoRegion + "_" + tipoTesoro.getCode() + "_" + numero,
-                nombre, descripcion, rarezaTesoro, tipoTesoro, partes, puntos);
-    }
-
-    /**
-     * Constructor con el código ya montado.
-     */
     public Treasure(String codigo, String nombre, String descripcion,
             ETreasureRarity rarezaTesoro, ETreasureType tipoTesoro,
             int partes, int puntos) {
@@ -37,6 +27,13 @@ public class Treasure {
         this.tipoTesoro = tipoTesoro;
         this.partes = partes;
         this.puntos = puntos;
+    }
+
+    public Treasure(String nombre, String codigoRegion, ETreasureType tipoTesoro,
+            String numero, int partes, int puntos, ETreasureRarity rarezaTesoro,
+            String descripcion) {
+        this(codigoRegion + "_" + tipoTesoro.getCode() + "_" + numero, nombre,
+                descripcion, rarezaTesoro, tipoTesoro, partes, puntos);
     }
 
     public String getCodigo() {
@@ -67,9 +64,10 @@ public class Treasure {
         return partes;
     }
 
-    /** Devuelve el código con una parte al azar, por ejemplo "ROM_COI_001_0003". */
+    // devuelve el codigo y genera partes de forma aleatoria
     public String getCodigoConParte() {
         int parte = random.nextInt(partes) + 1;
         return String.format("%s_%04d", codigo, parte);
     }
+
 }
