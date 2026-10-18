@@ -13,19 +13,30 @@ public class InputHelper {
     }
 
     /**
+     * Lee una línea. Si no hay entrada (Ctrl+D / Ctrl+Z), devuelve "" en vez de null.
+     */
+    private static String leer(String mensaje) {
+        String texto = console.readLine(mensaje);
+        return (texto == null) ? "" : texto.trim();
+    }
+
+    /**
      * Pide un número entero. Si escribe algo que no es un número, vuelve a preguntar.
      * @param mensaje El texto que se muestra (por ejemplo "Opción: ").
      * @return El número escrito.
      */
     public static int leerEntero(String mensaje) {
-        while (true) {
-            String texto = console.readLine(mensaje);
+        int numero = 0;
+        boolean valido = false;
+        while (!valido) {
             try {
-                return Integer.parseInt(texto.trim());
+                numero = Integer.parseInt(leer(mensaje));
+                valido = true;
             } catch (NumberFormatException e) {
                 System.out.println("Introduce un número.");
             }
         }
+        return numero;
     }
 
     /**
@@ -34,13 +45,12 @@ public class InputHelper {
      * @return Lo que ha escrito, sin espacios al principio ni al final.
      */
     public static String leerTexto(String mensaje) {
-        while (true) {
-            String texto = console.readLine(mensaje).trim();
-            if (!texto.isEmpty()) {
-                return texto;
-            }
+        String texto = leer(mensaje);
+        while (texto.isEmpty()) {
             System.out.println("No puede estar vacío.");
+            texto = leer(mensaje);
         }
+        return texto;
     }
 
     /**
@@ -49,15 +59,11 @@ public class InputHelper {
      * @return true si responde s; false si responde n.
      */
     public static boolean confirmar(String mensaje) {
-        while (true) {
-            String resp = console.readLine(mensaje + " (s/n): ").trim();
-            if (resp.equalsIgnoreCase("s")) {
-                return true;
-            }
-            if (resp.equalsIgnoreCase("n")) {
-                return false;
-            }
+        String resp = leer(mensaje + " (s/n): ");
+        while (!resp.equalsIgnoreCase("s") && !resp.equalsIgnoreCase("n")) {
             System.out.println("Responde s o n.");
+            resp = leer(mensaje + " (s/n): ");
         }
+        return resp.equalsIgnoreCase("s");
     }
 }

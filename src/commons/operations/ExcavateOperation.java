@@ -7,15 +7,13 @@ import excavation.ETerrainSize;
 import excavation.Excavation;
 import helpers.CodeHelper;
 import helpers.InputHelper;
-import helpers.UtilsHelper;
+import helpers.TreasureHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import people.Archeologist;
 import regions.Region;
 import skills.Skill;
-import treasures.ETreasureRarity;
-import treasures.ETreasureType;
 import treasures.Treasure;
 
 /**
@@ -151,29 +149,15 @@ public class ExcavateOperation implements IOperation {
         for (String codigo : codigos) {
             Treasure t = region.getTesoro(CodeHelper.getFullTreasure(codigo));
             if (t != null) {
-                System.out.println(t.getNombre());
-                System.out.println(t.getDescripcion());
-                System.out.println("Código: " + codigo);
-                System.out.println(UtilsHelper.ucfirst(t.getTipoTesoro().toString()) + " "
-                        + getRareza(t.getRarezaTesoro(), esFemenino(t.getTipoTesoro())));
+                TreasureHelper.mostrar(t, codigo); 
                 System.out.println();
             }
         }
     }
 
-    private boolean esFemenino(ETreasureType tipo) {
-        return tipo != ETreasureType.EQUIP && tipo != ETreasureType.FRAGMENT;
-    }
+    
 
-    private String getRareza(ETreasureRarity rareza, boolean femenino) {
-        if (rareza == ETreasureRarity.COMMON) {
-            return "común";
-        }
-        if (rareza == ETreasureRarity.UNCOMMON) {
-            return "infrecuente";
-        }
-        return femenino ? "rara" : "raro";
-    }
+    
 
     // ========================================================== SUBIR DE NIVEL
 
