@@ -1,7 +1,7 @@
 package excavation;
 
+import helpers.InputHelper;
 import helpers.UtilsHelper;
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +28,7 @@ public class Excavation {
 
     private static final String SIN_EXCAVAR = "·";
     private static final String VACIO = "x";
-    private static final String SUPOSICION = "?"; 
+    private static final String SUPOSICION = "?";
 
     // Valores de ETerrainSize.getTamanho()
     private static final String PEQUENO = "Pequeño";
@@ -37,7 +37,7 @@ public class Excavation {
 
     private static final double ACCIONES_MIN = 0.25; // 25 % de la rejilla
     private static final double ACCIONES_MAX = 0.75; // 75 % de la rejilla
-    private static final double REVELACION_MAX = 0.25; // 25 % de la rejilla como mucho 
+    private static final double REVELACION_MAX = 0.25; // 25 % de la rejilla como mucho
 
     private final ETerrainSize terreno;
     private final Region region;
@@ -59,13 +59,7 @@ public class Excavation {
     private int puntos;
 
     public Excavation(ETerrainSize terreno, Region region, Archeologist arqueologo) {
-        if (terreno == null || region == null || arqueologo == null) {
-            throw new IllegalArgumentException("El terreno, la región y el arqueólogo no pueden ser nulos.");
-        }
-        if (!arqueologo.puedeExcavar(terreno)) {
-            throw new IllegalArgumentException(arqueologo.getNombre() + " no puede excavar el terreno "
-                    + terreno.getTamanho() + " (" + terreno.getNombre() + ").");
-        }
+        
         this.terreno = terreno;
         this.region = region;
         this.arqueologo = arqueologo;
@@ -122,6 +116,7 @@ public class Excavation {
     }
 
     private void generarTesoros() {
+        
         int total = numColumnas * numFilas;
         int cantidad = Math.max(1, (int) Math.ceil(total / 10.0)); // 10 %, redondeando hacia arriba
 
@@ -141,7 +136,7 @@ public class Excavation {
                 anadir(rarezas, ETreasureRarity.RARE, 1);
                 break;
             default:
-                throw new IllegalStateException("Tamaño de terreno desconocido: " + terreno.getTamanho());
+                System.out.println("Tamaño de terreno desconocido: ");
         }
 
         // Después, hasta completar la cantidad, con rareza aleatoria
@@ -169,7 +164,8 @@ public class Excavation {
         for (int i = 0; i < rarezas.size(); i++) {
             Treasure tesoro = region.getTesoroAleatorioPorRareza(rarezas.get(i));
             if (tesoro == null) {
-                throw new IllegalStateException("La región no tiene tesoros de rareza " + rarezas.get(i) + ".");
+               
+                continue;
             }
             tesoros.put(posiciones.get(i), tesoro);
         }
@@ -217,6 +213,7 @@ public class Excavation {
         int maximo = (int) (total * ACCIONES_MAX);
         return Math.max(1, Math.min(calculadas, maximo));
     }
+
     /**
      * Aplica las habilidades de revelación antes de empezar, sin gastar acciones:
      * primero la limpieza y después la suposición. Entre las dos no revelan
@@ -228,8 +225,10 @@ public class Excavation {
         int reveladas = limpiar(arqueologo.getLimpieza(), maximo);
         suponer(arqueologo.getSuposicion() / 3, maximo - reveladas);
     }
-     /**
+
+    /**
      * Limpieza: destapa casillas sin tesoro al azar (quedan como 'x').
+     * 
      * @param cantidad Casillas que quiere destapar el arqueólogo.
      * @param maximo   Casillas que se pueden revelar como mucho.
      * @return Las casillas destapadas.
@@ -250,10 +249,14 @@ public class Excavation {
         }
         return destapadas;
     }
-     /**
-     * Suposición: cada escaneo marca con '?' tres casillas al azar, una con tesoro y dos sin él.
-     * Se aplica después de la limpieza: si una de las casillas vacías elegidas ya estaba
+
+    /**
+     * Suposición: cada escaneo marca con '?' tres casillas al azar, una con tesoro
+     * y dos sin él.
+     * Se aplica después de la limpieza: si una de las casillas vacías elegidas ya
+     * estaba
      * destapada, se queda como 'x' y no se elige otra, así que salen menos '?'.
+     * 
      * @param escaneos Número de escaneos (cada uno marca hasta 3 casillas).
      * @param maximo   Casillas que se pueden marcar como mucho.
      */
@@ -283,12 +286,14 @@ public class Excavation {
             }
         }
     }
-    /** true si la casilla todavía no se ha excavado (sin tocar o marcada con '?'). */
+
+    /**
+     * true si la casilla todavía no se ha excavado (sin tocar o marcada con '?').
+     */
     private boolean sinExcavar(int indice) {
         String c = casillas.get(indice);
         return c.equals(SIN_EXCAVAR) || c.equals(SUPOSICION);
     }
-
 
     // ===== Excavar ========================================================
 
@@ -297,20 +302,16 @@ public class Excavation {
      *
      * @param posicion La posición a excavar.
      * @return <code>true</code> si había un tesoro.
-     * @throws IllegalArgumentException Si la posición es nula, no existe o ya está
-     *                                  excavada.
-     * @throws IllegalStateException    Si la excavación ya ha terminado.
+     *  Si la excavación ya ha terminado.
      */
     public boolean excavar(Position posicion) {
-        if (posicion == null) {
-            throw new IllegalArgumentException("La posición no puede ser nula.");
-        }
-        if (isFinalizada()) {
-            throw new IllegalStateException("La excavación ya ha terminado.");
-        }
         int indice = getIndice(posicion);
+        if (indice == -1) {
+            return false; // getIndice ya ha mostrado el mensaje
+        }
         if (!sinExcavar(indice)) {
-            throw new IllegalArgumentException("ya está excavada.");
+            System.out.println(posicion.getFil() + posicion.getCol() + ": ya está excavada.");
+            return false;
         }
 
         acciones--;
@@ -331,11 +332,13 @@ public class Excavation {
         int fila = posicion.getFil();
         int columna = columnas.indexOf(posicion.getCol());
         if (fila < 1 || fila > numFilas) {
-            throw new IllegalArgumentException("La fila " + fila + " no existe (1-" + numFilas + ").");
+            System.out.println(fila + posicion.getCol() + ": la fila " + fila + " no existe (1-" + numFilas + ").");
+            return -1;
         }
         if (columna < 0) {
-            throw new IllegalArgumentException("La columna " + posicion.getCol() + " no existe ("
+            System.out.println(fila + posicion.getCol() + ": la columna " + posicion.getCol() + " no existe ("
                     + columnas.get(0) + "-" + columnas.get(numColumnas - 1) + ").");
+            return -1;
         }
         return (fila - 1) * numColumnas + columna;
     }
@@ -465,21 +468,16 @@ public class Excavation {
 
     // ===== Proceso por consola ============================================
 
-       /**
+    /**
      * Ejecuta el proceso de excavación hasta quedarse sin acciones o sin tesoros.
      *
      * @return Los códigos completos de los tesoros encontrados.
      */
-    public List<String> ejecutar() {
-        Console console = System.console();
+       public List<String> ejecutar() {
         System.out.println(ADORNO + " Excavación en " + region.getNombre() + " " + ADORNO);
         while (!isFinalizada()) {
             mostrarTurno();
-            String linea = console.readLine();
-            if (linea == null) {
-                System.out.println("No hay entrada disponible. Se interrumpe la excavación.");
-                break;
-            }
+            String linea = InputHelper.leerLinea();
             procesarEntrada(linea);
             if (!isFinalizada()) {
                 System.out.println(SEPARADOR_TURNO);
@@ -500,7 +498,7 @@ public class Excavation {
         System.out.print("Conjunto de coordenadas a excavar separadas por espacios: ");
     }
 
-    private void procesarEntrada(String linea) {
+        private void procesarEntrada(String linea) {
         if (linea.trim().isEmpty()) {
             System.out.println("No has introducido ninguna posición.");
             return;
@@ -513,10 +511,9 @@ public class Excavation {
                 System.out.println("Se ignoran las posiciones restantes: la excavación ha terminado.");
                 return;
             }
-            try {
-                excavar(leerPosicion(indicacion));
-            } catch (IllegalArgumentException e) {
-                System.out.println(indicacion + ": " + e.getMessage());
+            Position posicion = leerPosicion(indicacion);
+            if (posicion != null) {
+                excavar(posicion);
             }
         }
     }
@@ -528,16 +525,13 @@ public class Excavation {
             i++;
         }
         String letras = texto.substring(i).toUpperCase();
-        if (i == 0 || letras.isEmpty()) {
-            throw new IllegalArgumentException("formato no válido, usa número y letra (ej. 3B).");
+        // i > 3: ningún terreno tiene más de 40 filas, así se evita un número enorme
+        if (i == 0 || i > 3 || letras.isEmpty()) {
+            System.out.println(texto + ": formato no válido, usa número y letra (ej. 3B).");
+            return null;
         }
-        try {
-            return new Position(Integer.parseInt(texto.substring(0, i)), letras);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("el número de fila no es válido.");
-        }
+        return new Position(Integer.parseInt(texto.substring(0, i)), letras);
     }
-
     private void mostrarFinal() {
         System.out.println(SEPARADOR_FIN);
         System.out.println("Excavación terminada");
