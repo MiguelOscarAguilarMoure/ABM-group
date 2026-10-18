@@ -65,7 +65,7 @@ public enum ETerrainSize {
             case "Fila":
                 return TerrainShape.ROW;
             case "Horizontal":
-                return TerrainShape.HORINZOTAL;
+                return TerrainShape.HORIZONTAL;
             case "Columna":
                 return TerrainShape.COLUMN;
             case "Vertical":

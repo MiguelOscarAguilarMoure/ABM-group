@@ -27,7 +27,7 @@ public class Licencia extends Skill {
         if (nivel == 1) {
             return List.of(TerrainShape.ROW, TerrainShape.COLUMN);          // Licencia A
         }
-        return List.of(TerrainShape.HORINZOTAL, TerrainShape.VERTICAL);     // Licencia B
+        return List.of(TerrainShape.HORIZONTAL, TerrainShape.VERTICAL);     // Licencia B
     }
 
     /** Un arqueólogo solo puede tener una Licencia. */
