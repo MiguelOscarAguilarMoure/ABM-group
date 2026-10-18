@@ -5,6 +5,21 @@ import treasures.ETreasureRarity;
 import treasures.ETreasureType;
 import treasures.Treasure;
 
+/**
+ * Representa la región de Iberia dentro del juego.
+ * 
+ * Esta clase hereda de {@link Region} y define la colección de tesoros propios
+ * de la cultura ibérica. Los objetos incluidos en la región reflejan elementos
+ * característicos de la península ibérica, como monedas, joyas, cerámicas,
+ * armas, estelas y piezas de caracter religioso o funerario.
+ * 
+ * Su objetivo es ofrecer una zona concreta con una identidad cultural definida,
+ * permitiendo consultar el contenido de Iberia mediante los métodos heredados.
+ *
+ * @author Miguel Aguilar
+ * @version 1.0
+ * @since 2026-10-18
+ */
 public class Iberia extends Region {
    public static final String CODIGO = "IBR";
    public Iberia(){
@@ -36,6 +51,10 @@ public class Iberia extends Region {
       this.treasures.add(new Treasure("Ídolo de placa", CODIGO, ETreasureType.FRAGMENT, "004", 3, 2, ETreasureRarity.UNCOMMON, "Placa de pizarra, trapezoidal, oculada y tallada con motivos geométricos."));
       this.treasures.add(new Treasure("Mosaico punteado", CODIGO, ETreasureType.TILE, "001", 625, 1, ETreasureRarity.COMMON, "Mosaico punteado en dos colores creando formas geométricas. Inspirado en el de la Casa de Likine."));
    }
+       /** 
+        * Obtiene el codigo de iberia
+        * @return su codigo de region
+        */
        @Override
     public String getCodigo() {
         return CODIGO;
