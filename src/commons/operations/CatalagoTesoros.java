@@ -8,7 +8,18 @@ import regions.Region;
 import treasures.Treasure;
 
 /**
- * Opción Catálogo de tesoros: muestra la ficha individual de cada tesoro.
+ * Opción "Catálogo de tesoros" del menú principal.
+ * <p>
+ * Muestra las regiones; al elegir una, sus tesoros; y al elegir un tesoro, su ficha
+ * (nombre, descripción, código, tipo, rareza y partes). Después pregunta si se quiere
+ * consultar otro tesoro de la misma región: si la respuesta es sí vuelve a la lista de tesoros,
+ * y si es no, al menú principal.
+ * </p>
+ *
+ * @author Borja Abal Dios
+ * @version 1.0
+ * @see helpers.TreasureHelper
+ * @see commons.repositories.RegionRepository
  */
 public class CatalagoTesoros implements IOperation {
 
@@ -18,7 +29,11 @@ public class CatalagoTesoros implements IOperation {
     public String getName() {
         return "Catálogo de tesoros";
     }
-
+    /**
+     * Bucle del catálogo: región → tesoro → ficha → "¿Consultar otro tesoro?".
+     * Con 0 en la lista de regiones vuelve al menú principal;
+     * con 0 en la lista de tesoros vuelve a las regiones.
+     */
     @Override
     public void operation() {
         while (true) {
@@ -36,11 +51,15 @@ public class CatalagoTesoros implements IOperation {
             // si eligió 0 en la lista de tesoros, vuelve a la lista de regiones
         }
     }
+    
 
-    /**
-     * Deja elegir tesoros de una región y muestra su ficha.
-     * @return true si el usuario quiere volver al menú principal,
-     *         false si eligió 0 para volver a la lista de regiones.
+     /**
+     * Deja elegir tesoros de una región y muestra su ficha, hasta que el usuario
+     * elige 0 o responde que no quiere consultar otro.
+     *
+     * @param region La región elegida.
+     * @return {@code true} si el usuario quiere volver al menú principal;
+     *         {@code false} si eligió 0 para volver a la lista de regiones.
      */
     private boolean verTesoros(Region region) {
         while (true) {
@@ -59,8 +78,12 @@ public class CatalagoTesoros implements IOperation {
         }
     }
 
-    // ========================================================== AUXILIARES
-
+    
+    /**
+     * Muestra las regiones y pide una.
+     *
+     * @return La región elegida, o {@code null} si elige 0 o una opción no válida.
+     */
     /** Lista las regiones y devuelve la elegida, o null si elige 0. */
     private Region elegirRegion() {
         List<Region> regiones = RegionRepository.getTodas();
@@ -78,7 +101,12 @@ public class CatalagoTesoros implements IOperation {
         return regiones.get(op - 1);
     }
 
-    /** Lista los tesoros de una región y devuelve el elegido, o null si elige 0. */
+    /**
+     * Muestra los tesoros de una región y pide uno.
+     *
+     * @param region La región elegida.
+     * @return El tesoro elegido, o {@code null} si elige 0 o una opción no válida.
+     */
     private Treasure elegirTesoro(Region region) {
         List<Treasure> tesoros = region.getTesoros();
 

@@ -1,20 +1,27 @@
 package commons.repositories;
+import helpers.CodeHelper;
 import java.util.ArrayList;
 import java.util.List;
-
-import helpers.CodeHelper;
 import regions.Region;
 import treasures.Treasure;
 /**
- * Repositorio de todas las regiones del sistema.
- * Las regiones se registran una sola vez en preInit y se obtienen siempre de aquí.
+ * Repositorio de todas las regiones del juego.
+ * <p>
+ * Las regiones se registran una sola vez en {@code preInit} y se obtienen siempre de aquí,
+ * así cada región existe como un único objeto en todo el programa.
  * Los tesoros no se registran aparte: están dentro de cada región y se accede a ellos a través de ella.
+ * </p>
+ *
+ * @author Borja Abal Dios
+ * @version 1.0
+ * @see regions.Region
+ * @see treasures.Treasure
  */
 public class RegionRepository {
 
     /** Lista con todas las regiones registradas. */
     private static final List<Region> regiones = new ArrayList<>();
-
+    
     /**
      * Registra una región en el repositorio.
      * @param r La región a registrar.

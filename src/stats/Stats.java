@@ -12,7 +12,15 @@ import treasures.Treasure;
 
 /**
  * Estadísticas de la partida: lugares visitados y tesoros encontrados.
- * Guarda los datos y sabe mostrarlos; el menú está en StatsOperation.
+ * <p>
+ * Guarda los datos en dos {@link HashMap} y sabe mostrarlos con el formato del enunciado.
+ * El menú que elige qué estadística mostrar está en {@code StatsOperation}.
+ * </p>
+ *
+ * @author Borja Abal Dios
+ * @version 1.0
+ * @see commons.operations.StatsOperation
+ * @see commons.repositories.RegionRepository
  */
 public class Stats {
 
@@ -29,20 +37,22 @@ public class Stats {
      * 
      * @param region  La región excavada.
      * @param codigos Los códigos completos de los tesoros encontrados
-     *                ("GRC_CER_001_0005").
+     *                
      */
     public void registrar(Region region, List<String> codigos) {
         lugares.merge(region.getCodigo(), 1, Integer::sum);
         for (String codigo : codigos) {
-            tesoros.merge(codigo, 1, Integer::sum); // la lista de códigos que has encontrado en una excavación y le
-                                                    // suma 1 a cada uno en el mapa
+            tesoros.merge(codigo, 1, Integer::sum); 
+                                                  
         }
     }
 
-    /**
-     * Por cada región: veces visitada, tesoros distintos encontrados frente al
-     * total
-     * (con porcentaje) y total de tesoros excavados.
+     /**
+     * Muestra, por cada región, las veces que se ha visitado, los tesoros distintos encontrados
+     * frente al total (con porcentaje) y el total de tesoros excavados.
+     * <p>
+     * Cada parte de un tesoro cuenta como un tesoro distinto.
+     * </p>
      */
     public void mostrarLugares() {
         for (Region r : RegionRepository.getTodas()) {
@@ -67,7 +77,11 @@ public class Stats {
         }
     }
 
-    /** Tesoros divididos por región y ordenados por código. */
+    /**
+     * Muestra los tesoros encontrados divididos por región y ordenados por código.
+     * Las regiones sin tesoros encontrados no se muestran.
+     * Si todavía no se ha encontrado ninguno, lo indica.
+     */
     public void mostrarPorRegion() {
         List<String> codigos = codigosOrdenados();
         if (codigos.isEmpty()) {
@@ -90,11 +104,15 @@ public class Stats {
         
     }
 
-    /** Tesoros divididos por tipo y luego ordenados por código. */
+    /**
+     * Muestra los tesoros encontrados divididos por tipo (ordenados alfabéticamente)
+     * y, dentro de cada tipo, ordenados por código.
+     * Si todavía no se ha encontrado ninguno, lo indica.
+     */
     public void mostrarPorTipo() {
         List<String> codigos = codigosOrdenados();
 
-        // Los tipos que aparecen ("CER", "MON"...), sin repetir y en orden
+        
         List<String> tipos = new ArrayList<>();
         for (String codigo : codigos) {
             String tipo = CodeHelper.getType(codigo);
@@ -105,7 +123,7 @@ public class Stats {
         Collections.sort(tipos);
 
         for (String tipo : tipos) {
-            // Los códigos de este tipo, ya en orden
+            
             List<String> delTipo = new ArrayList<>();
             for (String codigo : codigos) {
                 if (CodeHelper.getType(codigo).equals(tipo)) {
@@ -122,9 +140,11 @@ public class Stats {
 
     // AUXILIARES
 
-    /**
-     * Devuelve los códigos encontrados ordenados alfabéticamente (el HashMap no los
-     * ordena).
+       /**
+     * Devuelve los códigos de los tesoros encontrados ordenados alfabéticamente,
+     * porque el {@link HashMap} no guarda ningún orden.
+     *
+     * @return Una lista nueva con los códigos ordenados (vacía si no hay ninguno).
      */
     private List<String> codigosOrdenados() {
         List<String> codigos = new ArrayList<>(tesoros.keySet());
@@ -132,10 +152,15 @@ public class Stats {
         return codigos;
     }
 
-    /**
-     * Muestra una lista de códigos (ya ordenada) agrupados por tesoro:
-     * si el tesoro tiene una sola parte, "-Nombre: veces";
-     * si tiene varias, "-Nombre:" y debajo cada parte con cuatro espacios.
+     /**
+     * Muestra una lista de códigos agrupados por tesoro.
+     * <ul>
+     *   <li>Si el tesoro tiene una sola parte: {@code -Nombre: veces}</li>
+     *   <li>Si tiene varias: {@code -Nombre:} y debajo cada parte con cuatro espacios</li>
+     * </ul>
+     * Los códigos que no corresponden a ningún tesoro registrado se ignoran.
+     *
+     * @param codigos Los códigos a mostrar, ya ordenados.
      */
     private void mostrarGrupo(List<String> codigos) {
         String tesoroActual = "";

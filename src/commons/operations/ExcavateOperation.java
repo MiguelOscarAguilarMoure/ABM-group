@@ -17,14 +17,34 @@ import skills.Skill;
 import treasures.Treasure;
 
 /**
- * Opción Excavar: elegir región, arqueólogo y terreno, excavar y repartir
- * puntos, experiencia y estadísticas.
+ * Opción "Excavar" del menú principal.
+ * <p>
+ * Pide la región, el arqueólogo y el terreno (en el orden del enunciado), lanza
+ * la excavación
+ * y al terminar registra las estadísticas, muestra los tesoros encontrados,
+ * suma los puntos
+ * y la experiencia y, si el arqueólogo sube de nivel, le hace elegir una
+ * habilidad nueva
+ * por cada nivel y la especialización al llegar al nivel máximo.
+ * </p>
+ *
+ * @author Borja Abal Dios
+ * @author Miguel Aguilar
+ * @version 1.0
+ * @see excavation.Excavation
+ * @see people.Archeologist
  */
 public class ExcavateOperation implements IOperation {
-
+    /** Partida en curso (arqueólogos, puntos y estadísticas). */
     private final Archaios juego;
+    /** Generador aleatorio para elegir las habilidades que se ofrecen. */
     private final Random random = new Random();
 
+    /**
+     * Crea la operación de excavar.
+     *
+     * @param juego La partida en curso.
+     */
     public ExcavateOperation(Archaios juego) {
         this.juego = juego;
     }
@@ -34,6 +54,10 @@ public class ExcavateOperation implements IOperation {
         return "Excavar";
     }
 
+    /**
+     * Ejecuta la excavación completa: elegir, excavar y repartir resultados.
+     * Si en cualquier elección se pulsa 0, vuelve al menú principal sin excavar.
+     */
     @Override
     public void operation() {
         // 1. Región, arqueólogo y terreno (en el orden del PDF)
@@ -73,7 +97,11 @@ public class ExcavateOperation implements IOperation {
 
     // ========================================================== ELEGIR
 
-    /** Lista las regiones y devuelve la elegida, o null si elige 0. */
+    /**
+     * Muestra las regiones y pide una.
+     *
+     * @return La región elegida, o {@code null} si elige 0 o una opción no válida.
+     */
     private Region elegirRegion() {
         List<Region> regiones = RegionRepository.getTodas();
         System.out.println("-------------------- Regiones --------------------");
@@ -88,11 +116,22 @@ public class ExcavateOperation implements IOperation {
         return regiones.get(op - 1);
     }
 
-    /** Lista los arqueólogos que pueden excavar en la región, con nombre y nivel. */
+    /**
+     * Muestra los arqueólogos que pueden excavar en la región, con su nombre y
+     * nivel, y pide uno.
+     *
+     * @param region La región elegida.
+     * @return El arqueólogo elegido, o {@code null} si no hay ninguno disponible o
+     *         elige 0.
+     */
     private Archeologist elegirArqueologo(Region region) {
+        if (juego.getArqueologos().isEmpty()) {
+            System.out.println("No tienes arqueólogos contratados.");
+            return null;
+        }
         List<Archeologist> disponibles = new ArrayList<>();
         for (Archeologist a : juego.getArqueologos()) {
-            if (a.puedeExcavarEn(region)) {   // por si la región pide licencia
+            if (a.puedeExcavarEn(region)) { // por si la región pide licencia
                 disponibles.add(a);
             }
         }
@@ -114,7 +153,14 @@ public class ExcavateOperation implements IOperation {
         return disponibles.get(op - 1);
     }
 
-    /** Lista los terrenos que puede excavar el arqueólogo (por nivel y formas desbloqueadas). */
+    /**
+     * Muestra los terrenos que puede excavar el arqueólogo (según su nivel y sus
+     * formas
+     * desbloqueadas) y pide uno.
+     *
+     * @param a El arqueólogo elegido.
+     * @return El terreno elegido, o {@code null} si elige 0 o una opción no válida.
+     */
     private ETerrainSize elegirTerreno(Archeologist a) {
         List<ETerrainSize> disponibles = new ArrayList<>();
         for (ETerrainSize t : ETerrainSize.values()) {
@@ -139,7 +185,13 @@ public class ExcavateOperation implements IOperation {
 
     // ========================================================== RESULTADO
 
-    /** Muestra cada tesoro encontrado: nombre, descripción, código, tipo y rareza. */
+    /**
+     * Muestra la ficha de cada tesoro encontrado, con el código de la parte
+     * encontrada.
+     *
+     * @param region  La región excavada.
+     * @param codigos Los códigos completos de los tesoros encontrados.
+     */
     private void mostrarTesoros(Region region, List<String> codigos) {
         System.out.println("-------------------- Tesoros encontrados --------------------");
         if (codigos.isEmpty()) {
@@ -149,19 +201,21 @@ public class ExcavateOperation implements IOperation {
         for (String codigo : codigos) {
             Treasure t = region.getTesoro(CodeHelper.getFullTreasure(codigo));
             if (t != null) {
-                TreasureHelper.mostrar(t, codigo); 
+                TreasureHelper.mostrar(t, codigo);
                 System.out.println();
             }
         }
     }
 
-    
-
-    
-
     // ========================================================== SUBIR DE NIVEL
 
-    /** Una habilidad nueva por cada nivel subido y especialización al llegar a 5. */
+     /**
+     * Da una habilidad nueva por cada nivel subido y, si llega al nivel máximo
+     * sin especialización, le hace elegirla.
+     *
+     * @param a              El arqueólogo.
+     * @param nivelesSubidos Los niveles que ha subido en esta excavación.
+     */
     private void subirNiveles(Archeologist a, int nivelesSubidos) {
         for (int i = 0; i < nivelesSubidos; i++) {
             System.out.println(a.getNombre() + " ha subido al nivel " + (a.getNivel() - nivelesSubidos + i + 1) + ".");
@@ -172,7 +226,12 @@ public class ExcavateOperation implements IOperation {
         }
     }
 
-    /** Ofrece 3 habilidades (la primera dependiente si hay) y obliga a elegir una, sin opción 0. */
+  /**
+     * Ofrece hasta 3 habilidades que el arqueólogo puede aprender, la primera de ellas
+     * dependiente si hay alguna, y le obliga a elegir una (no hay opción 0).
+     *
+     * @param a El arqueólogo que ha subido de nivel.
+     */
     private void elegirHabilidadNueva(Archeologist a) {
         List<Skill> dependientes = new ArrayList<>();
         List<Skill> otras = new ArrayList<>();
@@ -190,7 +249,7 @@ public class ExcavateOperation implements IOperation {
         if (!dependientes.isEmpty()) {
             opciones.add(dependientes.remove(random.nextInt(dependientes.size())));
         }
-        otras.addAll(dependientes);   // las dependientes que sobran también pueden salir
+        otras.addAll(dependientes); // las dependientes que sobran también pueden salir
         while (opciones.size() < 3 && !otras.isEmpty()) {
             opciones.add(otras.remove(random.nextInt(otras.size())));
         }
@@ -207,12 +266,16 @@ public class ExcavateOperation implements IOperation {
         int op;
         do {
             op = InputHelper.leerEntero("Habilidad: ");
-        } while (op < 1 || op > opciones.size());   // obligatorio, no hay 0
+        } while (op < 1 || op > opciones.size()); // obligatorio, no hay 0
 
         a.addHabilidad(opciones.get(op - 1));
     }
 
-    /** Al llegar a nivel 5, elige obligatoriamente la región de especialización. */
+    /**
+     * Al llegar al nivel máximo, le hace elegir obligatoriamente la región de especialización.
+     *
+     * @param a El arqueólogo que ha llegado al nivel máximo.
+     */
     private void elegirEspecializacion(Archeologist a) {
         List<Region> regiones = RegionRepository.getTodas();
         System.out.println(a.getNombre() + " ha llegado al nivel máximo. Elige su especialización:");

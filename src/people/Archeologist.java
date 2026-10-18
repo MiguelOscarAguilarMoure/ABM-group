@@ -10,24 +10,58 @@ import regions.Region;
 import skills.Skill;
 import treasures.ETreasureRarity;
 
-
 /**
- * Un arqueólogo de la partida: nivel, experiencia, habilidades, terrenos,
- * especialización y licencias.
+ * Arqueólogo de la partida.
+ * <p>
+ * Guarda su nivel, experiencia, habilidades, formas de terreno desbloqueadas,
+ * especialización y licencias de región, y aplica las reglas del juego:
+ * subir de nivel, aprender habilidades y calcular los bonos para la excavación.
+ * </p>
+ * <p>
+ * La rareza con la que se contrató no se guarda: se deduce de sus habilidades
+ * (las que tiene menos una por nivel).
+ * </p>
+ *
+ * @author Borja Abal Dios
+ * @author Miguel Aguilar
+ * @version 1.0
+ * @see skills.Skill
+ * @see regions.Region
  */
 public class Archeologist {
 
+    /** Nivel máximo que puede alcanzar un arqueólogo. */
     public static final int NIVEL_MAX = 5;
-  
 
+    /** Nombre del arqueólogo. */
     private String nombre;
+    /** Experiencia acumulada en el nivel actual (en nivel máximo, la total). */
     private int experiencia;
+    /** Nivel actual (de 0 a {@link #NIVEL_MAX}). */
     private int nivel;
+    /** Habilidades aprendidas. */
     private ArrayList<Skill> listaHabilidades = new ArrayList<>();
+    /** Formas de terreno desbloqueadas (empieza solo con el cuadrado). */
     private ArrayList<TerrainShape> tipoTerreno = new ArrayList<>();
+    /**
+     * Región en la que está especializado (solo en nivel máximo; {@code null} si no
+     * tiene).
+     */
     private Region especializacion = null;
+    /** Códigos de las regiones para las que tiene licencia. */
     private ArrayList<String> licencias = new ArrayList<>();
 
+    /**
+     * Crea un arqueólogo con todos sus datos (útil para cargar una partida
+     * guardada).
+     *
+     * @param nombre           Nombre del arqueólogo.
+     * @param experiencia      Experiencia acumulada.
+     * @param nivel            Nivel actual.
+     * @param listaHabilidades Habilidades aprendidas.
+     * @param tipoTerreno      Formas de terreno desbloqueadas.
+     * @param especializacion  Región de especialización ({@code null} si no tiene).
+     */
     public Archeologist(String nombre, int experiencia, int nivel, ArrayList<Skill> listaHabilidades,
             ArrayList<TerrainShape> tipoTerreno, Region especializacion) {
         this.nombre = nombre;
@@ -57,34 +91,26 @@ public class Archeologist {
         return nombre;
     }
 
-    
-
     public int getExperiencia() {
         return experiencia;
     }
-
- 
 
     public int getNivel() {
         return nivel;
     }
 
-   
-
     public ArrayList<Skill> getListaHabilidades() {
         return listaHabilidades;
     }
 
- 
-
     public ArrayList<TerrainShape> getTipoTerreno() {
         return tipoTerreno;
     }
-        /** Códigos de las regiones para las que tiene licencia. */
+
+    /** Códigos de las regiones para las que tiene licencia. */
     public ArrayList<String> getLicencias() {
         return licencias;
     }
-
 
     public Region getEspecializacion() {
         return especializacion;
@@ -104,26 +130,24 @@ public class Archeologist {
         return true;
     }
 
+    // NIVEL Y EXPERIENCIA
+
     /**
-     * meteodo para obtener la experiencia
-     * 
-     * @return
+     * Experiencia necesaria para subir al siguiente nivel.
+     *
+     * @return 50 más 50 por cada nivel actual.
      */
     public int getExpNecesaria() {
         return 50 + 50 * nivel;
     }
 
     /**
-     * Metodo para añadir la experiencia
-     * 
-     * @param exp
-     * @return
-     */
-    /**
      * Suma experiencia y sube de nivel tantas veces como corresponda.
-     * Usa un while porque con mucha experiencia de golpe puede subir más de un
-     * nivel.
-     * 
+     * Usa un {@code while} porque con mucha experiencia de golpe puede subir más de
+     * un nivel.
+     * En el nivel máximo la experiencia sigue acumulándose para los bonos de
+     * especialización.
+     *
      * @param exp La experiencia ganada.
      * @return Cuántos niveles ha subido (cada uno da una habilidad nueva).
      */
@@ -138,10 +162,11 @@ public class Archeologist {
         return nivelesSubidos;
     }
 
+    // TERRENOS
     /**
-     * metodo para obtener los distintos tamñaos segunb el nivel
-     * 
-     * @return
+     * Tamaños de terreno que puede excavar según su nivel.
+     *
+     * @return Pequeño siempre, mediano desde el nivel 2 y grande desde el nivel 4.
      */
     public List<TerrainSize> getTamaños() {
         List<TerrainSize> tamaños = new ArrayList<>();
@@ -152,9 +177,11 @@ public class Archeologist {
             tamaños.add(TerrainSize.LARGE);
         return tamaños;
     }
-        /**
+
+    /**
      * Comprueba si puede excavar un terreno: necesita el nivel mínimo del tamaño
      * y tener desbloqueada la forma.
+     * 
      * @param terreno El terreno a comprobar.
      * @return true si puede excavarlo.
      */
@@ -164,10 +191,25 @@ public class Archeologist {
     }
 
     /**
-     * Clase para saber si arqueplogo puede aprender una habildad
-     * 
-     * @param s
-     * @return
+     * Añade formas de terreno que aún no tenga.
+     *
+     * @param nuevas Las formas a añadir.
+     */
+    public void addTerrenos(List<TerrainShape> nuevas) {
+        for (TerrainShape forma : nuevas) {
+            if (!tipoTerreno.contains(forma)) {
+                tipoTerreno.add(forma);
+            }
+        }
+    }
+
+    // HABILIDADES
+    /**
+     * Comprueba si puede aprender una habilidad.
+     *
+     * @param s La habilidad a comprobar.
+     * @return {@code true} si no la tiene ya, tiene todas sus dependencias
+     *         y ninguna habilidad incompatible con ella.
      */
     public boolean puedeAprender(Skill s) {
         if (listaHabilidades.contains(s)) {
@@ -188,8 +230,25 @@ public class Archeologist {
     }
 
     /**
-     * Acciones extra: las de las habilidades + 1 cada 25 de exp si está
-     * especializado aquí.
+     * Añade una habilidad y, si desbloquea formas de terreno (Licencias), las añade
+     * también.
+     *
+     * @param s La habilidad a añadir.
+     */
+    public void addHabilidad(Skill s) {
+        listaHabilidades.add(s);
+        addTerrenos(s.getTerrenos()); // las que no son de terreno devuelven una lista vacía
+    }
+    // BONOS
+    // Cada método recorre las habilidades y suma el bono de cada una.
+    // Los que reciben la región suman además el bono de especialización.
+
+    /**
+     * Acciones extra para la excavación.
+     *
+     * @param r La región donde se excava.
+     * @return Las de las habilidades, más 1 cada 25 de experiencia si está
+     *         especializado en esa región.
      */
     public int getAccionesExtra(Region r) {
         int total = 0;
@@ -202,7 +261,11 @@ public class Archeologist {
         return total;
     }
 
-    /** Porcentaje de acciones extra que dan las habilidades. */
+    /**
+     * Porcentaje de acciones extra que dan las habilidades, sumado.
+     *
+     * @return La suma de los porcentajes (por ejemplo 20 para un 20 %).
+     */
     public int getPorcentajeAcciones() {
         int total = 0;
         for (Skill s : listaHabilidades) {
@@ -210,9 +273,13 @@ public class Archeologist {
         }
         return total;
     }
-        /**
-     * Factor de aumento de acciones: los porcentajes de las habilidades multiplicados entre sí.
-     * Ejemplo: Experiencia I (20 %) -> 1.20.
+
+    /**
+     * Factor por el que se multiplican las acciones: los porcentajes de las
+     * habilidades
+     * multiplicados entre sí. Por ejemplo, Experiencia I (20 %) da 1.20.
+     *
+     * @return El factor (1.0 si no tiene ninguna habilidad de experiencia).
      */
     public double getFactorAcciones() {
         double factor = 1.0;
@@ -223,8 +290,11 @@ public class Archeologist {
     }
 
     /**
-     * Tesoros aleatorios extra: los de las habilidades + 1 cada 50 de exp si está
-     * especializado aquí.
+     * Tesoros aleatorios extra para la excavación.
+     *
+     * @param r La región donde se excava.
+     * @return Los de las habilidades, más 1 cada 50 de experiencia si está
+     *         especializado en esa región.
      */
     public int getTesorosExtra(Region r) {
         int total = 0;
@@ -238,9 +308,14 @@ public class Archeologist {
     }
 
     /**
-     * Tesoros extra de una rareza: los de las habilidades y, si está especializado
-     * aquí,
-     * 1 común cada 50 de exp, 1 infrecuente cada 100 y 1 raro cada 200.
+     * Tesoros extra de una rareza concreta para la excavación.
+     * Si está especializado en esa región suma además 1 común cada 50 de
+     * experiencia,
+     * 1 infrecuente cada 100 y 1 raro cada 200.
+     *
+     * @param rareza La rareza de los tesoros.
+     * @param r      La región donde se excava.
+     * @return El número de tesoros extra de esa rareza.
      */
     public int getTesorosExtra(ETreasureRarity rareza, Region r) {
         int total = 0;
@@ -259,7 +334,12 @@ public class Archeologist {
         return total;
     }
 
-    /** Probabilidad extra de encontrar tesoros de una rareza. */
+    /**
+     * Probabilidad extra de que un tesoro sea de una rareza concreta.
+     *
+     * @param rareza La rareza de los tesoros.
+     * @return Los puntos porcentuales extra de todas sus habilidades.
+     */
     public int getProbabilidadExtra(ETreasureRarity rareza) {
         int total = 0;
         for (Skill s : listaHabilidades) {
@@ -268,7 +348,11 @@ public class Archeologist {
         return total;
     }
 
-    /** Bono de limpieza de las habilidades de revelación. */
+    /**
+     * Casillas vacías que se destapan al empezar la excavación (Limpieza).
+     *
+     * @return La suma de todas sus habilidades de limpieza.
+     */
     public int getLimpieza() {
         int total = 0;
         for (Skill s : listaHabilidades) {
@@ -277,7 +361,12 @@ public class Archeologist {
         return total;
     }
 
-    /** Bono de suposición de las habilidades de revelación. */
+    /**
+     * Casillas que se marcan con '?' al empezar la excavación (Escaneo).
+     *
+     * @return La suma de todos sus escaneos.
+     */
+
     public int getSuposicion() {
         int total = 0;
         for (Skill s : listaHabilidades) {
@@ -286,7 +375,11 @@ public class Archeologist {
         return total;
     }
 
-    /** true si alguna de sus habilidades es de investigación. */
+    /**
+     * Indica si puede ver cuántos tesoros de cada rareza quedan en la excavación.
+     *
+     * @return {@code true} si tiene la habilidad de Investigación.
+     */
     public boolean isInvestigacion() {
         for (Skill s : listaHabilidades) {
             if (s.isInvestigacion()) {
@@ -296,34 +389,13 @@ public class Archeologist {
         return false;
     }
 
-    /** true si está en nivel máximo y especializado en esa región. */
-    private boolean estaEspecializadoEn(Region r) {
-        return nivel == NIVEL_MAX && especializacion == r;
-    }
-
-    public void addTerrenos(List<TerrainShape> nuevas) {
-        for (TerrainShape forma : nuevas) {
-            if (!tipoTerreno.contains(forma)) {
-                tipoTerreno.add(forma);
-            }
-        }
-    }
-
-    /**
-     * Añade una habilidad y, si desbloquea formas de terreno, las añade también.
-     * 
-     * @param s La habilidad a añadir.
-     */
-
-    public void addHabilidad(Skill s) {
-        listaHabilidades.add(s);
-        addTerrenos(s.getTerrenos()); // las que no son de terreno devuelven una lista vacía
-    }
+    // LICENCIAR
 
     /**
      * Calcula los puntos que da licenciar al arqueólogo.
-     * 
-     * @return 10 por nivel, más 10 si es infrecuente o 20 si es raro.
+     * La rareza se deduce de las habilidades iniciales: las que tiene menos una por nivel.
+     *
+     * @return 10 por nivel, más 10 si era infrecuente o 20 si era raro.
      */
     public int getPuntosLicencia() {
         int puntos = 10 * nivel;
@@ -348,9 +420,11 @@ public class Archeologist {
             licencias.add(codigoRegion);
         }
     }
-        /**
+
+    /**
      * Comprueba si puede excavar en una región: si no pide licencia, siempre;
      * si la pide, solo si la tiene.
+     * 
      * @param r La región.
      * @return true si puede excavar en ella.
      */
@@ -365,7 +439,6 @@ public class Archeologist {
      * @param r La región.
      * @return true si puede excavar en ella.
      */
-    
 
     public void mostrar() {
         System.out.println("-------------------- " + nombre + " --------------------");
@@ -392,6 +465,17 @@ public class Archeologist {
                 System.out.println("   " + s.getDescripcion());
             }
         }
+    }
+    // AUXILIARES
+
+    /**
+     * Comprueba si los bonos de especialización se aplican en una región.
+     *
+     * @param r La región donde se excava.
+     * @return {@code true} si está en nivel máximo y especializado en esa región.
+     */
+    private boolean estaEspecializadoEn(Region r) {
+        return nivel == NIVEL_MAX && especializacion == r;
     }
 
 }

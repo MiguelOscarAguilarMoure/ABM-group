@@ -8,7 +8,19 @@ import skills.ESkillType;
 import skills.Skill;
 
 /**
- * Opción Habilidades del menú principal.
+ * Opción "Habilidades" del menú principal.
+ * <p>
+ * Muestra los tipos de habilidad; al elegir uno, las habilidades de ese tipo
+ * por orden alfabético; y al elegir una, sus datos: nombre, descripción, tipo,
+ * dependencias e incompatibilidades. Después pregunta si se quiere ver otra:
+ * si la respuesta es sí vuelve a los tipos, y si es no, al menú principal.
+ * </p>
+ *
+ * @author Borja Abal Dios
+ * @author Alberto Ameneiros
+ * @version 1.0
+ * @see commons.repositories.SkillRepository
+ * @see skills.Skill
  */
 public class SkillsOperation implements IOperation {
 
@@ -17,6 +29,12 @@ public class SkillsOperation implements IOperation {
         return "Habilidades";
     }
 
+    /**
+     * Bucle del menú de habilidades: tipo → habilidad → datos → "¿Ver otra
+     * habilidad?".
+     * Con 0 en la lista de tipos vuelve al menú principal;
+     * con 0 en la lista de habilidades vuelve a los tipos.
+     */
     @Override
     public void operation() {
         boolean seguir = true;
@@ -35,7 +53,12 @@ public class SkillsOperation implements IOperation {
         }
     }
 
-       /** Muestra nombre, descripción, tipo, dependencias e incompatibilidades. */
+     /**
+     * Muestra los datos de una habilidad: nombre, descripción, tipo y, si las tiene,
+     * sus dependencias y las habilidades con las que es incompatible.
+     *
+     * @param habilidad La habilidad a mostrar.
+     */
     private void mostrarHabilidad(Skill habilidad) {
         System.out.println("-------------------- " + habilidad.getNombre() + " --------------------");
         System.out.println(habilidad.getDescripcion());
@@ -62,25 +85,11 @@ public class SkillsOperation implements IOperation {
         }
     }
 
-    // ======= Operaciones Externas ================================================
-
     /**
-     * Solicita al usuario mediante la consola un número para seleccionar y devolver
-     * un tipo de habilidad específico.
-     * <p>
-     * El metodo asocia las opciones numéricas con las siguientes constantes:
-     * <ul>
-     * <li>1 -> {@link ESkillType#TREASURE} (tesoro)</li>
-     * <li>2 -> {@link ESkillType#EXCAVATION} (excavación)</li>
-     * <li>3 -> {@link ESkillType#TERRAIN} (terreno)</li>
-     * <li>4 -> {@link ESkillType#EXPERT} (especialista)</li>
-     * </ul>
-     * </p>
+     * Muestra los tipos de habilidad y pide uno.
      *
-     * @return El {@link ESkillType} seleccionado por el usuario, o {@code null} si
-     *         el usuario introduce 0 para salir o una opción no válida.
+     * @return El tipo elegido, o {@code null} si elige 0 o una opción no válida.
      */
-        /** Muestra los tipos y devuelve el elegido, o null si elige 0. */
     private ESkillType elegirTipo() {
         System.out.println("-------------------- Habilidades --------------------");
         System.out.println("1. Tesoros");
@@ -101,7 +110,12 @@ public class SkillsOperation implements IOperation {
         }
     }
 
-        /** Muestra las habilidades del tipo por orden alfabético y devuelve la elegida, o null si elige 0. */
+     /**
+     * Muestra las habilidades de un tipo por orden alfabético y pide una.
+     *
+     * @param tipo El tipo de habilidad elegido.
+     * @return La habilidad elegida, o {@code null} si elige 0 o una opción no válida.
+     */
     private Skill elegirHabilidad(ESkillType tipo) {
         List<Skill> lista = SkillRepository.getPorTipo(tipo);
 
@@ -117,5 +131,4 @@ public class SkillsOperation implements IOperation {
         return lista.get(op - 1);
     }
 
- 
 }

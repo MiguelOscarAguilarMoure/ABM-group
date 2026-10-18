@@ -1,18 +1,32 @@
 
 package commons.operations;
+
 import commons.Archaios;
 import helpers.InputHelper;
 import stats.Stats;
 
 /**
- * Opción Estadísticas: muestra los menús y pide al usuario qué quiere ver.
- * Los datos y los cálculos están en la clase Stats.
+ * Opción "Estadísticas" del menú principal.
+ * <p>
+ * Muestra los menús y pide al usuario qué quiere ver: estadísticas de lugares
+ * o de tesoros (por región o por tipo). Los datos y los cálculos están en
+ * {@link Stats};
+ * esta clase solo se encarga de los menús.
+ * </p>
+ *
+ * @author Borja Abal Dios
+ * @version 1.0
+ * @see stats.Stats
  */
 public class StatsOperation implements IOperation {
-
+    /** Partida en curso, de la que se obtienen las estadísticas. */
     private final Archaios juego;
-    
 
+    /**
+     * Crea la operación de estadísticas.
+     *
+     * @param juego La partida en curso.
+     */
     public StatsOperation(Archaios juego) {
         this.juego = juego;
     }
@@ -22,7 +36,10 @@ public class StatsOperation implements IOperation {
         return "Estadísticas";
     }
 
-    /** Menú de estadísticas: lugares o tesoros. Tras ver una, vuelve a este menú. */
+    /**
+     * Menú de estadísticas: lugares o tesoros.
+     * Tras ver una, vuelve a este menú; con 0 vuelve al menú principal.
+     */
     @Override
     public void operation() {
         Stats stats = juego.getStats();
@@ -32,16 +49,23 @@ public class StatsOperation implements IOperation {
             System.out.println("1. Lugares");
             System.out.println("2. Tesoros");
             System.out.println("0. Volver");
-             op = InputHelper.leerEntero("Opción: ");
+            op = InputHelper.leerEntero("Opción: ");
 
-            if (op == 1) stats.mostrarLugares();
-            if (op == 2) menuTesoros(stats);
+            if (op == 1) {
+                stats.mostrarLugares();
+            } else if (op == 2) {
+                menuTesoros(stats);
+            }
         } while (op != 0);
     }
 
     // ========================================================== AUXILIARES
 
-    /** Submenú de tesoros: por región o por tipo. */
+    /**
+     * Submenú de tesoros: por región o por tipo.
+     *
+     * @param stats Las estadísticas de la partida.
+     */
     private void menuTesoros(Stats stats) {
         System.out.println("-------------------- Tesoros --------------------");
         System.out.println("1. Por región");
@@ -49,7 +73,9 @@ public class StatsOperation implements IOperation {
         System.out.println("0. Volver");
         int op = InputHelper.leerEntero("Opción: ");
 
-        if (op == 1) stats.mostrarPorRegion();
-        if (op == 2) stats.mostrarPorTipo();
+        if (op == 1)
+            stats.mostrarPorRegion();
+        if (op == 2)
+            stats.mostrarPorTipo();
     }
 }
