@@ -15,6 +15,7 @@ import people.Archeologist;
 import regions.Region;
 import skills.Skill;
 import treasures.Treasure;
+import messages.ResponseWrapper;
 
 /**
  * Opción "Excavar" del menú principal.
@@ -78,19 +79,23 @@ public class ExcavateOperation implements IOperation {
         Excavation excavacion = new Excavation(terreno, region, a);
         List<String> encontrados = excavacion.ejecutar();
 
-        // 3. Estadísticas y tesoros encontrados
+       
+               // 3. Estadísticas y tesoros encontrados
         juego.getStats().registrar(region, encontrados);
         mostrarTesoros(region, encontrados);
-        // TODO Zeraf (librería Terra): enviar los tesoros al museo y mostrar su mensaje
 
-        // 4. Puntos y experiencia
+        // 4. Envío de los tesoros al Museo y mensaje de respuesta
+        ResponseWrapper<String> respuesta = juego.getZeraf().sendData(encontrados);
+        System.out.println(respuesta.getCode().getMessage());
+
+        // 5. Puntos y experiencia
         int puntos = excavacion.getPuntosObtenidos();
         int exp = excavacion.getExperienciaObtenida();
         juego.addPuntos(puntos);
         System.out.println("Puntos conseguidos: " + puntos);
         System.out.println(a.getNombre() + " ha conseguido " + exp + " puntos de experiencia.");
 
-        // 5. Subir de nivel
+        // 6. Subir de nivel
         int subidos = a.addExperiencia(exp);
         subirNiveles(a, subidos);
     }

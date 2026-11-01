@@ -19,6 +19,9 @@ import regions.civilizaciones.Iberia;
 import regions.civilizaciones.Rome;
 import skills.Skill;
 import stats.Stats;
+import zeraf.ESistema;
+import zeraf.Zeraf;
+import zeraf.ZerafFactory;
 
 /**
  * Coordina el ciclo de vida y las operaciones principales de una partida de Archaios.
@@ -67,6 +70,8 @@ public class Archaios {
 
     /** Operaciones de consulta de estadísticas. */
     private StatsOperation estadisticas;
+        /** Conexión con el Museo (librería Terra). */
+    private Zeraf zeraf;
 
     /**
      * Inicia, ejecuta y finaliza una partida.
@@ -146,6 +151,8 @@ public class Archaios {
         nombrePartida = InputHelper.leerTexto("Nombre de la partida: ");
         String nombreArq = InputHelper.leerTexto("Nombre del primer arqueólogo: ");
         arqueologos.add(new Archeologist(nombreArq));
+                
+        zeraf = ZerafFactory.createZeraf(ESistema.MUSEO, uid, CODIGO_GRUPO);
 
         arqueologosOp = new ArcheologistsOperation(this);
         habilidades = new SkillsOperation();
@@ -253,6 +260,14 @@ public class Archaios {
      */
     public Stats getStats() {
         return stats;
+    }
+    /**
+     * devuelve el objeto Zeraf que se creó en Archaios
+     * 
+     * @returnel objeto Zeraf de la partida
+     */
+        public Zeraf getZeraf() {
+        return zeraf;
     }
 
     /**
