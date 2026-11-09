@@ -185,16 +185,20 @@ public class Region {
         return cantidad;
     }
 
-    /**
-     * Determina si la región requiere una licencia para acceder a su contenido.
-     * 
-     * En esta version inicial,  el valor devuelto es false, por lo que la región no
-     * exige ningún tipo de licencia adicional para su uso.
+     /**
+     * Indica si hace falta licencia para excavar en esta región.
+     * <p>
+     * Solo la necesitan las regiones difíciles (las de las expansiones), es decir,
+     * las que implementan {@link IRegionDificil}. Las regiones básicas devuelven
+     * {@code false} y cualquier arqueólogo puede excavar en ellas.
+     * </p>
      *
-     * @return true si necesita licencia, false en caso contrario.
+     * @return {@code true} si es una región difícil y necesita licencia;
+     *         {@code false} si es una región básica.
+     * @see people.Archeologist#puedeExcavarEn(Region)
      */
     public boolean necesitaLicencia() {
-        return false;
+        return this instanceof IRegionDificil;
     }
 
 }
