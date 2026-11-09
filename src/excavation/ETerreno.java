@@ -1,4 +1,4 @@
-package regions;
+package excavation;
 
 public enum  ETerreno {
     TIERRA, PIEDRA, ARENA, AGUA;
