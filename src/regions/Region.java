@@ -200,5 +200,13 @@ public class Region {
     public boolean necesitaLicencia() {
         return this instanceof IRegionDificil;
     }
+      /**
+     * Añade un tesoro a la región. Lo usa la carga dinámica de los ficheros JSON.
+     *
+     * @param tesoro El tesoro que se añade.
+     */
+    public void addTesoro(Treasure tesoro) {
+        treasures.add(tesoro);
+    }
 
 }
