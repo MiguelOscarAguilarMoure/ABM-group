@@ -9,16 +9,18 @@ import commons.operations.SkillsOperation;
 import commons.operations.StatsOperation;
 import commons.repositories.RegionRepository;
 import commons.repositories.SkillRepository; // 1. IMPORTANTE: Importar el repositorio
-import excavation.ETerreno;
 import helpers.InputHelper;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import people.Archeologist;
 import regions.Region;
-import regions.RegionDificil;
 import regions.RegionLoader;
+import regions.civilizaciones.Egypt;
+import regions.civilizaciones.Greece;
+import regions.civilizaciones.Iberia;
+import regions.civilizaciones.Petra;
+import regions.civilizaciones.Rome;
+import regions.civilizaciones.Sumeria;
 import skills.Skill;
 import stats.Stats;
 import zeraf.ESistema;
@@ -93,16 +95,15 @@ public class Archaios {
      * Registra las regiones y carga las habilidades antes de iniciar la partida.
      */
     private void preInit() {
-         RegionRepository.registrar(new Region("Grecia", "GRC"));
-        RegionRepository.registrar(new Region("Iberia", "IBR"));
-        RegionRepository.registrar(new Region("Roma", "ROM"));
-        String arenas = "Imperios de las arenas";
-        RegionRepository.registrar(new RegionDificil("Egipto", "EGP", arenas,
-                Map.of(ETerreno.AGUA, 10, ETerreno.TIERRA, 35, ETerreno.ARENA, 55)));
-        RegionRepository.registrar(new RegionDificil("Petra", "PTR", arenas,
-                Map.of(ETerreno.PIEDRA, 75, ETerreno.ARENA, 25)));
-        RegionRepository.registrar(new RegionDificil("Sumeria", "SUM", arenas,
-                Map.of(ETerreno.PIEDRA, 30, ETerreno.ARENA, 50, ETerreno.TIERRA, 20)));
+        RegionRepository.registrar(new Greece());
+        RegionRepository.registrar(new Iberia());
+        RegionRepository.registrar(new Rome());
+
+        
+        RegionRepository.registrar(new Egypt());
+        RegionRepository.registrar(new Petra());
+        RegionRepository.registrar(new Sumeria());
+
         RegionLoader.cargarTesoros();
         SkillRepository.inicializar();
     }
