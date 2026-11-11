@@ -1,42 +1,43 @@
 package regions;
 
+import excavation.ETerreno;
 import java.util.Map;
 
-import excavation.ETerreno;
-
 /**
- * Región difícil de una expansión (Egipto, Petra, Sumeria...).
+ * Base de las regiones difíciles de las expansiones (Egipto, Petra, Sumeria...).
  * <p>
  * Funciona igual que una región básica, pero además guarda la expansión a la
- * que
- * pertenece y la proporción de cada terreno, que usa la excavación para generar
- * la rejilla.
- * Como todas las regiones difíciles solo se diferencian en sus datos, se usa
- * esta única
- * clase en lugar de una por región.
+ * que pertenece y la proporción de cada terreno, que usa la excavación para
+ * generar la rejilla.
+ * </p>
+ * <p>
+ * Es abstracta: cada región difícil es una subclase con su código estático
+ * (por ejemplo {@code Egypt}). Así {@link #getExpansion()} y
+ * {@link #getProporciones()} se escriben una sola vez.
  * </p>
  *
  * @author Borja Abal Dios
  * @version 1.0
  * @see IRegionDificil
  */
-public class RegionDificil extends Region implements IRegionDificil {
+public abstract class RegionDificil extends Region implements IRegionDificil {
+
     /** Expansión a la que pertenece la región. */
     private final String expansion;
+
     /** Porcentaje de la rejilla que ocupa cada terreno. */
+    private final Map<ETerreno, Integer> proporciones;
 
     /**
-     * Crea una región difícil.
+     * Crea una región difícil. Solo lo usan las subclases de cada región.
      *
      * @param nombre       Nombre de la región (por ejemplo "Egipto").
      * @param codigo       Código de la región (por ejemplo "EGP").
      * @param expansion    Expansión a la que pertenece.
-     * @param proporciones Porcentaje de cada terreno en la rejilla (deben sumar
-     *                     100).
+     * @param proporciones Porcentaje de cada terreno en la rejilla (deben sumar 100).
      */
-    private final Map<ETerreno, Integer> proporciones;
-
-    public RegionDificil(String nombre, String codigo, String expansion, Map<ETerreno, Integer> proporciones) {
+    protected RegionDificil(String nombre, String codigo, String expansion,
+            Map<ETerreno, Integer> proporciones) {
         super(nombre, codigo);
         this.expansion = expansion;
         this.proporciones = proporciones;
@@ -51,5 +52,4 @@ public class RegionDificil extends Region implements IRegionDificil {
     public String getExpansion() {
         return expansion;
     }
-
 }

@@ -16,18 +16,28 @@ import treasures.Treasure;
  * en una zona determinada. Su finalidad principal es ofrecer acceso
  * estructurado
  * a la información de cada región sin modificar la lógica interna del programa.
- *
+ * <p>
+ * Es abstracta: cada región es una subclase con su código estático
+ * ({@code Greece}, {@code Egypt}...). Sus tesoros se cargan desde su JSON.
+ * </p>
  * @author Miguel Aguilar
  * @author Borja Abal
  * @version 1.0
  * @since 2026-10-18
  */
-public class Region {
+public abstract class Region {
     protected final String nombre;
     protected final String codigo;
     protected ArrayList<Treasure> treasures = new ArrayList<>();
 
-    public Region(String nombre, String codigo) {
+       /**
+     * Crea una región. Solo lo usan las subclases de cada civilización
+     * (por ejemplo {@code Greece} o {@code Egypt}).
+     *
+     * @param nombre Nombre de la región.
+     * @param codigo Código de la región.
+     */
+    protected Region(String nombre, String codigo) {
         this.nombre = nombre;
         this.codigo = codigo;
     }
