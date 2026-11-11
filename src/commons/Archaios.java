@@ -170,7 +170,7 @@ public class Archaios {
 
         arqueologosOp = new ArcheologistsOperation(this);
         habilidades = new SkillsOperation();
-        licencias = new LicenseOperation();
+        licencias = new LicenseOperation(this);
         atlas = new AtlasOperation();
         catalogo = new CatalagoTesoros();
         excavar = new ExcavateOperation(this);
