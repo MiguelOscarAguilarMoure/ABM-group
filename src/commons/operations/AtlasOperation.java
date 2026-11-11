@@ -4,6 +4,8 @@ import commons.repositories.RegionRepository;
 import helpers.InputHelper;
 import helpers.TreasureHelper;
 import java.util.List;
+
+import regions.IRegionDificil;
 import regions.Region;
 import treasures.Treasure;
 
@@ -68,7 +70,7 @@ public class AtlasOperation implements IOperation {
         }
         System.out.println("0. Volver");
 
-        int op = InputHelper.leerOpcion("Región: ",regiones.size());
+        int op = InputHelper.leerOpcion("Región: ", regiones.size());
         if (op < 1 || op > regiones.size()) {
             return null;
         }
@@ -83,6 +85,10 @@ public class AtlasOperation implements IOperation {
      */
     private void mostrarRegion(Region region) {
         System.out.println("-------------------- " + region.getNombre() + " --------------------");
+        if (region instanceof IRegionDificil) {
+            IRegionDificil dificil = (IRegionDificil) region;
+            System.out.println("Región difícil. " + dificil.getExpansion());
+        }
         for (Treasure t : region.getTesoros()) {
             System.out
                     .println("-" + t.getNombre() + " (" + t.getTipoTesoro() + " " + TreasureHelper.getRareza(t) + ")");

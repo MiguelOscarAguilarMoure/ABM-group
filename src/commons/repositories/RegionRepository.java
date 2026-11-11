@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import regions.Region;
 import treasures.Treasure;
+import regions.IRegionDificil;
 /**
  * Repositorio de todas las regiones del juego.
  * <p>
@@ -63,5 +64,39 @@ public class RegionRepository {
             return null;
         }
         return r.getTesoro(CodeHelper.getFullTreasure(codigo));
+    }
+        /**
+     * Devuelve las regiones básicas, las que no tienen terrenos difíciles
+     * y en las que cualquier arqueólogo puede excavar sin licencia.
+     *
+     * @return Una lista nueva con las regiones básicas (Grecia, Iberia, Roma...).
+     * @see #getDificiles()
+     */
+    public static List<Region> getBasicas() {
+        List<Region> basicas = new ArrayList<>();
+        for (Region r : regiones) {
+            if (!(r instanceof IRegionDificil)) {
+                basicas.add(r);
+            }
+        }
+        return basicas;
+    }
+
+    /**
+     * Devuelve las regiones difíciles, las de las expansiones, que tienen terrenos
+     * especiales y necesitan licencia para excavar.
+     *
+     * @return Una lista nueva con las regiones difíciles (Egipto, Petra, Sumeria...).
+     * @see #getBasicas()
+     * @see regions.IRegionDificil
+     */
+    public static List<Region> getDificiles() {
+        List<Region> dificiles = new ArrayList<>();
+        for (Region r : regiones) {
+            if (r instanceof IRegionDificil) {
+                dificiles.add(r);
+            }
+        }
+        return dificiles;
     }
 }
