@@ -19,9 +19,6 @@ import people.Archeologist;
 import regions.Region;
 import regions.RegionDificil;
 import regions.RegionLoader;
-import regions.civilizaciones.Greece;
-import regions.civilizaciones.Iberia;
-import regions.civilizaciones.Rome;
 import skills.Skill;
 import stats.Stats;
 import zeraf.ESistema;
@@ -96,9 +93,9 @@ public class Archaios {
      * Registra las regiones y carga las habilidades antes de iniciar la partida.
      */
     private void preInit() {
-        RegionRepository.registrar(new Greece());
-        RegionRepository.registrar(new Iberia());
-        RegionRepository.registrar(new Rome());
+         RegionRepository.registrar(new Region("Grecia", "GRC"));
+        RegionRepository.registrar(new Region("Iberia", "IBR"));
+        RegionRepository.registrar(new Region("Roma", "ROM"));
         String arenas = "Imperios de las arenas";
         RegionRepository.registrar(new RegionDificil("Egipto", "EGP", arenas,
                 Map.of(ETerreno.AGUA, 10, ETerreno.TIERRA, 35, ETerreno.ARENA, 55)));
