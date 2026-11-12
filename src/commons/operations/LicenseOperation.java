@@ -69,7 +69,7 @@ public class LicenseOperation implements IOperation {
         System.out.println("Tienes " + juego.getPuntos() + " puntos.");
         System.out.println("Una licencia para " + a.getNombre() + " cuesta " + coste + " puntos.");
         if (juego.getPuntos() < coste) {
-            System.out.println("No tienes puntos suficientes");
+            System.out.println("No tienes puntos suficientes.");
             return;
         }
 
@@ -128,7 +128,7 @@ public class LicenseOperation implements IOperation {
 
         }
         System.out.println("0. Volver");
-        int op = InputHelper.leerOpcion("Arqueologo", lista.size());
+        int op = InputHelper.leerOpcion("Arqueologo: ", lista.size());
         if (op == 0) {
             return null;
         }
@@ -146,7 +146,7 @@ public class LicenseOperation implements IOperation {
             System.out.println((i + 1) + ". " + regiones.get(i).getNombre());
         }
         System.out.println("0. Volver");
-        int op = InputHelper.leerOpcion("Region: ", regiones.size());
+        int op = InputHelper.leerOpcion("Región: ", regiones.size());
         if (op == 0) {
             return null;
         }
