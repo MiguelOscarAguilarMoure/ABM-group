@@ -95,9 +95,13 @@ public class ExcavateOperation implements IOperation {
         System.out.println("Puntos conseguidos: " + puntos);
         System.out.println(a.getNombre() + " ha conseguido " + exp + " puntos de experiencia.");
 
+        commons.SaveManager.guardarPartida(juego); // GUARDAR PARTIDA
+
         // 6. Subir de nivel
         int subidos = a.addExperiencia(exp);
         subirNiveles(a, subidos);
+
+        commons.SaveManager.guardarPartida(juego); // GUARDAR PARTIDA
     }
 
     // ========================================================== ELEGIR

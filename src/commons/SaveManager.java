@@ -2,6 +2,8 @@ package commons;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import regions.Region;
+import skills.Skill;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -12,16 +14,26 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Gestor de persistencia y registro de eventos mediante GSON en Saves > Save y Saves > log.
+ *
+ * @author Alberto
+ * @version 1.0
+ */
 public class SaveManager {
 
     private static final String SAVE_DIR = "Saves" + File.separator + "Save";
     private static final String LOG_DIR = "Saves" + File.separator + "log";
 
-    // Configuración de GSON con formato legible (Pretty Printing)
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting()
+            .registerTypeAdapter(Skill.class, new SkillAdapter())
+            .registerTypeAdapter(Region.class, new RegionAdapter())
+            .create();
 
     /**
-     * Guarda el estado completo de la partida en formato JSON dentro de Saves > Save.
+     * Guarda el estado de la partida en formato JSON y registra el evento en el log.
+     *
+     * @param archaios Partida actual a guardar.
      */
     public static void guardarPartida(Archaios archaios) {
         if (archaios == null || archaios.getNombrePartida() == null) {
@@ -33,7 +45,7 @@ public class SaveManager {
                 dir.mkdirs();
             }
 
-            String fileName = archaios.getNombrePartida() + ".json";
+            String fileName = archaios.getNombrePartida() + ".save";
             File file = new File(dir, fileName);
 
             try (FileWriter writer = new FileWriter(file)) {
@@ -47,10 +59,13 @@ public class SaveManager {
     }
 
     /**
-     * Carga una partida existente desde Saves > Save > [nombrePartida].json
+     * Carga una partida existente desde su archivo JSON.
+     *
+     * @param nombrePartida Nombre de la partida.
+     * @return Instancia de {@link Archaios} restaurada, o {@code null} si no existe.
      */
     public static Archaios cargarPartida(String nombrePartida) {
-        String filePath = SAVE_DIR + File.separator + nombrePartida + ".json";
+        String filePath = SAVE_DIR + File.separator + nombrePartida + ".save";
         File file = new File(filePath);
 
         if (!file.exists()) {
@@ -68,7 +83,10 @@ public class SaveManager {
     }
 
     /**
-     * Registra un evento en el archivo log correspondiente dentro de Saves > log.
+     * Registra un mensaje con marca de tiempo en el archivo log de la partida.
+     *
+     * @param nombrePartida Nombre de la partida.
+     * @param mensaje       Mensaje a registrar.
      */
     public static void registrarLog(String nombrePartida, String mensaje) {
         try {
