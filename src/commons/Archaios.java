@@ -1,5 +1,6 @@
 package commons;
 
+import com.google.gson.annotations.SerializedName;
 import commons.operations.ArcheologistsOperation;
 import commons.operations.AtlasOperation;
 import commons.operations.CatalagoTesoros;
@@ -41,42 +42,50 @@ public class Archaios {
     private static final String CODIGO_GRUPO = "2DAM2627";
 
     /** Identificador del usuario de la partida. */
+    @SerializedName("UID")
     private String uid;
 
     /** Nombre de la partida actual. */
+    @SerializedName("Partida")
     private String nombrePartida;
 
     /** Puntos acumulados durante la partida. */
+    @SerializedName("Puntos")
     private int puntos;
 
     /** Arqueólogos que participan en la partida. */
+    @SerializedName("Arqueólogos")
     private List<Archeologist> arqueologos = new ArrayList<>();
 
     /** Estadísticas acumuladas de la partida. */
+    @SerializedName("Estadísticas")
     private Stats stats = new Stats(); // una sola para toda la partida
 
+    // --- OPERACIONES Y ZERAF (No llevan @SerializedName porque no van en el JSON) ---
+
     /** Operaciones de gestión de arqueólogos. */
-    private ArcheologistsOperation arqueologosOp;
+    private transient ArcheologistsOperation arqueologosOp;
 
     /** Operaciones de gestión de habilidades. */
-    private SkillsOperation habilidades;
+    private transient SkillsOperation habilidades;
 
     /** Operaciones de gestión de licencias. */
-    private LicenseOperation licencias;
+    private transient LicenseOperation licencias;
 
     /** Operaciones de consulta del atlas. */
-    private AtlasOperation atlas;
+    private transient AtlasOperation atlas;
 
     /** Operaciones del catálogo de tesoros. */
-    private CatalagoTesoros catalogo;
+    private transient CatalagoTesoros catalogo;
 
     /** Operaciones de excavación. */
-    private ExcavateOperation excavar;
+    private transient ExcavateOperation excavar;
 
     /** Operaciones de consulta de estadísticas. */
-    private StatsOperation estadisticas;
+    private transient StatsOperation estadisticas;
+
     /** Conexión con el Museo (librería Terra). */
-    private Zeraf zeraf;
+    private transient Zeraf zeraf;
 
     /**
      * Inicia, ejecuta y finaliza una partida.
@@ -158,11 +167,29 @@ public class Archaios {
      * operaciones.
      */
     private void init() {
-        // Cargar partidas guardadas: para la entrega del guardado
         uid = InputHelper.leerTexto("Código de usuario: ");
         nombrePartida = InputHelper.leerTexto("Nombre de la partida: ");
-        String nombreArq = InputHelper.leerTexto("Nombre del primer arqueólogo: ");
-        arqueologos.add(new Archeologist(nombreArq));
+
+        // Intentar cargar la partida existente en el pre-init / arranque
+        Archaios partidaCargada = SaveManager.cargarPartida(nombrePartida);
+
+        if (partidaCargada != null) {
+            // Restaurar los datos de la partida cargada
+            this.uid = partidaCargada.uid;
+            this.nombrePartida = partidaCargada.nombrePartida;
+            this.puntos = partidaCargada.puntos;
+            this.arqueologos = partidaCargada.arqueologos;
+            this.stats = partidaCargada.stats;
+            System.out.println("¡Partida '" + nombrePartida + "' cargada correctamente desde archivo!");
+        } else {
+            // Si no existe, crear la partida nueva por defecto
+            String nombreArq = InputHelper.leerTexto("Nombre del primer arqueólogo: ");
+            arqueologos.add(new Archeologist(nombreArq));
+
+            // Primer guardado: cuando se crea una partida nueva
+            SaveManager.guardarPartida(this);
+            SaveManager.registrarLog(nombrePartida, "Inicio de la partida.");
+        }
 
         zeraf = ZerafFactory.createZeraf(ESistema.MUSEO, uid, CODIGO_GRUPO);
 
