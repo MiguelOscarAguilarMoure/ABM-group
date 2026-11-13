@@ -84,6 +84,11 @@ public class ExcavateOperation implements IOperation {
         juego.getStats().registrar(region, encontrados);
         mostrarTesoros(region, encontrados);
 
+        // REGISTRO DE LOS LOGS CON LOS TESOROS
+        for (String codigoTesoro : encontrados) {
+            commons.SaveManager.registrarTesoro(juego.getNombrePartida(), codigoTesoro);
+        }
+
         // 4. Envío de los tesoros al Museo y mensaje de respuesta
         ResponseWrapper<String> respuesta = juego.getZeraf().sendData(encontrados);
         System.out.println(respuesta.getCode().getMessage());
