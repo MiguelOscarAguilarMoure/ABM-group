@@ -1,5 +1,6 @@
 package people;
 
+import com.google.gson.annotations.SerializedName;
 import excavation.ETerrainSize;
 import excavation.TerrainShape;
 import excavation.TerrainSize;
@@ -34,21 +35,33 @@ public class Archeologist {
     public static final int NIVEL_MAX = 5;
 
     /** Nombre del arqueólogo. */
+    @SerializedName("Nombre")
     private String nombre;
+
     /** Experiencia acumulada en el nivel actual (en nivel máximo, la total). */
+    @SerializedName("Exp")
     private int experiencia;
+
     /** Nivel actual (de 0 a {@link #NIVEL_MAX}). */
+    @SerializedName("Nv")
     private int nivel;
+
     /** Habilidades aprendidas. */
+    @SerializedName("Habilidades")
     private ArrayList<Skill> listaHabilidades = new ArrayList<>();
+
     /** Formas de terreno desbloqueadas (empieza solo con el cuadrado). */
+    @SerializedName("Terrenos")
     private ArrayList<TerrainShape> tipoTerreno = new ArrayList<>();
+
     /**
-     * Región en la que está especializado (solo en nivel máximo; {@code null} si no
-     * tiene).
+     * Región en la que está especializado (solo en nivel máximo; {@code null} si no tiene).
      */
+    @SerializedName("Especialización")
     private Region especializacion = null;
+
     /** Códigos de las regiones para las que tiene licencia. */
+    @SerializedName("Licencias")
     private ArrayList<String> licencias = new ArrayList<>();
 
     /**
