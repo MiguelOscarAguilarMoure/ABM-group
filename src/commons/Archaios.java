@@ -11,8 +11,10 @@ import commons.operations.StatsOperation;
 import commons.repositories.RegionRepository;
 import commons.repositories.SkillRepository; // 1. IMPORTANTE: Importar el repositorio
 import helpers.InputHelper;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import people.Archeologist;
 import regions.Region;
 import regions.RegionLoader;
@@ -34,61 +36,90 @@ import zeraf.ZerafFactory;
  *
  * @author Borja Abal
  * @author Alberto Ameneiros
- * @since 2026-10-18
  * @version 1.0
+ * @since 2026-10-18
  */
 public class Archaios {
-    /** Código identificador del equipo. */
+    /**
+     * Código identificador del equipo.
+     */
     private static final String CODIGO_GRUPO = "2DAM2627";
 
-    /** Identificador del usuario de la partida. */
+    /**
+     * Identificador del usuario de la partida.
+     */
     @SerializedName("UID")
     private String uid;
 
-    /** Nombre de la partida actual. */
+    /**
+     * Nombre de la partida actual.
+     */
     @SerializedName("Partida")
     private String nombrePartida;
 
-    /** Puntos acumulados durante la partida. */
+    /**
+     * Puntos acumulados durante la partida.
+     */
     @SerializedName("Puntos")
     private int puntos;
 
-    /** Arqueólogos que participan en la partida. */
+    /**
+     * Arqueólogos que participan en la partida.
+     */
     @SerializedName("Arqueólogos")
     private List<Archeologist> arqueologos = new ArrayList<>();
 
-    /** Estadísticas acumuladas de la partida. */
+    /**
+     * Estadísticas acumuladas de la partida.
+     */
     @SerializedName("Estadísticas")
     private Stats stats = new Stats(); // una sola para toda la partida
 
     // --- OPERACIONES Y ZERAF (No llevan @SerializedName porque no van en el JSON) ---
 
-    /** Operaciones de gestión de arqueólogos. */
+    /**
+     * Operaciones de gestión de arqueólogos.
+     */
     private transient ArcheologistsOperation arqueologosOp;
 
-    /** Operaciones de gestión de habilidades. */
+    /**
+     * Operaciones de gestión de habilidades.
+     */
     private transient SkillsOperation habilidades;
 
-    /** Operaciones de gestión de licencias. */
+    /**
+     * Operaciones de gestión de licencias.
+     */
     private transient LicenseOperation licencias;
 
-    /** Operaciones de consulta del atlas. */
+    /**
+     * Operaciones de consulta del atlas.
+     */
     private transient AtlasOperation atlas;
 
-    /** Operaciones del catálogo de tesoros. */
+    /**
+     * Operaciones del catálogo de tesoros.
+     */
     private transient CatalagoTesoros catalogo;
 
-    /** Operaciones de excavación. */
+    /**
+     * Operaciones de excavación.
+     */
     private transient ExcavateOperation excavar;
 
-    /** Operaciones de consulta de estadísticas. */
+    /**
+     * Operaciones de consulta de estadísticas.
+     */
     private transient StatsOperation estadisticas;
 
-    /** Conexión con el Museo (librería Terra). */
+    /**
+     * Conexión con el Museo (librería Terra).
+     */
     private transient Zeraf zeraf;
 
     /**
      * Devuelve el nombre de la partida actual.
+     *
      * @return nombre de la partida
      */
     public String getPartida() {
@@ -116,7 +147,7 @@ public class Archaios {
         RegionRepository.registrar(new Iberia());
         RegionRepository.registrar(new Rome());
 
-        
+
         RegionRepository.registrar(new Egypt());
         RegionRepository.registrar(new Petra());
         RegionRepository.registrar(new Sumeria());
@@ -196,7 +227,9 @@ public class Archaios {
 
             // Primer guardado: cuando se crea una partida nueva
             SaveManager.guardarPartida(this);
-            SaveManager.registrarLog(nombrePartida, "Inicio de la partida.");
+
+            // Inicializar el registro de tesoros con la línea "Inicio de la partida." en log/register/[partida].log
+            SaveManager.inicializarRegistroPartida(nombrePartida);
         }
 
         zeraf = ZerafFactory.createZeraf(ESistema.MUSEO, uid, CODIGO_GRUPO);
@@ -331,7 +364,7 @@ public class Archaios {
 
     /**
      * devuelve el objeto Zeraf que se creó en Archaios
-     * 
+     *
      * @returnel objeto Zeraf de la partida
      */
     public Zeraf getZeraf() {
