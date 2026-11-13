@@ -11,12 +11,13 @@ public class TerrenoArena extends Skill {
         super(nombre, descripcion, tipo);
     }
 
-}
 
-/** aplica el efecto de la habilidad
- *
- * @return coste de excavacion en casillas "Arena"
- */
-public int efecto() {
-    return 1;
+    /**
+     * aplica el efecto de la habilidad
+     *
+     * @return coste de excavacion en casillas "Arena"
+     */
+    public int efecto() {
+        return 1;
+    }
 }
