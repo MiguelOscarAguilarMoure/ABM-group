@@ -11,3 +11,11 @@ public class TerrenoDemoler extends Skill {
         super(nombre, descripcion, tipo);
     }
 }
+
+/** aplica el efecto de la habilidad
+ *
+ * @return numero de piedras que han de romperse
+ */
+public int efecto() {
+    return 5;
+}
