@@ -1,5 +1,6 @@
 package commons;
 
+import com.google.gson.annotations.SerializedName;
 import commons.operations.ArcheologistsOperation;
 import commons.operations.AtlasOperation;
 import commons.operations.CatalagoTesoros;
@@ -10,63 +11,120 @@ import commons.operations.StatsOperation;
 import commons.repositories.RegionRepository;
 import commons.repositories.SkillRepository; // 1. IMPORTANTE: Importar el repositorio
 import helpers.InputHelper;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import people.Archeologist;
 import regions.Region;
+import regions.RegionLoader;
+import regions.civilizaciones.Egypt;
 import regions.civilizaciones.Greece;
 import regions.civilizaciones.Iberia;
+import regions.civilizaciones.Petra;
 import regions.civilizaciones.Rome;
+import regions.civilizaciones.Sumeria;
 import skills.Skill;
 import stats.Stats;
+import zeraf.ESistema;
+import zeraf.Zeraf;
+import zeraf.ZerafFactory;
 
 /**
- * Coordina el ciclo de vida y las operaciones principales de una partida de Archaios.
+ * Coordina el ciclo de vida y las operaciones principales de una partida de
+ * Archaios.
  *
  * @author Borja Abal
  * @author Alberto Ameneiros
- * @since 2026-10-18
  * @version 1.0
+ * @since 2026-10-18
  */
 public class Archaios {
-    /** Código identificador del equipo. */
+    /**
+     * Código identificador del equipo.
+     */
     private static final String CODIGO_GRUPO = "2DAM2627";
 
-    /** Identificador del usuario de la partida. */
+    /**
+     * Identificador del usuario de la partida.
+     */
+    @SerializedName("UID")
     private String uid;
 
-    /** Nombre de la partida actual. */
+    /**
+     * Nombre de la partida actual.
+     */
+    @SerializedName("Partida")
     private String nombrePartida;
 
-    /** Puntos acumulados durante la partida. */
+    /**
+     * Puntos acumulados durante la partida.
+     */
+    @SerializedName("Puntos")
     private int puntos;
 
-    /** Arqueólogos que participan en la partida. */
+    /**
+     * Arqueólogos que participan en la partida.
+     */
+    @SerializedName("Arqueólogos")
     private List<Archeologist> arqueologos = new ArrayList<>();
 
-    /** Estadísticas acumuladas de la partida. */
-    private Stats stats = new Stats();   // una sola para toda la partida
+    /**
+     * Estadísticas acumuladas de la partida.
+     */
+    @SerializedName("Estadísticas")
+    private Stats stats = new Stats(); // una sola para toda la partida
 
-    /** Operaciones de gestión de arqueólogos. */
-    private ArcheologistsOperation arqueologosOp;
+    // --- OPERACIONES Y ZERAF (No llevan @SerializedName porque no van en el JSON) ---
 
-    /** Operaciones de gestión de habilidades. */
-    private SkillsOperation habilidades;
+    /**
+     * Operaciones de gestión de arqueólogos.
+     */
+    private transient ArcheologistsOperation arqueologosOp;
 
-    /** Operaciones de gestión de licencias. */
-    private LicenseOperation licencias;
+    /**
+     * Operaciones de gestión de habilidades.
+     */
+    private transient SkillsOperation habilidades;
 
-    /** Operaciones de consulta del atlas. */
-    private AtlasOperation atlas;
+    /**
+     * Operaciones de gestión de licencias.
+     */
+    private transient LicenseOperation licencias;
 
-    /** Operaciones del catálogo de tesoros. */
-    private CatalagoTesoros catalogo;
+    /**
+     * Operaciones de consulta del atlas.
+     */
+    private transient AtlasOperation atlas;
 
-    /** Operaciones de excavación. */
-    private ExcavateOperation excavar;
+    /**
+     * Operaciones del catálogo de tesoros.
+     */
+    private transient CatalagoTesoros catalogo;
 
-    /** Operaciones de consulta de estadísticas. */
-    private StatsOperation estadisticas;
+    /**
+     * Operaciones de excavación.
+     */
+    private transient ExcavateOperation excavar;
+
+    /**
+     * Operaciones de consulta de estadísticas.
+     */
+    private transient StatsOperation estadisticas;
+
+    /**
+     * Conexión con el Museo (librería Terra).
+     */
+    private transient Zeraf zeraf;
+
+    /**
+     * Devuelve el nombre de la partida actual.
+     *
+     * @return nombre de la partida
+     */
+    public String getPartida() {
+        return nombrePartida; // O 'partida', dependiendo del nombre de tu variable interna
+    }
 
     /**
      * Inicia, ejecuta y finaliza una partida.
@@ -88,6 +146,13 @@ public class Archaios {
         RegionRepository.registrar(new Greece());
         RegionRepository.registrar(new Iberia());
         RegionRepository.registrar(new Rome());
+
+
+        RegionRepository.registrar(new Egypt());
+        RegionRepository.registrar(new Petra());
+        RegionRepository.registrar(new Sumeria());
+
+        RegionLoader.cargarTesoros();
         SkillRepository.inicializar();
     }
 
@@ -99,7 +164,6 @@ public class Archaios {
     public static String getCodigoGrupo() {
         return CODIGO_GRUPO;
     }
-
 
     /**
      * Devuelve el identificador del usuario de la partida.
@@ -138,25 +202,49 @@ public class Archaios {
     }
 
     /**
-     * Solicita los datos iniciales, crea el primer arqueólogo y prepara las operaciones.
+     * Solicita los datos iniciales, crea el primer arqueólogo y prepara las
+     * operaciones.
      */
     private void init() {
-        // Cargar partidas guardadas: para la entrega del guardado
         uid = InputHelper.leerTexto("Código de usuario: ");
         nombrePartida = InputHelper.leerTexto("Nombre de la partida: ");
-        String nombreArq = InputHelper.leerTexto("Nombre del primer arqueólogo: ");
-        arqueologos.add(new Archeologist(nombreArq));
+
+        // Intentar cargar la partida existente en el pre-init / arranque
+        Archaios partidaCargada = SaveManager.cargarPartida(nombrePartida);
+
+        if (partidaCargada != null) {
+            // Restaurar los datos de la partida cargada
+            this.uid = partidaCargada.uid;
+            this.nombrePartida = partidaCargada.nombrePartida;
+            this.puntos = partidaCargada.puntos;
+            this.arqueologos = partidaCargada.arqueologos;
+            this.stats = partidaCargada.stats;
+            System.out.println("¡Partida '" + nombrePartida + "' cargada correctamente desde archivo!");
+        } else {
+            // Si no existe, crear la partida nueva por defecto
+            String nombreArq = InputHelper.leerTexto("Nombre del primer arqueólogo: ");
+            arqueologos.add(new Archeologist(nombreArq));
+
+            // Primer guardado: cuando se crea una partida nueva
+            SaveManager.guardarPartida(this);
+
+            // Inicializar el registro de tesoros con la línea "Inicio de la partida." en log/register/[partida].log
+            SaveManager.inicializarRegistroPartida(nombrePartida);
+        }
+
+        zeraf = ZerafFactory.createZeraf(ESistema.MUSEO, uid, CODIGO_GRUPO);
 
         arqueologosOp = new ArcheologistsOperation(this);
         habilidades = new SkillsOperation();
-        licencias = new LicenseOperation();
+        licencias = new LicenseOperation(this);
         atlas = new AtlasOperation();
         catalogo = new CatalagoTesoros();
         excavar = new ExcavateOperation(this);
         estadisticas = new StatsOperation(this);
     }
 
-    // Se eliminó la línea "void InicializadosSkills();" que causaba el error de sintaxis
+    // Se eliminó la línea "void InicializadosSkills();" que causaba el error de
+    // sintaxis
 
     /**
      * Muestra las opciones disponibles en el menú principal.
@@ -182,22 +270,41 @@ public class Archaios {
             menu();
             op = InputHelper.leerEntero("Opción: ");
             switch (op) {
-                case 1: arqueologosOp.operation(); break;
-                case 2: habilidades.operation(); break;
-                case 3: licencias.operation(); break;
-                case 4: atlas.operation(); break;
-                case 5: catalogo.operation(); break;
-                case 6: excavar.operation(); break;
-                case 7: estadisticas.operation(); break;
-                case 67: menuPruebas(); break;
-                case 0: break;
-                default: System.out.println("Opción no válida.");
+                case 1:
+                    arqueologosOp.operation();
+                    break;
+                case 2:
+                    habilidades.operation();
+                    break;
+                case 3:
+                    licencias.operation();
+                    break;
+                case 4:
+                    atlas.operation();
+                    break;
+                case 5:
+                    catalogo.operation();
+                    break;
+                case 6:
+                    excavar.operation();
+                    break;
+                case 7:
+                    estadisticas.operation();
+                    break;
+                case 67:
+                    menuPruebas();
+                    break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("Opción no válida.");
             }
         } while (op != 0);
     }
 
     /**
-     * Reserva el punto de extensión para guardar el estado de la partida (futura implementacion).
+     * Reserva el punto de extensión para guardar el estado de la partida (futura
+     * implementacion).
      */
     private void save() {
 
@@ -256,6 +363,15 @@ public class Archaios {
     }
 
     /**
+     * devuelve el objeto Zeraf que se creó en Archaios
+     *
+     * @returnel objeto Zeraf de la partida
+     */
+    public Zeraf getZeraf() {
+        return zeraf;
+    }
+
+    /**
      * Añade puntos a la puntuación actual.
      *
      * @param cantidad puntos que se añadirán
@@ -280,11 +396,20 @@ public class Archaios {
             op = InputHelper.leerEntero("Opción: ");
 
             switch (op) {
-                case 1: pruebaPuntos(); break;
-                case 2: pruebaExperiencia(); break;
-                case 3: pruebaHabilidad(); break;
-                case 4: pruebaEstadisticas(); break;
-                default: break;
+                case 1:
+                    pruebaPuntos();
+                    break;
+                case 2:
+                    pruebaExperiencia();
+                    break;
+                case 3:
+                    pruebaHabilidad();
+                    break;
+                case 4:
+                    pruebaEstadisticas();
+                    break;
+                default:
+                    break;
             }
         } while (op != 0);
     }
@@ -299,7 +424,8 @@ public class Archaios {
     }
 
     /**
-     * Añade experiencia a un arqueólogo y permite asignarle habilidades o especialización.
+     * Añade experiencia a un arqueólogo y permite asignarle habilidades o
+     * especialización.
      */
     private void pruebaExperiencia() {
         Archeologist a = pruebaElegirArqueologo();
@@ -366,7 +492,8 @@ public class Archaios {
     }
 
     /**
-     * Registra cinco tesoros aleatorios de una región en las estadísticas de prueba.
+     * Registra cinco tesoros aleatorios de una región en las estadísticas de
+     * prueba.
      */
     private void pruebaEstadisticas() {
         List<Region> regiones = RegionRepository.getTodas();

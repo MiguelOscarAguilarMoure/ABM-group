@@ -15,6 +15,7 @@ import people.Archeologist;
 import regions.Region;
 import skills.Skill;
 import treasures.Treasure;
+import messages.ResponseWrapper;
 
 /**
  * Opción "Excavar" del menú principal.
@@ -60,13 +61,14 @@ public class ExcavateOperation implements IOperation {
      */
     @Override
     public void operation() {
-        // 1. Región, arqueólogo y terreno (en el orden del PDF)
-        Region region = elegirRegion();
-        if (region == null) {
+        // 1. Arqueólogo, región y terreno
+
+        Archeologist a = elegirArqueologo();
+        if (a == null) {
             return;
         }
-        Archeologist a = elegirArqueologo(region);
-        if (a == null) {
+        Region region = elegirRegion(a);
+        if (region == null) {
             return;
         }
         ETerrainSize terreno = elegirTerreno(a);
@@ -81,76 +83,84 @@ public class ExcavateOperation implements IOperation {
         // 3. Estadísticas y tesoros encontrados
         juego.getStats().registrar(region, encontrados);
         mostrarTesoros(region, encontrados);
-        // TODO Zeraf (librería Terra): enviar los tesoros al museo y mostrar su mensaje
 
-        // 4. Puntos y experiencia
+        // REGISTRO DE LOS LOGS CON LOS TESOROS
+        for (String codigoTesoro : encontrados) {
+            commons.SaveManager.registrarTesoro(juego.getNombrePartida(), codigoTesoro);
+        }
+
+        // 4. Envío de los tesoros al Museo y mensaje de respuesta
+        ResponseWrapper<String> respuesta = juego.getZeraf().sendData(encontrados);
+        System.out.println(respuesta.getCode().getMessage());
+
+        // 5. Puntos y experiencia
         int puntos = excavacion.getPuntosObtenidos();
         int exp = excavacion.getExperienciaObtenida();
         juego.addPuntos(puntos);
         System.out.println("Puntos conseguidos: " + puntos);
         System.out.println(a.getNombre() + " ha conseguido " + exp + " puntos de experiencia.");
 
-        // 5. Subir de nivel
+        commons.SaveManager.guardarPartida(juego); // GUARDAR PARTIDA
+
+        // 6. Subir de nivel
         int subidos = a.addExperiencia(exp);
         subirNiveles(a, subidos);
+
+        commons.SaveManager.guardarPartida(juego); // GUARDAR PARTIDA
     }
 
     // ========================================================== ELEGIR
 
     /**
-     * Muestra las regiones y pide una.
+     * Muestra las regiones en las que puede excavar el arqueólogo (las básicas y
+     * las difíciles para las que tiene licencia) y pide una.
      *
-     * @return La región elegida, o {@code null} si elige 0 o una opción no válida.
+     * @param a El arqueólogo elegido.
+     * @return La región elegida, o {@code null} si elige 0.
      */
-    private Region elegirRegion() {
-        List<Region> regiones = RegionRepository.getTodas();
+    private Region elegirRegion(Archeologist a) {
+        List<Region> disponibles = new ArrayList<>();
+        for (Region r : RegionRepository.getTodas()) {
+            if (a.puedeExcavarEn(r)) {
+                disponibles.add(r);
+            }
+        }
+
         System.out.println("-------------------- Regiones --------------------");
-        for (int i = 0; i < regiones.size(); i++) {
-            System.out.println((i + 1) + ". " + regiones.get(i).getNombre());
+        for (int i = 0; i < disponibles.size(); i++) {
+            System.out.println((i + 1) + ". " + disponibles.get(i).getNombre());
         }
         System.out.println("0. Volver");
-        int op = InputHelper.leerOpcion("Región en la que realizar la excavación: ",regiones.size());
-        if (op < 1 || op > regiones.size()) {
+        int op = InputHelper.leerOpcion("Región en la que realizar la excavación: ", disponibles.size());
+        if (op == 0) {
             return null;
         }
-        return regiones.get(op - 1);
+        return disponibles.get(op - 1);
     }
 
     /**
-     * Muestra los arqueólogos que pueden excavar en la región, con su nombre y
-     * nivel, y pide uno.
+     * Muestra los arqueólogos con su nombre y nivel y pide uno.
      *
-     * @param region La región elegida.
-     * @return El arqueólogo elegido, o {@code null} si no hay ninguno disponible o
-     *         elige 0.
+     * @return El arqueólogo elegido, o {@code null} si no hay ninguno o elige 0.
      */
-    private Archeologist elegirArqueologo(Region region) {
-        if (juego.getArqueologos().isEmpty()) {
+    private Archeologist elegirArqueologo() {
+        List<Archeologist> lista = juego.getArqueologos();
+        if (lista.isEmpty()) {
             System.out.println("No tienes arqueólogos contratados.");
-            return null;
-        }
-        List<Archeologist> disponibles = new ArrayList<>();
-        for (Archeologist a : juego.getArqueologos()) {
-            if (a.puedeExcavarEn(region)) { // por si la región pide licencia
-                disponibles.add(a);
-            }
-        }
-        if (disponibles.isEmpty()) {
-            System.out.println("Ningún arqueólogo tiene licencia para excavar en " + region.getNombre() + ".");
             return null;
         }
 
         System.out.println("-------------------- Arqueólogos --------------------");
-        for (int i = 0; i < disponibles.size(); i++) {
-            Archeologist a = disponibles.get(i);
+        for (int i = 0; i < lista.size(); i++) {
+            Archeologist a = lista.get(i);
             System.out.println((i + 1) + ". " + a.getNombre() + " (nivel " + a.getNivel() + ")");
         }
         System.out.println("0. Volver");
-        int op = InputHelper.leerOpcion("Arqueólogo que realiza la excavación: ", disponibles.size());
-        if (op < 1 || op > disponibles.size()) {
+        int op = InputHelper.leerOpcion("Arqueólogo que realiza la excavación: ", lista.size());
+        if (op == 0) {
             return null;
         }
-        return disponibles.get(op - 1);
+        return lista.get(op - 1);
     }
 
     /**
@@ -176,7 +186,7 @@ public class ExcavateOperation implements IOperation {
                     + " (" + t.getFil() + "x" + t.getCol() + ")");
         }
         System.out.println("0. Volver");
-                int op = InputHelper.leerOpcion("Terreno a excavar: ", disponibles.size());
+        int op = InputHelper.leerOpcion("Terreno a excavar: ", disponibles.size());
         if (op < 1 || op > disponibles.size()) {
             return null;
         }
@@ -209,7 +219,7 @@ public class ExcavateOperation implements IOperation {
 
     // ========================================================== SUBIR DE NIVEL
 
-     /**
+    /**
      * Da una habilidad nueva por cada nivel subido y, si llega al nivel máximo
      * sin especialización, le hace elegirla.
      *
@@ -226,8 +236,9 @@ public class ExcavateOperation implements IOperation {
         }
     }
 
-  /**
-     * Ofrece hasta 3 habilidades que el arqueólogo puede aprender, la primera de ellas
+    /**
+     * Ofrece hasta 3 habilidades que el arqueólogo puede aprender, la primera de
+     * ellas
      * dependiente si hay alguna, y le obliga a elegir una (no hay opción 0).
      *
      * @param a El arqueólogo que ha subido de nivel.
@@ -272,7 +283,8 @@ public class ExcavateOperation implements IOperation {
     }
 
     /**
-     * Al llegar al nivel máximo, le hace elegir obligatoriamente la región de especialización.
+     * Al llegar al nivel máximo, le hace elegir obligatoriamente la región de
+     * especialización.
      *
      * @param a El arqueólogo que ha llegado al nivel máximo.
      */
