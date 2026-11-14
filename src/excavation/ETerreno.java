@@ -1,66 +1,112 @@
 package excavation;
 
-import java.util.Random;
-
+/**
+ * Tipos de terreno que puede tener una casilla de la rejilla de excavación.
+ * <p>
+ * Cada terreno tiene un símbolo (el que ve el jugador mientras la casilla está
+ * sin excavar), un coste en acciones y, opcionalmente, un siguiente nivel: al
+ * excavarlo no se descubre lo que hay debajo, sino que la casilla pasa a ese
+ * terreno y hay que excavarla de nuevo.
+ * </p>
+ * <ul>
+ * <li><b>Tierra</b> {@code .} (coste 1): el terreno básico.</li>
+ * <li><b>Piedra</b> {@code ^} (coste 1): al romperla pasa a tierra.</li>
+ * <li><b>Arena</b> {@code ~} (coste 1-2, variable).</li>
+ * <li><b>Agua</b> {@code -} (coste 2).</li>
+ * </ul>
+ *
+ * @author Miguel Aguilar Moure
+ * @version 2.0
+ * @see regions.IRegionDificil#getProporciones()
+ */
 public enum ETerreno {
-    TIERRA('.', 1, 1, null),
-    PIEDRA('^', 1, 1, TIERRA),
-    ARENA('~', 1, 2, null),
-    AGUA('-', 2, 2, null);
+    // El siguiente nivel debe declararse antes que el terreno que lo usa (TIERRA antes que PIEDRA).
+    TIERRA(".", 1, 1, null),
+    PIEDRA("^", 1, 1, TIERRA),
+    ARENA("~", 1, 2, null),
+    AGUA("-", 2, 2, null);
 
-    private static final Random RANDOM = new Random();
+    /** Símbolo que se dibuja en la rejilla. */
+    private final String simbolo;
+    /** Coste mínimo en acciones. */
+    private final int costeMin;
+    /** Coste máximo en acciones (igual al mínimo si el coste es fijo). */
+    private final int costeMax;
+    /** Terreno en el que se convierte al excavarlo ({@code null} si no tiene). */
+    private final ETerreno siguiente;
 
-    private final char simbolo;
-    private final int costeMinimo;
-    private final int costeMaximo;
-    private final ETerreno siguienteNivel;
-
-    ETerreno(char simbolo, int costeMinimo, int costeMaximo, ETerreno siguienteNivel) {
-        if (costeMinimo < 1 || costeMaximo < costeMinimo) {
-            throw new IllegalArgumentException(
-                    "Rango de coste inválido para el terreno " + simbolo + ": [" + costeMinimo + ", " + costeMaximo
-                            + "]");
-        }
+    /**
+     * Crea un terreno.
+     *
+     * @param simbolo   Símbolo de la rejilla.
+     * @param costeMin  Coste mínimo en acciones.
+     * @param costeMax  Coste máximo en acciones (igual al mínimo si es fijo).
+     * @param siguiente Terreno al que pasa al excavarlo, o {@code null} si al
+     *                  excavarlo se descubre lo que hay debajo.
+     */
+    private ETerreno(String simbolo, int costeMin, int costeMax, ETerreno siguiente) {
         this.simbolo = simbolo;
-        this.costeMinimo = costeMinimo;
-        this.costeMaximo = costeMaximo;
-        this.siguienteNivel = siguienteNivel;
+        this.costeMin = costeMin;
+        this.costeMax = costeMax;
+        this.siguiente = siguiente;
     }
 
-    public char getSimbolo() {
+    /**
+     * @return El símbolo que se muestra en la rejilla.
+     */
+    public String getSimbolo() {
         return simbolo;
     }
 
-    public int getCosteMinimo() {
-        return costeMinimo;
+    /**
+     * @return El coste mínimo en acciones.
+     */
+    public int getCosteMin() {
+        return costeMin;
     }
 
-    public int getCosteMaximo() {
-        return costeMaximo;
+    /**
+     * @return El coste máximo en acciones.
+     */
+    public int getCosteMax() {
+        return costeMax;
     }
 
-    public ETerreno getSiguienteNivel() {
-        return siguienteNivel;
+    /**
+     * Indica si el coste varía (se sortea entre el mínimo y el máximo).
+     *
+     * @return {@code true} si el coste mínimo y el máximo son distintos.
+     */
+    public boolean isCosteVariable() {
+        return costeMin != costeMax;
     }
 
-    public boolean tieneSiguienteNivel() {
-        return siguienteNivel != null;
+    /**
+     * @return El terreno al que pasa al excavarlo, o {@code null} si no tiene siguiente nivel.
+     */
+    public ETerreno getSiguiente() {
+        return siguiente;
     }
 
-    public int calcularCoste() {
-        if (costeMinimo == costeMaximo) {
-            return costeMinimo;
-        }
-        return RANDOM.nextInt(costeMaximo - costeMinimo + 1) + costeMinimo;
+    /**
+     * @return {@code true} si al excavarlo pasa a otro terreno y hay que volver a excavar la casilla.
+     */
+    public boolean tieneSiguiente() {
+        return siguiente != null;
     }
 
-    public static ETerreno obtenerPorSimbolo(char simbolo) {
-        ETerreno[] terrenos = ETerreno.values();
-        for (int i = 0; i < terrenos.length; i++) {
-            if (terrenos[i].getSimbolo() == simbolo) {
-                return terrenos[i];
+    /**
+     * Busca un terreno por su símbolo.
+     *
+     * @param simbolo El símbolo de la rejilla (por ejemplo "^").
+     * @return El terreno con ese símbolo, o {@code null} si no hay ninguno.
+     */
+    public static ETerreno getPorSimbolo(String simbolo) {
+        for (ETerreno t : ETerreno.values()) {
+            if (t.simbolo.equals(simbolo)) {
+                return t;
             }
         }
-        throw new IllegalArgumentException("No existe ningún tipo de terreno con el símbolo: " + simbolo);
+        return null;
     }
 }
