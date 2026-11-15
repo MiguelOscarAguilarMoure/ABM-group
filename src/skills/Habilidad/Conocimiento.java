@@ -1,4 +1,4 @@
-package skills.Habilidad;
+package skills.habilidad;
 
 import skills.ESkillType;
 import skills.Skill;
@@ -17,6 +17,7 @@ import treasures.ETreasureRarity;
  *
  * @author Borja Abal Dios
  * @author Alberto Ameneiros
+ * 
  * @version 1.0
  * @see Skill#getTesorosExtra(ETreasureRarity)
  */

@@ -1,5 +1,6 @@
 package skills;
 
+import excavation.ETerreno;
 import excavation.TerrainShape;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import treasures.ETreasureRarity;
  *
  * @author Borja Abal Dios
  * @author Alberto Ameneiros
+ * @author Miguel Aguilar Moure
  * @version 1.0
  * @see commons.repositories.SkillRepository
  * @see people.Archeologist
@@ -173,6 +175,33 @@ public abstract class Skill {
      */
     public boolean isInvestigacion() {
         return false;
+    }
+
+     /**
+     * Coste fijo al que esta habilidad deja la excavación de un terreno.
+     * Lo sobrescribe {@code TerrenoArena} (Especialización en desierto).
+     *
+     * @param terreno El terreno que se va a excavar.
+     * @return El coste fijo en acciones, o 0 si la habilidad no afecta a ese terreno.
+     * @author Miguel Aguilar Moure
+     * @Version 1.0
+     */
+    // !new
+    public int getCosteTerreno(ETerreno terreno) {
+        return 0;
+    }
+    /**
+     * Número de casillas de un terreno que se cambian por tierra antes de empezar
+     * la excavación. Lo sobrescribe {@code TerrenoDemoler} (Especialista en demoliciones).
+     *
+     * @param terreno El terreno que se cambia.
+     * @return Cuántas casillas de ese terreno cambia como máximo (0 por defecto).
+     * @author Miguel Aguilar Moure
+     * @Version 1.0
+     */
+    // ! new
+    public int getCasillasCambiadas(ETerreno terreno) {
+        return 0;
     }
 
     /**
