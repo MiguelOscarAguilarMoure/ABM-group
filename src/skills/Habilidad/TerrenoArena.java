@@ -1,4 +1,4 @@
-package skills.habilidad;
+package skills.Habilidad;
 
 import excavation.ETerreno;
 import skills.ESkillType;

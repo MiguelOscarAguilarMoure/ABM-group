@@ -3,8 +3,8 @@ package commons.repositories;
 import java.util.ArrayList;
 import java.util.List;
 import skills.ESkillType;
-import skills.Habilidad.*;
 import skills.Skill;
+import skills.habilidad.*;
 
 /**
  * Repositorio de todas las habilidades del juego.

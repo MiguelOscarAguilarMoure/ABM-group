@@ -38,7 +38,8 @@ public class Excavation {
     private static final String SEPARADOR_TURNO = "----------------------------------------";
     private static final String SEPARADOR_FIN = "::::::::::::::::::::::::::::::::::::::::";
 
-    private static final String SIN_EXCAVAR = "·";
+    //! C1 quitado SIN_EXCAVAR
+    // se ve ahora con el simbolo de su terreno
     private static final String VACIO = "x";
     private static final String SUPOSICION = "?";
 
@@ -59,9 +60,13 @@ public class Excavation {
 
     private final ArrayList<String> columnas = new ArrayList<>(); // A, B... AA, AB...
     private final ArrayList<String> casillas = new ArrayList<>(); // lo que ve el jugador
+     // !C3: capa de terreno, una por casilla y aparte de lo que ve el jugador
+    private final ArrayList<ETerreno> terrenos = new ArrayList<>();
     private final HashMap<Integer, Treasure> tesoros = new HashMap<>(); // casilla -> tesoro enterrado
     private final ArrayList<String> codigosEncontrados = new ArrayList<>();
-
+      // !CAMBIO 3.1: true si la casilla ya está resuelta. Ya no se puede deducir del
+    // símbolo, porque una casilla sin excavar muestra su terreno y una piedra rota
+    // muestra tierra pero no esta resuelta. Se puede deducir de la rejilla.
     private String cabecera;
     private int anchoEtiqueta;
     private int anchoNumFila;
