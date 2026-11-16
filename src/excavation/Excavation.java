@@ -3,13 +3,14 @@ package excavation;
 import helpers.InputHelper;
 import helpers.UtilsHelper;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collections; // CAMBIO 1: para mezclar la capa de terreno
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Map; // !CAMBIO 1: proporciones de terreno de la región
 import java.util.Random;
+import logs.Registro; // !CAMBIO 1: registro de errores
 import people.Archeologist;
-import regions.IRegionDificil;
+import regions.IRegionDificil; // CAMBIO 1: saber si la región tiene terrenos difíciles
 import regions.Region;
 import treasures.ETreasureRarity;
 import treasures.Treasure;
@@ -24,6 +25,10 @@ import treasures.Treasure;
  * <p>
  * Cada excavación puede tratarse como una instancia
  * independiente con sus propias dimensiones, región, arqueólogo y progreso.
+ * <p>
+ * !CAMBIO 15: ahora cada casilla tiene además un terreno (tierra, piedra, arena o
+ * agua) que decide cuántas acciones cuesta excavarla y si hay que excavarla más de
+ * una vez (la piedra pasa a tierra).
  *
  * @author Miguel Aguilar
  * @author Borja Abal
@@ -41,8 +46,8 @@ public class Excavation {
     private static final String SEPARADOR_TURNO = "----------------------------------------";
     private static final String SEPARADOR_FIN = "::::::::::::::::::::::::::::::::::::::::";
 
-    //! C1 quitado SIN_EXCAVAR
-    // se ve ahora con el simbolo de su terreno
+    // !CAMBIO 2: eliminada la constante SIN_EXCAVAR ("·"). Una casilla sin excavar
+    // se ve ahora con el símbolo de su terreno ('.', '^', '~' o '-').
     private static final String VACIO = "x";
     private static final String SUPOSICION = "?";
 
@@ -63,13 +68,15 @@ public class Excavation {
 
     private final ArrayList<String> columnas = new ArrayList<>(); // A, B... AA, AB...
     private final ArrayList<String> casillas = new ArrayList<>(); // lo que ve el jugador
-     // !C3: capa de terreno, una por casilla y aparte de lo que ve el jugador
+    // !CAMBIO 3: capa de terreno, una por casilla y aparte de lo que ve el jugador
     private final ArrayList<ETerreno> terrenos = new ArrayList<>();
     private final HashMap<Integer, Treasure> tesoros = new HashMap<>(); // casilla -> tesoro enterrado
     private final ArrayList<String> codigosEncontrados = new ArrayList<>();
-      // !CAMBIO 3.1: true si la casilla ya está resuelta. Ya no se puede deducir del
+
+    // !CAMBIO 3: true si la casilla ya está resuelta. Ya no se puede deducir del
     // símbolo, porque una casilla sin excavar muestra su terreno y una piedra rota
-    // muestra tierra pero no esta resuelta. Se puede deducir de la rejilla.
+    // muestra tierra pero sigue pendiente.
+    private boolean[] excavadas;
     private String cabecera;
     private int anchoEtiqueta;
     private int anchoNumFila;
@@ -106,7 +113,7 @@ public class Excavation {
         this.numFilas = terreno.getCol();
 
         generarRejilla();
-        generarTerrenos();//! c 4: rellena la capa de terreno antes de colocar tesoros
+        generarTerrenos(); // CAMBIO 4: rellena la capa de terreno antes de colocar tesoros
         generarTesoros();
         this.acciones = calcularAcciones();
         aplicarRevelacion();
@@ -122,9 +129,9 @@ public class Excavation {
     private void generarRejilla() {
         // dimensiond de la rejilla
         int total = numColumnas * numFilas;
-         // !c5: las casillas ya no se rellenan aquí con "·": lo hace
+        // CAMBIO 5: las casillas ya no se rellenan aquí con "·": lo hace
         // generarTerrenos() con el símbolo de cada terreno.
-        excavadas = new boolean[total]; // todo implementar
+        excavadas = new boolean[total];
         cavarRestantes = total;
 
         // Letras por etiqueta: 1 si caben en el abecedario, 2 si no...
@@ -143,7 +150,8 @@ public class Excavation {
         }
         cabecera = sb.toString();
     }
-      /**
+
+    /**
      * !CAMBIO 6 (método nuevo). Rellena la capa de terreno y pone en cada casilla el
      * símbolo de su terreno, que es lo que ve el jugador mientras no la excava.
      * <p>
@@ -170,7 +178,8 @@ public class Excavation {
             casillas.add(tipo.getSimbolo());
         }
     }
- /**
+
+    /**
      * !CAMBIO 6 (método nuevo). Calcula cuántas casillas de cada terreno hay según
      * los porcentajes y las devuelve en una lista sin mezclar.
      * <p>
@@ -185,7 +194,7 @@ public class Excavation {
      */
     private List<ETerreno> repartirTerrenos(Map<ETerreno, Integer> proporciones, int total) {
         List<ETerreno> capa = new ArrayList<>();
-        int suma = sumarProporciones(proporciones); //todo implementar esto
+        int suma = sumarProporciones(proporciones);
         if (suma > 0) {
             ETerreno[] tipos = ETerreno.values();
             int[] cantidades = new int[tipos.length];
@@ -215,8 +224,9 @@ public class Excavation {
         }
         return capa;
     }
-      /**
-     * CAMBIO 6 (método nuevo). Porcentaje de un terreno, tratando como 0 lo que falta,
+
+    /**
+     * !CAMBIO 6 (método nuevo). Porcentaje de un terreno, tratando como 0 lo que falta,
      * es null o es negativo.
      *
      * @param proporciones porcentajes de la región (no puede ser null).
@@ -229,7 +239,7 @@ public class Excavation {
     }
 
     /**
-     * !CAMBIO 6 (método nuevo). Suma los porcentajes válidos de las proporciones.
+     *! CAMBIO 6 (método nuevo). Suma los porcentajes válidos de las proporciones.
      *
      * @param proporciones porcentajes de la región (puede ser null).
      * @return la suma, o 0 si no hay proporciones válidas.
@@ -243,9 +253,10 @@ public class Excavation {
         }
         return suma;
     }
-     /**
-     * !CAMBIO 6 (método nuevo). Posición del mayor valor de un array (la primera si hay empate).
-     *  TODO ME QUEDO AQUI SEGUIR MAÑANA
+
+    /**
+     * CAMBIO 6 (método nuevo). Posición del mayor valor de un array (la primera si hay empate).
+     *
      * @param valores array no vacío.
      * @return índice del mayor valor.
      */
@@ -258,6 +269,7 @@ public class Excavation {
         }
         return mejor;
     }
+
     /**
      * Genera las etiquetas de las columnas hasta alcanzar la cantidad necesaria.
      *
@@ -327,10 +339,11 @@ public class Excavation {
         List<Integer> posiciones = UtilsHelper.genRandomIdxs(rarezas.size(), total);
         for (int i = 0; i < rarezas.size(); i++) {
             Treasure tesoro = region.getTesoroAleatorioPorRareza(rarezas.get(i));
-            if (tesoro == null) {
-                continue; // la región no tiene tesoros de esa rareza: la casilla queda vacía
+            // CAMBIO 7: era "if (tesoro == null) continue;". Se invierte la condición:
+            // si la región no tiene tesoros de esa rareza, la casilla queda vacía.
+            if (tesoro != null) {
+                tesoros.put(posiciones.get(i), tesoro);
             }
-            tesoros.put(posiciones.get(i), tesoro);
         }
         tesorosRestantes = tesoros.size();
     }
@@ -400,15 +413,56 @@ public class Excavation {
     }
 
     /**
-     * Aplica las revelaciones iniciales del arqueólogo sin consumir acciones.
-     * Primero limpia casillas vacías y después marca posibles posiciones de
-     * tesoros, sin superar el límite establecido para la rejilla.
+     * Aplica las habilidades iniciales del arqueólogo sin consumir acciones.
+     * ! CAMBIO 8: primero cambia terrenos (demoliciones); después limpia casillas
+     * vacías y por último marca posibles posiciones de tesoros, sin superar el
+     * límite establecido para la rejilla.
      */
     private void aplicarRevelacion() {
+        cambiarTerrenos(); // CAMBIO 8: antes de la limpieza y del escaneo
         int total = numColumnas * numFilas;
         int maximo = (int) (total * REVELACION_MAX);
         int reveladas = limpiar(arqueologo.getLimpieza(), maximo);
         suponer(arqueologo.getSuposicion() / 3, maximo - reveladas);
+    }
+
+    /**
+     * ! CAMBIO 8 (método nuevo). Pide al arqueólogo cuántas casillas de cada terreno
+     * cambia por tierra (por ejemplo, las demoliciones rompen piedras) y las cambia.
+     * No gasta acciones y se hace antes de limpiar y escanear.
+     */
+    private void cambiarTerrenos() {
+        for (ETerreno tipo : ETerreno.values()) {
+            // TODO getCasillasCambiadas no declarado
+            int cantidad = arqueologo.getCasillasCambiadas(tipo);
+            if (tipo != ETerreno.TIERRA && cantidad > 0) {
+                cambiarATierra(tipo, cantidad);
+            }
+        }
+    }
+
+    /**
+     * ! CAMBIO 8 (método nuevo). Cambia por tierra, al azar, hasta {@code cantidad}
+     * casillas de un terreno. Si hay menos casillas de ese terreno, se cambian todas.
+     *
+     * @param tipo     terreno que se cambia.
+     * @param cantidad número máximo de casillas a cambiar.
+     */
+    private void cambiarATierra(ETerreno tipo, int cantidad) {
+        List<Integer> candidatas = new ArrayList<>();
+        for (int i = 0; i < terrenos.size(); i++) {
+            if (terrenos.get(i) == tipo) {
+                candidatas.add(i);
+            }
+        }
+        Collections.shuffle(candidatas, RANDOM);
+
+        int cambiar = Math.min(cantidad, candidatas.size());
+        for (int i = 0; i < cambiar; i++) {
+            int indice = candidatas.get(i);
+            terrenos.set(indice, ETerreno.TIERRA);
+            casillas.set(indice, ETerreno.TIERRA.getSimbolo());
+        }
     }
 
     /**
@@ -430,6 +484,7 @@ public class Excavation {
         while (destapadas < cantidad && destapadas < maximo && !vacias.isEmpty()) {
             int indice = vacias.remove(RANDOM.nextInt(vacias.size()));
             casillas.set(indice, VACIO);
+            excavadas[indice] = true; // CAMBIO 9: la casilla limpiada queda resuelta
             cavarRestantes--;
             destapadas++;
         }
@@ -462,7 +517,7 @@ public class Excavation {
             // Dos casillas sin tesoro (si ya estaban destapadas, se quedan como 'x')
             for (int j = 0; j < 2 && marcadas < maximo && !sinTesoro.isEmpty(); j++) {
                 indice = sinTesoro.remove(RANDOM.nextInt(sinTesoro.size()));
-                if (casillas.get(indice).equals(SIN_EXCAVAR)) {
+                if (!excavadas[indice]) { // CAMBIO 10: antes comparaba el símbolo con SIN_EXCAVAR
                     casillas.set(indice, SUPOSICION);
                     marcadas++;
                 }
@@ -473,22 +528,33 @@ public class Excavation {
     /**
      * Comprueba si una casilla todavía puede excavarse.
      *
+     *! CAMBIO 11: ahora consulta {@code excavadas}. Una casilla con terreno de varios
+     * niveles (la piedra) sigue sin excavar hasta llegar al último nivel.
+     *
      * @param indice índice de la casilla en la rejilla.
-     * @return true si no se ha excavado o solo está marcada como suposición.
+     * @return true si no se ha resuelto todavía (aunque esté marcada como suposición).
      */
     private boolean sinExcavar(int indice) {
-        String c = casillas.get(indice);
-        return c.equals(SIN_EXCAVAR) || c.equals(SUPOSICION);
+        return !excavadas[indice];
     }
 
     // !===== Excavar ========================================================
 
     /**
-     * Excava la posición indicada y consume una acción. Si encuentra un tesoro,
-     * actualiza los tesoros restantes, la puntuación y los códigos encontrados.
+     * Excava la posición indicada. CAMBIO 12: consume las acciones que cueste su
+     * terreno (se las pide al arqueólogo, que tiene en cuenta sus habilidades). Si
+     * el terreno tiene un siguiente nivel (la piedra pasa a tierra), la casilla
+     * cambia de terreno y hay que volver a excavarla para ver qué hay debajo.
+     * Si encuentra un tesoro, actualiza los tesoros restantes, la puntuación y los
+     * códigos encontrados.
+     * <p>
+     * Si quedan menos acciones que el coste, se puede excavar igualmente y las
+     * acciones se quedan en 0, así una excavación nunca se queda bloqueada.
+     * </p>
      *
      * @param posicion posición que se desea excavar.
-     * @return true si la casilla contenía un tesoro; false si estaba vacía.
+     * @return true si la casilla contenía un tesoro; false si estaba vacía o solo
+     *         se ha roto un nivel del terreno.
      * @throws IllegalArgumentException si la posición es null, no pertenece a la
      *                                  rejilla o ya se había excavado.
      * @throws IllegalStateException    si la excavación ya ha finalizado.
@@ -505,7 +571,17 @@ public class Excavation {
             throw new IllegalArgumentException("ya está excavada.");
         }
 
-        acciones--;
+        // CAMBIO 12: antes era "acciones--;"
+        ETerreno tipo = terrenos.get(indice); // "tipo" y no "terreno", que ya es un atributo
+        // TODO getCosteExcar no delcarado
+        acciones = Math.max(0, acciones - arqueologo.getCosteExcavar(tipo));
+
+        if (tipo.tieneSiguiente()) {
+            bajarNivel(indice, tipo.getSiguiente());
+            return false; // todavía no se ve lo que hay debajo
+        }
+
+        excavadas[indice] = true;
         cavarRestantes--;
         casillas.set(indice, getSimbolo(indice)); // se intercambia por lo que hay enterrado
 
@@ -517,6 +593,21 @@ public class Excavation {
         puntos += tesoro.getPuntos();
         codigosEncontrados.add(tesoro.getCodigoConParte());
         return true;
+    }
+
+    /**
+     * CAMBIO 12 (método nuevo). Pasa una casilla al siguiente nivel de su terreno.
+     * Si estaba marcada con suposición ('?') la marca se mantiene, porque el tesoro
+     * sigue debajo.
+     *
+     * @param indice    índice de la casilla en la rejilla.
+     * @param siguiente terreno al que pasa la casilla.
+     */
+    private void bajarNivel(int indice, ETerreno siguiente) {
+        terrenos.set(indice, siguiente);
+        if (!casillas.get(indice).equals(SUPOSICION)) {
+            casillas.set(indice, siguiente.getSimbolo());
+        }
     }
 
     /**
@@ -561,6 +652,36 @@ public class Excavation {
      */
     public boolean isFinalizada() {
         return acciones <= 0 || tesorosRestantes <= 0;
+    }
+
+    /**
+     * CAMBIO 13 (método nuevo). Devuelve el terreno actual de una casilla.
+     *
+     * @param posicion posición de la casilla.
+     * @return el terreno que tiene ahora la casilla (cambia al romper un nivel).
+     * @throws IllegalArgumentException si la posición es null o no pertenece a la rejilla.
+     */
+    public ETerreno getTerreno(Position posicion) {
+        if (posicion == null) {
+            throw new IllegalArgumentException("La posición no puede ser nula.");
+        }
+        return terrenos.get(getIndice(posicion));
+    }
+
+    /**
+     * CAMBIO 13 (método nuevo). Cuenta las casillas que tienen ahora un terreno.
+     *
+     * @param buscado terreno que se desea contar.
+     * @return número de casillas con ese terreno.
+     */
+    public int contarTerreno(ETerreno buscado) {
+        int cantidad = 0;
+        for (ETerreno t : terrenos) {
+            if (t == buscado) {
+                cantidad++;
+            }
+        }
+        return cantidad;
     }
 
     /**
@@ -785,6 +906,11 @@ public class Excavation {
 
     /**
      * Procesa las posiciones introducidas por el jugador en una línea de texto.
+     * <p>
+     * CAMBIO 14: se reescribe el bucle sin {@code continue} ni {@code return} dentro
+     * de él. Se recorre con un índice mientras queden indicaciones y la excavación no
+     * haya terminado; si sobran indicaciones, se avisa una sola vez al final.
+     * </p>
      *
      * @param linea texto que contiene una o varias posiciones.
      */
@@ -793,19 +919,33 @@ public class Excavation {
             System.out.println("No has introducido ninguna posición.");
             return;
         }
-        for (String indicacion : linea.trim().split(" ")) {
-            if (indicacion.isEmpty()) {
-                continue; // varios espacios seguidos generan cadenas vacías
+        String[] indicaciones = linea.trim().split(" ");
+        int i = 0;
+        while (i < indicaciones.length && !isFinalizada()) {
+            // varios espacios seguidos generan cadenas vacías: se saltan sin "continue"
+            if (!indicaciones[i].isEmpty()) {
+                excavarIndicacion(indicaciones[i]);
             }
-            if (isFinalizada()) {
-                System.out.println("Se ignoran las posiciones restantes: la excavación ha terminado.");
-                return;
-            }
-            try {
-                excavar(leerPosicion(indicacion));
-            } catch (IllegalArgumentException e) {
-                System.out.println(indicacion + ": " + e.getMessage());
-            }
+            i++;
+        }
+        if (i < indicaciones.length) {
+            System.out.println("Se ignoran las posiciones restantes: la excavación ha terminado.");
+        }
+    }
+
+    /**
+     * CAMBIO 14 (método nuevo, sale del cuerpo del bucle anterior). Excava una
+     * indicación. Si no es válida, se avisa al jugador y, además, se anota la
+     * excepción con su pila en el registro de errores.
+     *
+     * @param indicacion coordenada escrita por el jugador, por ejemplo "3B".
+     */
+    private void excavarIndicacion(String indicacion) {
+        try {
+            excavar(leerPosicion(indicacion));
+        } catch (IllegalArgumentException e) {
+            System.out.println(indicacion + ": " + e.getMessage());
+            Registro.registrarError("Posición no válida (" + indicacion + "): " + e.getMessage(), e);
         }
     }
 
