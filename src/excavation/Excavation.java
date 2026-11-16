@@ -3,10 +3,13 @@ package excavation;
 import helpers.InputHelper;
 import helpers.UtilsHelper;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import people.Archeologist;
+import regions.IRegionDificil;
 import regions.Region;
 import treasures.ETreasureRarity;
 import treasures.Treasure;
@@ -103,6 +106,7 @@ public class Excavation {
         this.numFilas = terreno.getCol();
 
         generarRejilla();
+        generarTerrenos();//! c 4: rellena la capa de terreno antes de colocar tesoros
         generarTesoros();
         this.acciones = calcularAcciones();
         aplicarRevelacion();
@@ -118,9 +122,9 @@ public class Excavation {
     private void generarRejilla() {
         // dimensiond de la rejilla
         int total = numColumnas * numFilas;
-        for (int i = 0; i < total; i++) {
-            casillas.add(SIN_EXCAVAR);
-        }
+         // !c5: las casillas ya no se rellenan aquí con "·": lo hace
+        // generarTerrenos() con el símbolo de cada terreno.
+        excavadas = new boolean[total]; // todo implementar
         cavarRestantes = total;
 
         // Letras por etiqueta: 1 si caben en el abecedario, 2 si no...
@@ -139,7 +143,121 @@ public class Excavation {
         }
         cabecera = sb.toString();
     }
+      /**
+     * !CAMBIO 6 (método nuevo). Rellena la capa de terreno y pone en cada casilla el
+     * símbolo de su terreno, que es lo que ve el jugador mientras no la excava.
+     * <p>
+     * Las regiones difíciles reparten los terrenos según sus proporciones; las
+     * básicas (o una región con proporciones no válidas) son todo tierra.
+     * </p>
+     */
+    private void generarTerrenos() {
+        int total = numColumnas * numFilas;
+        List<ETerreno> capa = new ArrayList<>();
+        if (region instanceof IRegionDificil) {
+            capa = repartirTerrenos(((IRegionDificil) region).getProporciones(), total);
+        }
+        if (capa.size() != total) {
+            capa = new ArrayList<>();
+            for (int i = 0; i < total; i++) {
+                capa.add(ETerreno.TIERRA);
+            }
+        }
+        Collections.shuffle(capa, RANDOM);
 
+        for (ETerreno tipo : capa) { // "tipo" y no "terreno", que ya es un atributo
+            terrenos.add(tipo);
+            casillas.add(tipo.getSimbolo());
+        }
+    }
+ /**
+     * !CAMBIO 6 (método nuevo). Calcula cuántas casillas de cada terreno hay según
+     * los porcentajes y las devuelve en una lista sin mezclar.
+     * <p>
+     * Cada terreno recibe la parte entera de su porcentaje y las casillas que sobran
+     * por el redondeo se dan, una a una, a los terrenos a los que más se les ha
+     * recortado. Así la suma siempre es el total de casillas.
+     * </p>
+     *
+     * @param proporciones porcentaje de cada terreno (si no suman 100 se reparte en proporción).
+     * @param total        número de casillas de la rejilla.
+     * @return lista con {@code total} terrenos, o vacía si las proporciones no son válidas.
+     */
+    private List<ETerreno> repartirTerrenos(Map<ETerreno, Integer> proporciones, int total) {
+        List<ETerreno> capa = new ArrayList<>();
+        int suma = sumarProporciones(proporciones); //todo implementar esto
+        if (suma > 0) {
+            ETerreno[] tipos = ETerreno.values();
+            int[] cantidades = new int[tipos.length];
+            int[] sobrante = new int[tipos.length]; // lo recortado al redondear; -1 si el terreno no está
+            int asignadas = 0;
+            for (int i = 0; i < tipos.length; i++) {
+                int porcentaje = getPorcentaje(proporciones, tipos[i]);
+                if (porcentaje > 0) {
+                    cantidades[i] = total * porcentaje / suma;
+                    sobrante[i] = total * porcentaje % suma;
+                    asignadas += cantidades[i];
+                } else {
+                    sobrante[i] = -1;
+                }
+            }
+            while (asignadas < total) {
+                int mejor = indiceMayor(sobrante);
+                cantidades[mejor]++;
+                sobrante[mejor] = -1; // cada terreno recibe como mucho una casilla extra
+                asignadas++;
+            }
+            for (int i = 0; i < tipos.length; i++) {
+                for (int j = 0; j < cantidades[i]; j++) {
+                    capa.add(tipos[i]);
+                }
+            }
+        }
+        return capa;
+    }
+      /**
+     * CAMBIO 6 (método nuevo). Porcentaje de un terreno, tratando como 0 lo que falta,
+     * es null o es negativo.
+     *
+     * @param proporciones porcentajes de la región (no puede ser null).
+     * @param tipo         terreno que se consulta.
+     * @return el porcentaje, 0 o más.
+     */
+    private int getPorcentaje(Map<ETerreno, Integer> proporciones, ETerreno tipo) {
+        Integer porcentaje = proporciones.get(tipo);
+        return (porcentaje == null || porcentaje < 0) ? 0 : porcentaje;
+    }
+
+    /**
+     * !CAMBIO 6 (método nuevo). Suma los porcentajes válidos de las proporciones.
+     *
+     * @param proporciones porcentajes de la región (puede ser null).
+     * @return la suma, o 0 si no hay proporciones válidas.
+     */
+    private int sumarProporciones(Map<ETerreno, Integer> proporciones) {
+        int suma = 0;
+        if (proporciones != null) {
+            for (ETerreno tipo : ETerreno.values()) {
+                suma += getPorcentaje(proporciones, tipo);
+            }
+        }
+        return suma;
+    }
+     /**
+     * !CAMBIO 6 (método nuevo). Posición del mayor valor de un array (la primera si hay empate).
+     *  TODO ME QUEDO AQUI SEGUIR MAÑANA
+     * @param valores array no vacío.
+     * @return índice del mayor valor.
+     */
+    private int indiceMayor(int[] valores) {
+        int mejor = 0;
+        for (int i = 1; i < valores.length; i++) {
+            if (valores[i] > valores[mejor]) {
+                mejor = i;
+            }
+        }
+        return mejor;
+    }
     /**
      * Genera las etiquetas de las columnas hasta alcanzar la cantidad necesaria.
      *
