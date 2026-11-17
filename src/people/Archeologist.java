@@ -1,6 +1,7 @@
 package people;
 
 import excavation.ETerrainSize;
+import excavation.ETerreno;
 import excavation.TerrainShape;
 import excavation.TerrainSize;
 import helpers.UtilsHelper;
@@ -9,7 +10,7 @@ import java.util.List;
 import regions.Region;
 import skills.Skill;
 import treasures.ETreasureRarity;
-
+import java.util.Random;
 /**
  * Arqueólogo de la partida.
  * <p>
@@ -32,6 +33,7 @@ public class Archeologist {
 
     /** Nivel máximo que puede alcanzar un arqueólogo. */
     public static final int NIVEL_MAX = 5;
+    private static final Random RANDOM = new Random();
 
     /** Nombre del arqueólogo. */
     private String nombre;
@@ -476,6 +478,52 @@ public class Archeologist {
      */
     private boolean estaEspecializadoEn(Region r) {
         return nivel == NIVEL_MAX && especializacion == r;
+    }
+
+
+    /**
+     * Acciones que cuesta excavar una casilla de un terreno.
+     * <p>
+     * Parte del coste del propio terreno (fijo, o aleatorio dentro de su rango si es
+     * variable) y se queda con el menor entre ese coste y el que fije alguna de sus
+     * habilidades (por ejemplo, la especialización en desierto fija la arena en 1).
+     * </p>
+     *
+     * @param tipo El terreno que se va a excavar.
+     * @return El coste en acciones (1 o más).
+     * @throws IllegalArgumentException si el terreno es {@code null}.
+     */
+    public int getCosteExcavar(ETerreno tipo) {
+        if (tipo == null) {
+            throw new IllegalArgumentException("El terreno no puede ser nulo.");
+        }
+        int coste = tipo.getCosteMin() + RANDOM.nextInt(tipo.getCosteMax() - tipo.getCosteMin() + 1);
+        for (Skill s : listaHabilidades) {
+            int fijo = s.getCosteExcavar(tipo);
+            if (fijo > 0 && fijo < coste) {
+                coste = fijo;
+            }
+        }
+        return coste;
+    }
+
+    /**
+     * Casillas de un terreno que se cambian por tierra al empezar la excavación
+     * (habilidades de demolición).
+     *
+     * @param tipo El terreno que se cambia.
+     * @return La suma de lo que aporta cada habilidad (0 si no tiene ninguna).
+     * @throws IllegalArgumentException si el terreno es {@code null}.
+     */
+    public int getCasillasCambiadas(ETerreno tipo) {
+        if (tipo == null) {
+            throw new IllegalArgumentException("El terreno no puede ser nulo.");
+        }
+        int total = 0;
+        for (Skill s : listaHabilidades) {
+            total += s.getCasillasCambiadas(tipo);
+        }
+        return total;
     }
 
 }

@@ -205,6 +205,7 @@ public abstract class Skill {
      *
      * @param tipo El terreno que se va a excavar.
      * @return El coste en acciones, o 0 si la habilidad no modifica el coste de ese terreno.
+     * @author Miguel Aguilar Moure
      */
     public int getCosteExcavar(ETerreno tipo) {
         return 0;
@@ -216,6 +217,7 @@ public abstract class Skill {
      *
      * @param tipo El terreno que se cambia.
      * @return Número máximo de casillas a cambiar (0 por defecto).
+     * @author Miguel Aguilar Moure
      */
     public int getCasillasCambiadas(ETerreno tipo) {
         return 0;

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections; // CAMBIO 1: para mezclar la capa de terreno
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale; // REFACTOR 9: mayúsculas independientes del idioma del sistema
 import java.util.Map; // !CAMBIO 1: proporciones de terreno de la región
 import java.util.Random;
 import logs.Registro; // !CAMBIO 1: registro de errores
@@ -30,9 +31,15 @@ import treasures.Treasure;
  * agua) que decide cuántas acciones cuesta excavarla y si hay que excavarla más de
  * una vez (la piedra pasa a tierra).
  *
+ * <p>
+ * REFACTOR 1: el coste de excavar y las casillas que cambian las habilidades de
+ * terreno se piden siempre al arqueólogo ({@link Archeologist#getCosteExcavar(ETerreno)}
+ * y {@link Archeologist#getCasillasCambiadas(ETerreno)}); esta clase no calcula nada
+ * de ello por su cuenta.
+ *
  * @author Miguel Aguilar
  * @author Borja Abal
- * @version 1.0
+ * @version 2.0
  * @since 2026-10-18
  */
 public class Excavation {
@@ -93,12 +100,19 @@ public class Excavation {
      * @param terreno    configuración y dimensiones del terreno.
      * @param region     región cuyos tesoros pueden aparecer en la excavación.
      * @param arqueologo arqueólogo que realizará la excavación.
-     * @throws IllegalArgumentException si algún parámetro es null o el arqueólogo
-     *                                  no puede excavar el terreno.
+     * @throws IllegalArgumentException si algún parámetro es null, el arqueólogo
+     *                                  no puede excavar el terreno o no tiene
+     *                                  licencia para la región.
      */
     public Excavation(ETerrainSize terreno, Region region, Archeologist arqueologo) {
         if (terreno == null || region == null || arqueologo == null) {
             throw new IllegalArgumentException("El terreno, la región y el arqueólogo no pueden ser nulos.");
+        }
+        // REFACTOR 2: nuevo. Una región difícil solo se excava con licencia (entrega II).
+        // ExcavateOperation ya filtra las regiones, pero la clase se protege por sí misma.
+        if (!arqueologo.puedeExcavarEn(region)) {
+            throw new IllegalArgumentException(arqueologo.getNombre() + " no tiene licencia para excavar en "
+                    + region.getNombre() + ".");
         }
         if (!arqueologo.puedeExcavar(terreno)) {
             throw new IllegalArgumentException(arqueologo.getNombre() + " no puede excavar el terreno "
@@ -123,8 +137,12 @@ public class Excavation {
     // ===== Generación =====================================================
 
     /**
-     * Inicializa las casillas de la rejilla y prepara las etiquetas de filas y
+     * Prepara el contador de casillas pendientes y las etiquetas de filas y
      * columnas que se mostrarán al jugador.
+     * <p>
+     * REFACTOR 3: el Javadoc decía que también inicializaba las casillas, pero eso
+     * lo hace {@link #generarTerrenos()} desde el CAMBIO 5.
+     * </p>
      */
     private void generarRejilla() {
         // dimensiond de la rejilla
@@ -320,9 +338,10 @@ public class Excavation {
         while (rarezas.size() < cantidad) {
             rarezas.add(tirarRareza(permiteRaros));
         }
-        // TODO Extras del arqueólogo (raros, infrecuentes, comunes y aleatorios) sin
+        // Extras del arqueólogo (raros, infrecuentes, comunes y aleatorios) sin
         // pasar del 50 % de casillas.
-        // Pendiente de que Archeologist ofrezca sus bonos.
+        // REFACTOR 4: eliminado el TODO "pendiente de que Archeologist ofrezca sus
+        // bonos": ya los ofrece (getTesorosExtra / getProbabilidadExtra).
         int maximo = total / 2;
         if (permiteRaros) {
             anadirHasta(rarezas, ETreasureRarity.RARE, arqueologo.getTesorosExtra(ETreasureRarity.RARE, region),
@@ -337,7 +356,11 @@ public class Excavation {
         }
         // Por último, se colocan en casillas distintas al azar
         List<Integer> posiciones = UtilsHelper.genRandomIdxs(rarezas.size(), total);
-        for (int i = 0; i < rarezas.size(); i++) {
+        // REFACTOR 5: genRandomIdxs devuelve una lista vacía si se piden más índices
+        // que casillas; antes eso provocaba un IndexOutOfBoundsException en
+        // posiciones.get(i). Ahora solo se colocan tantos tesoros como posiciones haya.
+        int colocables = Math.min(rarezas.size(), posiciones.size());
+        for (int i = 0; i < colocables; i++) {
             Treasure tesoro = region.getTesoroAleatorioPorRareza(rarezas.get(i));
             // CAMBIO 7: era "if (tesoro == null) continue;". Se invierte la condición:
             // si la región no tiene tesoros de esa rareza, la casilla queda vacía.
@@ -433,10 +456,16 @@ public class Excavation {
      */
     private void cambiarTerrenos() {
         for (ETerreno tipo : ETerreno.values()) {
-            // TODO getCasillasCambiadas no declarado
-            int cantidad = arqueologo.getCasillasCambiadas(tipo);
-            if (tipo != ETerreno.TIERRA && cantidad > 0) {
-                cambiarATierra(tipo, cantidad);
+            // REFACTOR 6: la tierra es el terreno básico y no se cambia por sí misma,
+            // así que ni se le pregunta al arqueólogo. Antes se llamaba siempre y
+            // después se descartaba el resultado.
+            // getCasillasCambiadas(ETerreno) es un método nuevo de Archeologist
+            // (ver Cambios_complementarios.md): suma lo que aporta cada habilidad.
+            if (tipo != ETerreno.TIERRA) {
+                int cantidad = arqueologo.getCasillasCambiadas(tipo);
+                if (cantidad > 0) {
+                    cambiarATierra(tipo, cantidad);
+                }
             }
         }
     }
@@ -573,8 +602,11 @@ public class Excavation {
 
         // CAMBIO 12: antes era "acciones--;"
         ETerreno tipo = terrenos.get(indice); // "tipo" y no "terreno", que ya es un atributo
-        // TODO getCosteExcar no delcarado
-        acciones = Math.max(0, acciones - arqueologo.getCosteExcavar(tipo));
+        // REFACTOR 7: el coste se pide una sola vez por excavación (en terrenos de
+        // coste variable cada llamada puede dar un valor distinto) y se pasa por
+        // getCoste(), que lo protege de valores no válidos. Antes se llamaba
+        // directamente a un método que no existía.
+        acciones = Math.max(0, acciones - getCoste(tipo));
 
         if (tipo.tieneSiguiente()) {
             bajarNivel(indice, tipo.getSiguiente());
@@ -608,6 +640,21 @@ public class Excavation {
         if (!casillas.get(indice).equals(SUPOSICION)) {
             casillas.set(indice, siguiente.getSimbolo());
         }
+    }
+
+    /**
+     * REFACTOR 7 (método nuevo). Pide al arqueólogo cuántas acciones cuesta excavar
+     * un terreno (según su coste base y las habilidades que tenga).
+     * <p>
+     * El coste mínimo es 1: así una habilidad mal definida (coste 0 o negativo) no
+     * puede dar acciones gratis ni sumarlas.
+     * </p>
+     *
+     * @param tipo terreno que se va a excavar.
+     * @return acciones que se cobran, 1 o más.
+     */
+    private int getCoste(ETerreno tipo) {
+        return Math.max(1, arqueologo.getCosteExcavar(tipo));
     }
 
     /**
@@ -911,6 +958,11 @@ public class Excavation {
      * de él. Se recorre con un índice mientras queden indicaciones y la excavación no
      * haya terminado; si sobran indicaciones, se avisa una sola vez al final.
      * </p>
+     * <p>
+     * REFACTOR 8: se separa por {@code \s+} (cualquier cantidad de espacios o
+     * tabuladores) en vez de {@code " "}, así no salen cadenas vacías y se puede
+     * quitar la comprobación {@code isEmpty()} del bucle.
+     * </p>
      *
      * @param linea texto que contiene una o varias posiciones.
      */
@@ -919,13 +971,10 @@ public class Excavation {
             System.out.println("No has introducido ninguna posición.");
             return;
         }
-        String[] indicaciones = linea.trim().split(" ");
+        String[] indicaciones = linea.trim().split("\\s+"); // REFACTOR 8: antes split(" ")
         int i = 0;
         while (i < indicaciones.length && !isFinalizada()) {
-            // varios espacios seguidos generan cadenas vacías: se saltan sin "continue"
-            if (!indicaciones[i].isEmpty()) {
-                excavarIndicacion(indicaciones[i]);
-            }
+            excavarIndicacion(indicaciones[i]); // REFACTOR 8: ya no hay cadenas vacías que saltar
             i++;
         }
         if (i < indicaciones.length) {
@@ -962,7 +1011,9 @@ public class Excavation {
         while (i < texto.length() && Character.isDigit(texto.charAt(i))) {
             i++;
         }
-        String letras = texto.substring(i).toUpperCase();
+        // REFACTOR 9: toUpperCase() usa el idioma del sistema (en turco la "i" pasa a "İ"
+        // y la columna no se encontraría). Con Locale.ROOT es siempre igual.
+        String letras = texto.substring(i).toUpperCase(Locale.ROOT);
         if (i == 0 || letras.isEmpty()) {
             throw new IllegalArgumentException("formato no válido, usa número y letra (ej. 3B).");
         }

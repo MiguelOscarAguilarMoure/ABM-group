@@ -95,18 +95,5 @@ public enum ETerreno {
         return siguiente != null;
     }
 
-    /**
-     * Busca un terreno por su símbolo.
-     *
-     * @param simbolo El símbolo de la rejilla (por ejemplo "^").
-     * @return El terreno con ese símbolo, o {@code null} si no hay ninguno.
-     */
-    public static ETerreno getPorSimbolo(String simbolo) {
-        for (ETerreno t : ETerreno.values()) {
-            if (t.simbolo.equals(simbolo)) {
-                return t;
-            }
-        }
-        return null;
-    }
+    
 }
