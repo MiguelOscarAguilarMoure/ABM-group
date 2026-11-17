@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import skills.ESkillType;
 import skills.Skill;
-import skills.habilidad.*;
+import skills.Habilidad.*;
 
 /**
  * Repositorio de todas las habilidades del juego.
