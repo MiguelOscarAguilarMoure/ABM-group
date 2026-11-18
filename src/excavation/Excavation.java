@@ -16,9 +16,12 @@ import treasures.Treasure;
 /**
  * Representa una excavación dentro del juego.
  * <p>
- * Actúa como fachada y coordinador principal de la partida: valida las condiciones
- * de acceso, delega la construcción del tablero y el reparto inicial en el paquete
- * {@code excavation.utils}, y controla las reglas de turno, acciones y puntuación.
+ * Actúa como fachada y coordinador principal de la partida: valida las
+ * condiciones
+ * de acceso, delega la construcción del tablero y el reparto inicial en el
+ * paquete
+ * {@code excavation.utils}, y controla las reglas de turno, acciones y
+ * puntuación.
  * </p>
  *
  * @author Miguel Aguilar
@@ -28,25 +31,49 @@ import treasures.Treasure;
  */
 public class Excavation {
 
+    /** Generador compartido para la preparación aleatoria de las excavaciones. */
     private static final Random RANDOM = new Random();
 
-    // Valores de ETerrainSize.getTamanho()
+    /** Nombre del tamaño de terreno pequeño. */
     private static final String PEQUENO = "Pequeño";
+
+    /** Nombre del tamaño de terreno mediano. */
     private static final String MEDIANO = "Mediano";
+
+    /** Nombre del tamaño de terreno grande. */
     private static final String GRANDE = "Grande";
 
-    private static final double ACCIONES_MIN = 0.25; // 25 % de la rejilla
-    private static final double ACCIONES_MAX = 0.75; // 75 % de la rejilla
+    /** Proporción base de casillas usada para calcular las acciones. */
+    private static final double ACCIONES_MIN = 0.25;
 
+    /** Proporción máxima de casillas usada para limitar las acciones. */
+    private static final double ACCIONES_MAX = 0.75;
+
+    /** Configuración de tamaño y dimensiones del terreno. */
     private final ETerrainSize terreno;
+
+    /** Región de la que proceden los tesoros de la excavación. */
     private final Region region;
+
+    /** Arqueólogo que participa en la excavación. */
     private final Archeologist arqueologo;
+
+    /** Rejilla que almacena el estado y la representación de las casillas. */
     private final RejillaExcavacion rejilla;
+
+    /** Tesoros enterrados, indexados por casilla. */
     private final Map<Integer, Treasure> tesoros;
+
+    /** Códigos completos de los tesoros encontrados. */
     private final List<String> codigosEncontrados;
 
+    /** Acciones que aún puede realizar el arqueólogo. */
     private int acciones;
+
+    /** Tesoros que todavía no se han encontrado. */
     private int tesorosRestantes;
+
+    /** Puntos obtenidos al encontrar tesoros. */
     private int puntos;
 
     /**
@@ -78,7 +105,8 @@ public class Excavation {
         this.region = region;
         this.arqueologo = arqueologo;
 
-        // En ETerrainSize "AxB" es ancho x alto: A = columnas (letras), B = filas (números).
+        // En ETerrainSize "AxB" es ancho x alto: A = columnas (letras), B = filas
+        // (números).
         int numColumnas = terreno.getFil();
         int numFilas = terreno.getCol();
         int totalCasillas = numColumnas * numFilas;
@@ -144,8 +172,9 @@ public class Excavation {
     }
 
     /**
-     * Calcula las acciones disponibles según el tamaño de la rejilla y las
-     * bonificaciones del arqueólogo, acotadas entre 1 y el 75 % de las casillas.
+     * Calcula las acciones según el tamaño de la rejilla y las bonificaciones del
+     * arqueólogo, con un mínimo de una acción y un límite basado en el 75 % de las
+     * casillas.
      *
      * @return número de acciones iniciales.
      */
@@ -159,7 +188,8 @@ public class Excavation {
     }
 
     /**
-     * Consulta al arqueólogo el coste de excavar un terreno asegurando un mínimo de 1.
+     * Consulta al arqueólogo el coste de excavar un terreno asegurando un mínimo de
+     * 1.
      *
      * @param tipo terreno que se va a excavar.
      * @return acciones que cuesta excavar dicho terreno (1 o más).
@@ -185,7 +215,8 @@ public class Excavation {
      *
      * @param posicion posición de la casilla.
      * @return terreno actual en dicha posición.
-     * @throws IllegalArgumentException si la posición es null o está fuera de rango.
+     * @throws IllegalArgumentException si la posición es null o está fuera de
+     *                                  rango.
      */
     public ETerreno getTerreno(Position posicion) {
         return rejilla.getTerreno(posicion);
@@ -241,7 +272,7 @@ public class Excavation {
         return cantidad;
     }
 
-   /**
+    /**
      * Cuenta los tesoros de la rareza indicada que se colocaron al inicio.
      *
      * @param rareza rareza que se desea consultar.

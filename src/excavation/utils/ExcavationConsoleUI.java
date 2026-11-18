@@ -12,13 +12,30 @@ import treasures.ETreasureRarity;
 /**
  * Gestiona la interfaz por consola de una excavación: visualización de turnos,
  * lectura y validación de coordenadas del jugador y resumen final.
+ *
+ * 
+ *
+ * @author Miguel Aguilar
+ * @version 2.0
+ * @see Excavation
+ * @see InputHelper
+ * @see Position
+ * @see ETreasureRarity
+ * @see Registro
+ * @since 2026-11-18
  */
 public class ExcavationConsoleUI {
 
+    /** Texto decorativo que enmarca el título de la excavación. */
     private static final String ADORNO = "::::::::::::::::::::";
+
+    /** Línea separadora entre turnos. */
     private static final String SEPARADOR_TURNO = "----------------------------------------";
+
+    /** Línea separadora del resumen final. */
     private static final String SEPARADOR_FIN = "::::::::::::::::::::::::::::::::::::::::";
 
+    /** Excavación gestionada por esta interfaz. */
     private final Excavation excavacion;
 
     /**
@@ -35,7 +52,8 @@ public class ExcavationConsoleUI {
     }
 
     /**
-     * Ejecuta el bucle interactivo por consola hasta que finalice la excavación.
+     * Ejecuta la interacción por consola hasta que termine la excavación o se
+     * agote la entrada.
      *
      * @return lista con los códigos completos de los tesoros encontrados.
      */
@@ -56,6 +74,7 @@ public class ExcavationConsoleUI {
         return excavacion.getCodigosEncontrados();
     }
 
+    /** Muestra el estado actual y solicita las coordenadas del turno. */
     private void mostrarTurno() {
         System.out.println(excavacion);
         System.out.println("Número de acciones restantes: " + excavacion.getAccionesRestantes());
@@ -67,6 +86,11 @@ public class ExcavationConsoleUI {
         System.out.print("Conjunto de coordenadas a excavar separadas por espacios: ");
     }
 
+    /**
+     * Divide y procesa las coordenadas recibidas en una línea.
+     *
+     * @param linea texto introducido por el usuario.
+     */
     private void procesarEntrada(String linea) {
         String entradaLimpia = linea.trim();
         if (entradaLimpia.isEmpty()) {
@@ -84,6 +108,11 @@ public class ExcavationConsoleUI {
         }
     }
 
+    /**
+     * Convierte una coordenada y ejecuta la excavación correspondiente.
+     *
+     * @param coordenada coordenada introducida por el usuario.
+     */
     private void excavarPosicion(String coordenada) {
         try {
             Position posicion = leerPosicion(coordenada);
@@ -94,6 +123,13 @@ public class ExcavationConsoleUI {
         }
     }
 
+    /**
+     * Convierte el texto de una coordenada en una posición.
+     *
+     * @param texto coordenada formada por una fila y una columna.
+     * @return posición correspondiente a la coordenada.
+     * @throws IllegalArgumentException si el texto no representa una posición válida.
+     */
     private Position leerPosicion(String texto) {
         int i = 0;
         while (i < texto.length() && Character.isDigit(texto.charAt(i))) {
@@ -111,6 +147,7 @@ public class ExcavationConsoleUI {
         }
     }
 
+    /** Muestra el estado final de la excavación y el resumen de tesoros. */
     private void mostrarFinal() {
         System.out.println(SEPARADOR_FIN);
         System.out.println("Excavación terminada");
@@ -125,6 +162,12 @@ public class ExcavationConsoleUI {
         mostrarResumen(ETreasureRarity.RARE, "raros");
     }
 
+    /**
+     * Muestra los tesoros encontrados de una rareza, si los hay.
+     *
+     * @param rareza rareza de los tesoros que se resume.
+     * @param plural nombre plural de la rareza para mostrar.
+     */
     private void mostrarResumen(ETreasureRarity rareza, String plural) {
         int total = excavacion.getTotalTesoros(rareza);
         if (total > 0) {

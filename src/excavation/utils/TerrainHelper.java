@@ -12,22 +12,29 @@ import regions.Region;
 /**
  * Utilidad sin estado encargada de calcular el reparto proporcional de terrenos
  * y generar la capa inicial de terreno para una excavación.
+ * @author Miguel Aguilar Moure
+ * @version 2.0
+ * @see ETerreno
+ * @see Region
+ * @since 2026-11-18
+ * 
  */
 public final class TerrainHelper {
 
+    /** Impide la creación de instancias de esta clase de utilidad. */
     private TerrainHelper() {
-        // Evita la instanciación de la clase de utilidad
     }
 
     /**
      * Genera y mezcla la lista de terrenos correspondiente a una región.
      * Si la región es básica o sus proporciones no son válidas, rellena todo con tierra.
      *
-     * @param region        región de la excavación.
+     * @param region región de la excavación.
      * @param totalCasillas número total de casillas del tablero.
-     * @param random        generador de números aleatorios.
+     * @param random generador aleatorio usado para mezclar los terrenos.
      * @return lista mezclada con tantos terrenos como {@code totalCasillas}.
-     * @throws IllegalArgumentException si la región o random son nulos, o totalCasillas <= 0.
+     * @throws IllegalArgumentException si la región o el generador son nulos, o el total
+     *         de casillas no es positivo.
      */
     public static List<ETerreno> generarCapaTerrenos(Region region, int totalCasillas, Random random) {
         if (region == null) {
@@ -61,8 +68,9 @@ public final class TerrainHelper {
      * Calcula cuántas casillas de cada terreno corresponden según sus porcentajes
      * aplicando el método del resto mayor para que la suma coincida con {@code total}.
      *
-     * @param proporciones mapa con el porcentaje de cada tipo de terreno.
-     * @param total        número total de casillas a repartir.
+     * @param proporciones mapa con el porcentaje asignado a cada tipo de terreno; los
+     *        valores nulos o negativos se consideran cero.
+     * @param total número total de casillas a repartir.
      * @return lista sin mezclar con {@code total} terrenos, o vacía si no hay proporciones válidas.
      * @throws IllegalArgumentException si {@code total} es menor o igual que cero.
      */
@@ -90,6 +98,7 @@ public final class TerrainHelper {
                 }
             }
 
+            // Reparte las casillas restantes por orden de resto, sin repetir tipo.
             while (asignadas < total) {
                 int mejor = indiceMayor(sobrante);
                 cantidades[mejor]++;
@@ -106,6 +115,12 @@ public final class TerrainHelper {
         return capa;
     }
 
+    /**
+     * Suma las proporciones no negativas de los tipos de terreno.
+     *
+     * @param proporciones mapa de porcentajes; si es nulo, la suma es cero.
+     * @return suma de las proporciones válidas.
+     */
     private static int sumarProporciones(Map<ETerreno, Integer> proporciones) {
         int suma = 0;
         if (proporciones != null) {
@@ -117,11 +132,24 @@ public final class TerrainHelper {
         return suma;
     }
 
+    /**
+     * Obtiene el porcentaje válido asociado a un tipo de terreno.
+     *
+     * @param proporciones mapa de porcentajes.
+     * @param tipo tipo de terreno consultado.
+     * @return porcentaje, o cero si no está definido o es negativo.
+     */
     private static int getPorcentaje(Map<ETerreno, Integer> proporciones, ETerreno tipo) {
         Integer porcentaje = proporciones.get(tipo);
         return (porcentaje == null || porcentaje < 0) ? 0 : porcentaje;
     }
 
+    /**
+     * Busca el primer índice con el valor máximo del arreglo.
+     *
+     * @param valores valores que se compararán.
+     * @return índice del valor máximo; en caso de empate, el primero.
+     */
     private static int indiceMayor(int[] valores) {
         int mejor = 0;
         for (int i = 1; i < valores.length; i++) {
