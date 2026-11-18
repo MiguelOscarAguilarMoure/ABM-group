@@ -32,4 +32,26 @@ public class TerrenoArena extends TerrenoEspecializacion {
         super(nombre, descripcion, tipo);
     }
 
+    /**
+     * Coste de excavar un terreno con esta habilidad.
+     * Lo usa {@code Archeologist.getCosteExcavar()}.
+     *
+     * @param terreno El terreno que se va a excavar.
+     * @return 1 si es arena; 0 (sin efecto) en cualquier otro terreno.
+     */
+    @Override
+    public int getCosteTerreno(ETerreno terreno) {
+        return (terreno == ETerreno.ARENA) ? COSTE_ARENA : 0;
+    }
+
+
+
+    /**
+     * aplica el efecto de la habilidad
+     *
+     * @return coste de excavacion en casillas "Arena"
+     */
+    public int efecto() {
+        return 1;
+    }
 }
