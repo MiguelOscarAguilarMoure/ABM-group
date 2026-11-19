@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import treasures.ETreasureRarity;
 import treasures.ETreasureType;
 import treasures.Treasure;
+import logs.Registro;
 
 /**
  * Carga dinámica de los tesoros de las regiones desde sus ficheros JSON.
@@ -59,8 +60,9 @@ public class RegionLoader {
             for (TreasureData d : datos) {
                 region.addTesoro(crearTesoro(d));
             }
-        } catch (IOException | JsonParseException e) {
+                } catch (IOException | JsonParseException e) {
             System.out.println("No se han podido cargar los tesoros de " + region.getNombre() + " (" + ruta + ").");
+            Registro.registrarError("No se han podido cargar los tesoros de " + region.getNombre() + " (" + ruta + ").", e);
         }
     }
 
