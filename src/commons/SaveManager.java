@@ -60,7 +60,7 @@ public class SaveManager {
                 gson.toJson(archaios, writer);
             }
 
-            registrarLogGeneral(archaios.getNombrePartida(), "Guardado de partida realizado correctamente.");
+           
         } catch (Exception e) {
             registrarError(e);
         }
@@ -82,7 +82,7 @@ public class SaveManager {
 
         try (FileReader reader = new FileReader(file)) {
             Archaios archaios = gson.fromJson(reader, Archaios.class);
-            registrarLogGeneral(nombrePartida, "Partida cargada exitosamente.");
+            
             return archaios;
         } catch (Exception e) {
             registrarError(e);

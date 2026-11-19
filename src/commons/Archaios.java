@@ -29,6 +29,7 @@ import stats.Stats;
 import zeraf.ESistema;
 import zeraf.Zeraf;
 import zeraf.ZerafFactory;
+import logs.Registro;
 
 /**
  * Coordina el ciclo de vida y las operaciones principales de una partida de
@@ -223,7 +224,8 @@ public class Archaios {
 
             String nombreArq = InputHelper.leerTexto("Nombre del primer arqueólogo: ");
             arqueologos.add(new Archeologist(nombreArq));
-
+            // Registro de tesoros: se crea con la línea "Inicio de la partida."
+            Registro.iniciarPartida(nombrePartida);
             // Primer guardado: cuando se crea una partida nueva
             SaveManager.guardarPartida(this);
 
