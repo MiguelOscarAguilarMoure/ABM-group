@@ -203,8 +203,8 @@ public class Archaios {
     }
 
     /**
-     * Solicita los datos iniciales, crea el primer arqueólogo y prepara las
-     * operaciones.
+     * Carga una partida guardada o crea una nueva (pidiendo el código de usuario,
+     * el nombre de la partida y el primer arqueólogo) y prepara las operaciones.
      */
     private void init() {
         Archaios partidaCargada = elegirPartidaGuardada();
@@ -218,20 +218,18 @@ public class Archaios {
             this.stats = partidaCargada.stats;
             System.out.println("Partida '" + nombrePartida + "' cargada.");
         } else {
-            // Partida nueva
             uid = InputHelper.leerTexto("Código de usuario: ");
             nombrePartida = pedirNombreNuevo();
 
             String nombreArq = InputHelper.leerTexto("Nombre del primer arqueólogo: ");
             arqueologos.add(new Archeologist(nombreArq));
-            // Registro de tesoros: se crea con la línea "Inicio de la partida."
+
+            // Registro de la partida: se crea con la línea "Inicio de la partida."
             Registro.iniciarPartida(nombrePartida);
+
             // Primer guardado: cuando se crea una partida nueva
             SaveManager.guardarPartida(this);
 
-            // Registro de tesoros: línea "Inicio de la partida." en
-            // log/register/[partida].log
-            SaveManager.inicializarRegistroPartida(nombrePartida);
         }
 
         zeraf = ZerafFactory.createZeraf(ESistema.MUSEO, uid, CODIGO_GRUPO);
