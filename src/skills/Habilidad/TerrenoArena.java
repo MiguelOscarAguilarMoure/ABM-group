@@ -12,10 +12,10 @@ import skills.ESkillType;
  * </p>
  *
  * @author Miguel Aguilar Moure
- * @since Alberto Ameneiros
+ * @author Alberto Ameneiros
  * @version 1.0
  * @see TerrenoEspecializacion
- * @see skills.Skill#getCosteTerreno(ETerreno)
+ * @see skills.Skill#getCosteExcavar(ETerreno)
  */
 public class TerrenoArena extends TerrenoEspecializacion {
     /** Coste fijo de excavar arena con esta habilidad. */
@@ -34,24 +34,22 @@ public class TerrenoArena extends TerrenoEspecializacion {
 
     /**
      * Coste de excavar un terreno con esta habilidad.
-     * Lo usa {@code Archeologist.getCosteExcavar()}.
+     * Lo usa {@code Archeologist.getCosteExcavar()}, que se queda con el menor.
      *
-     * @param terreno El terreno que se va a excavar.
+     * @param tipo El terreno que se va a excavar.
      * @return 1 si es arena; 0 (sin efecto) en cualquier otro terreno.
      */
     @Override
-    public int getCosteTerreno(ETerreno terreno) {
-        return (terreno == ETerreno.ARENA) ? COSTE_ARENA : 0;
+    public int getCosteExcavar(ETerreno tipo) {
+        return (tipo == ETerreno.ARENA) ? efecto() : 0;
     }
 
-
-
     /**
-     * aplica el efecto de la habilidad
+     * Aplica el efecto de la habilidad.
      *
-     * @return coste de excavacion en casillas "Arena"
+     * @return El coste de excavación en las casillas de arena.
      */
     public int efecto() {
-        return 1;
+        return COSTE_ARENA;
     }
 }
