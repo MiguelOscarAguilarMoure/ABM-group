@@ -50,16 +50,15 @@ public class TerrenoDemoler extends Skill {
      */
     @Override
     public int getCasillasCambiadas(ETerreno terreno) {
-        return (terreno == ETerreno.PIEDRA) ? piedras : 0;
+        return (terreno == ETerreno.PIEDRA) ? efecto() : 0;
     }
 
-
     /**
-     * aplica el efecto de la habilidad
+     * Aplica el efecto de la habilidad.
      *
-     * @return numero de piedras que han de romperse
+     * @return El número máximo de piedras que rompe.
      */
     public int efecto() {
-        return 5;
+        return piedras;
     }
 }

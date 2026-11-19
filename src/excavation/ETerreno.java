@@ -9,10 +9,10 @@ package excavation;
  * terreno y hay que excavarla de nuevo.
  * </p>
  * <ul>
- * <li><b>Tierra</b> {@code .} (coste 1): el terreno básico.</li>
+ * * <li><b>Tierra</b> {@code ·} (coste 1): el terreno básico.</li
  * <li><b>Piedra</b> {@code ^} (coste 1): al romperla pasa a tierra.</li>
  * <li><b>Arena</b> {@code ~} (coste 1-2, variable).</li>
- * <li><b>Agua</b> {@code -} (coste 2).</li>
+ *  <li><b>Agua</b> {@code –} (coste 2).</li>
  * </ul>
  *
  * @author Miguel Aguilar Moure
@@ -20,11 +20,12 @@ package excavation;
  * @see regions.IRegionDificil#getProporciones()
  */
 public enum ETerreno {
-    // El siguiente nivel debe declararse antes que el terreno que lo usa (TIERRA antes que PIEDRA).
-    TIERRA(".", 1, 1, null),
+    // El siguiente nivel debe declararse antes que el terreno que lo usa (TIERRA
+    // antes que PIEDRA).
+    TIERRA("·", 1, 1, null),
     PIEDRA("^", 1, 1, TIERRA),
     ARENA("~", 1, 2, null),
-    AGUA("-", 2, 2, null);
+    AGUA("–", 2, 2, null);
 
     /** Símbolo que se dibuja en la rejilla. */
     private final String simbolo;
@@ -82,18 +83,19 @@ public enum ETerreno {
     }
 
     /**
-     * @return El terreno al que pasa al excavarlo, o {@code null} si no tiene siguiente nivel.
+     * @return El terreno al que pasa al excavarlo, o {@code null} si no tiene
+     *         siguiente nivel.
      */
     public ETerreno getSiguiente() {
         return siguiente;
     }
 
     /**
-     * @return {@code true} si al excavarlo pasa a otro terreno y hay que volver a excavar la casilla.
+     * @return {@code true} si al excavarlo pasa a otro terreno y hay que volver a
+     *         excavar la casilla.
      */
     public boolean tieneSiguiente() {
         return siguiente != null;
     }
 
-    
 }

@@ -124,11 +124,13 @@ public class LicenseOperation implements IOperation {
         List<Archeologist> lista = juego.getArqueologos();
         for (int i = 0; i < lista.size(); i++) {
             Archeologist a = lista.get(i);
-            System.out.println((i + 1) + ". " + a.getNombre() + " (" + a.getLicencias().size() + " licencias)");
+            int n = a.getLicencias().size();
+            String texto = (n == 1) ? "licencia" : "licencias";
+            System.out.println((i + 1) + ". " + a.getNombre() + " (" + n + " " + texto + ")");
 
         }
         System.out.println("0. Volver");
-        int op = InputHelper.leerOpcion("Arqueologo: ", lista.size());
+        int op = InputHelper.leerOpcion("Arqueólogo: ", lista.size());
         if (op == 0) {
             return null;
         }

@@ -29,6 +29,7 @@ import stats.Stats;
 import zeraf.ESistema;
 import zeraf.Zeraf;
 import zeraf.ZerafFactory;
+import logs.Registro;
 
 /**
  * Coordina el ciclo de vida y las operaciones principales de una partida de
@@ -75,7 +76,8 @@ public class Archaios {
     @SerializedName("Estadísticas")
     private Stats stats = new Stats(); // una sola para toda la partida
 
-    // --- OPERACIONES Y ZERAF (No llevan @SerializedName porque no van en el JSON) ---
+    // --- OPERACIONES Y ZERAF (No llevan @SerializedName porque no van en el JSON)
+    // ---
 
     /**
      * Operaciones de gestión de arqueólogos.
@@ -117,14 +119,7 @@ public class Archaios {
      */
     private transient Zeraf zeraf;
 
-    /**
-     * Devuelve el nombre de la partida actual.
-     *
-     * @return nombre de la partida
-     */
-    public String getPartida() {
-        return nombrePartida; // O 'partida', dependiendo del nombre de tu variable interna
-    }
+    
 
     /**
      * Inicia, ejecuta y finaliza una partida.
@@ -146,7 +141,6 @@ public class Archaios {
         RegionRepository.registrar(new Greece());
         RegionRepository.registrar(new Iberia());
         RegionRepository.registrar(new Rome());
-
 
         RegionRepository.registrar(new Egypt());
         RegionRepository.registrar(new Petra());
@@ -202,15 +196,11 @@ public class Archaios {
     }
 
     /**
-     * Solicita los datos iniciales, crea el primer arqueólogo y prepara las
-     * operaciones.
+     * Carga una partida guardada o crea una nueva (pidiendo el código de usuario,
+     * el nombre de la partida y el primer arqueólogo) y prepara las operaciones.
      */
     private void init() {
-        uid = InputHelper.leerTexto("Código de usuario: ");
-        nombrePartida = InputHelper.leerTexto("Nombre de la partida: ");
-
-        // Intentar cargar la partida existente en el pre-init / arranque
-        Archaios partidaCargada = SaveManager.cargarPartida(nombrePartida);
+        Archaios partidaCargada = elegirPartidaGuardada();
 
         if (partidaCargada != null) {
             // Restaurar los datos de la partida cargada
@@ -219,17 +209,20 @@ public class Archaios {
             this.puntos = partidaCargada.puntos;
             this.arqueologos = partidaCargada.arqueologos;
             this.stats = partidaCargada.stats;
-            System.out.println("¡Partida '" + nombrePartida + "' cargada correctamente desde archivo!");
+            System.out.println("Partida '" + nombrePartida + "' cargada.");
         } else {
-            // Si no existe, crear la partida nueva por defecto
+            uid = InputHelper.leerTexto("Código de usuario: ");
+            nombrePartida = pedirNombreNuevo();
+
             String nombreArq = InputHelper.leerTexto("Nombre del primer arqueólogo: ");
             arqueologos.add(new Archeologist(nombreArq));
+
+            // Registro de la partida: se crea con la línea "Inicio de la partida."
+            Registro.iniciarPartida(nombrePartida);
 
             // Primer guardado: cuando se crea una partida nueva
             SaveManager.guardarPartida(this);
 
-            // Inicializar el registro de tesoros con la línea "Inicio de la partida." en log/register/[partida].log
-            SaveManager.inicializarRegistroPartida(nombrePartida);
         }
 
         zeraf = ZerafFactory.createZeraf(ESistema.MUSEO, uid, CODIGO_GRUPO);
@@ -241,6 +234,52 @@ public class Archaios {
         catalogo = new CatalagoTesoros();
         excavar = new ExcavateOperation(this);
         estadisticas = new StatsOperation(this);
+    }
+
+    /**
+     * Comprueba si hay partidas guardadas y, si las hay, pregunta si se quiere
+     * cargar alguna o empezar una nueva.
+     *
+     * @return La partida cargada, o {@code null} si no hay ninguna guardada,
+     *         si elige empezar una nueva o si no se ha podido cargar.
+     */
+    private Archaios elegirPartidaGuardada() {
+        List<String> partidas = SaveManager.listarPartidas();
+        if (partidas.isEmpty()) {
+            return null; // no hay ninguna: se empieza una nueva directamente
+        }
+
+        System.out.println("-------------------- Partidas guardadas --------------------");
+        for (int i = 0; i < partidas.size(); i++) {
+            System.out.println((i + 1) + ". " + partidas.get(i));
+        }
+        System.out.println("0. Nueva partida");
+        int op = InputHelper.leerOpcion("Partida: ", partidas.size());
+
+        if (op == 0) {
+            return null;
+        }
+        Archaios cargada = SaveManager.cargarPartida(partidas.get(op - 1));
+        if (cargada == null) {
+            System.out.println("No se ha podido cargar la partida. Se empieza una nueva.");
+        }
+        return cargada;
+    }
+
+    /**
+     * Pide el nombre de una partida nueva. Si ya existe una guardada con ese
+     * nombre, avisa y lo vuelve a pedir, para no sobrescribirla.
+     *
+     * @return Un nombre que no está en uso.
+     */
+    private String pedirNombreNuevo() {
+        List<String> existentes = SaveManager.listarPartidas();
+        String nombre = InputHelper.leerTexto("Nombre de la partida: ");
+        while (existentes.contains(nombre)) {
+            System.out.println("Ya existe una partida con ese nombre.");
+            nombre = InputHelper.leerTexto("Nombre de la partida: ");
+        }
+        return nombre;
     }
 
     // Se eliminó la línea "void InicializadosSkills();" que causaba el error de

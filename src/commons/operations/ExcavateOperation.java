@@ -16,7 +16,7 @@ import regions.Region;
 import skills.Skill;
 import treasures.Treasure;
 import messages.ResponseWrapper;
-
+import logs.Registro;
 /**
  * Opción "Excavar" del menú principal.
  * <p>
@@ -86,7 +86,7 @@ public class ExcavateOperation implements IOperation {
 
         // REGISTRO DE LOS LOGS CON LOS TESOROS
         for (String codigoTesoro : encontrados) {
-            commons.SaveManager.registrarTesoro(juego.getNombrePartida(), codigoTesoro);
+              Registro.registrarTesoro(juego.getNombrePartida(), codigoTesoro);
         }
 
         // 4. Envío de los tesoros al Museo y mensaje de respuesta

@@ -6,7 +6,6 @@ import java.util.Locale;
 
 import excavation.Excavation;
 import excavation.Position;
-import logs.Registro;
 import treasures.ETreasureRarity;
 
 /**
@@ -113,13 +112,14 @@ public class ExcavationConsoleUI {
      *
      * @param coordenada coordenada introducida por el usuario.
      */
-    private void excavarPosicion(String coordenada) {
+       private void excavarPosicion(String coordenada) {
         try {
             Position posicion = leerPosicion(coordenada);
             excavacion.excavar(posicion);
         } catch (IllegalArgumentException | IllegalStateException e) {
+            // Error del usuario al escribir la coordenada: se le avisa y sigue jugando.
+            // No va a errors.log porque no es un fallo del programa.
             System.out.println(coordenada + ": " + e.getMessage());
-            Registro.registrarError("Posición no válida (" + coordenada + "): " + e.getMessage(), e);
         }
     }
 

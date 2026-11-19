@@ -158,4 +158,5 @@ public final class Registro {
             System.out.println("No se ha podido escribir en el registro " + ruta + ": " + e.getMessage());
         }
     }
+    
 }

@@ -2,41 +2,47 @@ package commons;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import logs.Registro;
 import regions.Region;
 import skills.Skill;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
- * Gestor de persistencia, guardado de partidas (.save) y registros (logs de tesoros y errores).
+ * Guardado y carga de partidas en formato JSON (ficheros .save).
+ * <p>
+ * Los registros (inicio de partida, tesoros y errores) los escribe
+ * {@link logs.Registro}.
+ * </p>
  *
- * @author Alberto
- * @version 2.0
+ * @author Alberto Ameneiros
+ * @version 2.1
  */
 public class SaveManager {
 
+    /** Carpeta donde se guardan las partidas. */
     private static final String SAVE_DIR = "Saves" + File.separator + "Save";
-    private static final String REGISTER_LOG_DIR = "log" + File.separator + "register";
-    private static final String GLOBAL_LOG_DIR = "log";
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    /** Extensión de los ficheros de partida. */
+    private static final String EXTENSION = ".save";
 
+    /** Gson con los adaptadores para guardar habilidades y regiones por su nombre o código. */
     private static final Gson gson = new GsonBuilder().setPrettyPrinting()
             .registerTypeAdapter(Skill.class, new SkillAdapter())
             .registerTypeAdapter(Region.class, new RegionAdapter())
             .create();
 
     /**
-     * Guarda el estado de la partida en formato JSON con extensión .save.
+     * Guarda el estado de la partida en formato JSON, sobrescribiendo el guardado anterior.
      *
      * @param archaios Partida actual a guardar.
      */
@@ -44,138 +50,59 @@ public class SaveManager {
         if (archaios == null || archaios.getNombrePartida() == null) {
             return;
         }
-        try {
-            File dir = new File(SAVE_DIR);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
+        File dir = new File(SAVE_DIR);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        File file = new File(dir, archaios.getNombrePartida() + EXTENSION);
 
-            String fileName = archaios.getNombrePartida() + ".save";
-            File file = new File(dir, fileName);
-
-            try (FileWriter writer = new FileWriter(file)) {
-                gson.toJson(archaios, writer);
-            }
-
-            registrarLogGeneral(archaios.getNombrePartida(), "Guardado de partida realizado correctamente.");
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
+            gson.toJson(archaios, writer);
         } catch (Exception e) {
-            registrarError(e);
+            Registro.registrarError("No se ha podido guardar la partida " + archaios.getNombrePartida() + ".", e);
         }
     }
 
     /**
-     * Carga una partida existente desde su archivo .save.
+     * Carga una partida existente desde su fichero .save.
      *
      * @param nombrePartida Nombre de la partida.
-     * @return Instancia de {@link Archaios} restaurada, o {@code null} si no existe.
+     * @return La partida restaurada, o {@code null} si no existe o no se ha podido leer.
      */
     public static Archaios cargarPartida(String nombrePartida) {
-        String filePath = SAVE_DIR + File.separator + nombrePartida + ".save";
-        File file = new File(filePath);
-
+        File file = new File(SAVE_DIR, nombrePartida + EXTENSION);
         if (!file.exists()) {
             return null;
         }
 
-        try (FileReader reader = new FileReader(file)) {
-            Archaios archaios = gson.fromJson(reader, Archaios.class);
-            registrarLogGeneral(nombrePartida, "Partida cargada exitosamente.");
-            return archaios;
+        try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
+            return gson.fromJson(reader, Archaios.class);
         } catch (Exception e) {
-            registrarError(e);
+            Registro.registrarError("No se ha podido cargar la partida " + nombrePartida + ".", e);
             return null;
         }
     }
 
     /**
-     * Inicializa el registro de una nueva partida creando el fichero en log/register/[partida].log
-     * y añadiendo la línea de inicio.
+     * Devuelve los nombres de las partidas guardadas, es decir, los ficheros
+     * .save de la carpeta de guardado.
      *
-     * @param nombrePartida Nombre de la partida.
+     * @return Los nombres ordenados alfabéticamente, sin la extensión;
+     *         una lista vacía si no hay ninguna.
      */
-    public static void inicializarRegistroPartida(String nombrePartida) {
-        registrarLogGeneral(nombrePartida, "Inicio de la partida.");
-    }
-
-    /**
-     * Registra un tesoro encontrado en el fichero de la partida: [yyyy-mm-dd hh:mm:ss] RRR_TTT_NNN_PPPP
-     *
-     * @param nombrePartida Nombre de la partida.
-     * @param codigoTesoro  Código completo del tesoro encontrado (ej. RRR_TTT_NNN_PPPP).
-     */
-    public static void registrarTesoro(String nombrePartida, String codigoTesoro) {
-        try {
-            File dir = new File(REGISTER_LOG_DIR);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            String filePath = REGISTER_LOG_DIR + File.separator + nombrePartida + ".log";
-            String timestamp = LocalDateTime.now().format(FORMATTER);
-            String logEntry = "[" + timestamp + "] " + codigoTesoro + System.lineSeparator();
-
-            Files.write(Paths.get(filePath), logEntry.getBytes(),
-                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-
-        } catch (IOException e) {
-            registrarError(e);
+    public static List<String> listarPartidas() {
+        List<String> nombres = new ArrayList<>();
+        File[] ficheros = new File(SAVE_DIR).listFiles();
+        if (ficheros == null) {
+            return nombres;   // la carpeta todavía no existe
         }
-    }
-
-    /**
-     * Registra un evento general/informativo en el log de la partida dentro de log/register.
-     *
-     * @param nombrePartida Nombre de la partida.
-     * @param mensaje       Mensaje descriptivo.
-     */
-    public static void registrarLogGeneral(String nombrePartida, String mensaje) {
-        try {
-            File dir = new File(REGISTER_LOG_DIR);
-            if (!dir.exists()) {
-                dir.mkdirs();
+        for (File f : ficheros) {
+            String nombre = f.getName();
+            if (f.isFile() && nombre.endsWith(EXTENSION)) {
+                nombres.add(nombre.substring(0, nombre.length() - EXTENSION.length()));
             }
-
-            String filePath = REGISTER_LOG_DIR + File.separator + nombrePartida + ".log";
-            String timestamp = LocalDateTime.now().format(FORMATTER);
-            String logEntry = "[" + timestamp + "] " + mensaje + System.lineSeparator();
-
-            Files.write(Paths.get(filePath), logEntry.getBytes(),
-                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-
-        } catch (IOException e) {
-            registrarError(e);
         }
-    }
-
-    /**
-     * Registra una excepción y su pila de trazabilidad en el archivo global log/errors.log.
-     *
-     * @exception e La excepción ocurrida.
-     */
-    public static void registrarError(Exception e) {
-        try {
-            File dir = new File(GLOBAL_LOG_DIR);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            String filePath = GLOBAL_LOG_DIR + File.separator + "errors.log";
-            String timestamp = LocalDateTime.now().format(FORMATTER);
-
-            // Obtener la pila de trazabilidad (stack trace) como texto
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            String stackTrace = sw.toString();
-
-            String logEntry = "[" + timestamp + "] " + e.getMessage() + System.lineSeparator()
-                    + stackTrace + System.lineSeparator();
-
-            Files.write(Paths.get(filePath), logEntry.getBytes(),
-                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
+        Collections.sort(nombres);
+        return nombres;
     }
 }
