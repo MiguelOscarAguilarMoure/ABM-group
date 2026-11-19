@@ -119,14 +119,7 @@ public class Archaios {
      */
     private transient Zeraf zeraf;
 
-    /**
-     * Devuelve el nombre de la partida actual.
-     *
-     * @return nombre de la partida
-     */
-    public String getPartida() {
-        return nombrePartida; // O 'partida', dependiendo del nombre de tu variable interna
-    }
+    
 
     /**
      * Inicia, ejecuta y finaliza una partida.
