@@ -15,6 +15,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Gestor de persistencia, guardado de partidas (.save) y registros (logs de tesoros y errores).
@@ -85,6 +88,28 @@ public class SaveManager {
             registrarError(e);
             return null;
         }
+    }
+     /**
+     * Devuelve los nombres de las partidas guardadas, es decir, los ficheros
+     * .save de la carpeta de guardado.
+     *
+     * @return Los nombres ordenados alfabéticamente, sin la extensión;
+     *         una lista vacía si no hay ninguna.
+     */
+    public static List<String> listarPartidas() {
+        List<String> nombres = new ArrayList<>();
+        File[] ficheros = new File(SAVE_DIR).listFiles();
+        if (ficheros == null) {
+            return nombres;   // la carpeta todavía no existe
+        }
+        for (File f : ficheros) {
+            String nombre = f.getName();
+            if (f.isFile() && nombre.endsWith(".save")) {
+                nombres.add(nombre.substring(0, nombre.length() - ".save".length()));
+            }
+        }
+        Collections.sort(nombres);
+        return nombres;
     }
 
     /**
