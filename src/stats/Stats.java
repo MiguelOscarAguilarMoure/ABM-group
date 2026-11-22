@@ -9,11 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import regions.Region;
 import treasures.Treasure;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Estadísticas de la partida: lugares visitados y tesoros encontrados.
  * <p>
- * Guarda los datos en dos {@link HashMap} y sabe mostrarlos con el formato del enunciado.
+ * Guarda los datos en dos {@link HashMap} y sabe mostrarlos con el formato del
+ * enunciado.
  * El menú que elige qué estadística mostrar está en {@code StatsOperation}.
  * </p>
  *
@@ -25,10 +27,13 @@ import treasures.Treasure;
 public class Stats {
 
     /** Código de cada tesoro encontrado (con parte) → veces encontrado. */
-    private final HashMap<String, Integer> tesoros = new HashMap<>();
+    @SerializedName("Tesoros")
+    private 
+     HashMap<String, Integer> tesoros = new HashMap<>();
 
     /** Código de cada región → veces que se ha excavado allí. */
-    private final HashMap<String, Integer> lugares = new HashMap<>();
+    @SerializedName("Lugares")
+    private  HashMap<String, Integer> lugares = new HashMap<>();
 
     /**
      * Registra una excavación: suma una visita a la región y cada tesoro
@@ -37,18 +42,19 @@ public class Stats {
      * 
      * @param region  La región excavada.
      * @param codigos Los códigos completos de los tesoros encontrados
-     *                
+     * 
      */
     public void registrar(Region region, List<String> codigos) {
         lugares.merge(region.getCodigo(), 1, Integer::sum);
         for (String codigo : codigos) {
-            tesoros.merge(codigo, 1, Integer::sum); 
-                                                  
+            tesoros.merge(codigo, 1, Integer::sum);
+
         }
     }
 
-     /**
-     * Muestra, por cada región, las veces que se ha visitado, los tesoros distintos encontrados
+    /**
+     * Muestra, por cada región, las veces que se ha visitado, los tesoros distintos
+     * encontrados
      * frente al total (con porcentaje) y el total de tesoros excavados.
      * <p>
      * Cada parte de un tesoro cuenta como un tesoro distinto.
@@ -101,18 +107,18 @@ public class Stats {
                 mostrarGrupo(deLaRegion);
             }
         }
-        
+
     }
 
     /**
-     * Muestra los tesoros encontrados divididos por tipo (ordenados alfabéticamente)
+     * Muestra los tesoros encontrados divididos por tipo (ordenados
+     * alfabéticamente)
      * y, dentro de cada tipo, ordenados por código.
      * Si todavía no se ha encontrado ninguno, lo indica.
      */
     public void mostrarPorTipo() {
         List<String> codigos = codigosOrdenados();
 
-        
         List<String> tipos = new ArrayList<>();
         for (String codigo : codigos) {
             String tipo = CodeHelper.getType(codigo);
@@ -123,7 +129,7 @@ public class Stats {
         Collections.sort(tipos);
 
         for (String tipo : tipos) {
-            
+
             List<String> delTipo = new ArrayList<>();
             for (String codigo : codigos) {
                 if (CodeHelper.getType(codigo).equals(tipo)) {
@@ -140,7 +146,7 @@ public class Stats {
 
     // AUXILIARES
 
-       /**
+    /**
      * Devuelve los códigos de los tesoros encontrados ordenados alfabéticamente,
      * porque el {@link HashMap} no guarda ningún orden.
      *
@@ -152,11 +158,12 @@ public class Stats {
         return codigos;
     }
 
-     /**
+    /**
      * Muestra una lista de códigos agrupados por tesoro.
      * <ul>
-     *   <li>Si el tesoro tiene una sola parte: {@code -Nombre: veces}</li>
-     *   <li>Si tiene varias: {@code -Nombre:} y debajo cada parte con cuatro espacios</li>
+     * <li>Si el tesoro tiene una sola parte: {@code -Nombre: veces}</li>
+     * <li>Si tiene varias: {@code -Nombre:} y debajo cada parte con cuatro
+     * espacios</li>
      * </ul>
      * Los códigos que no corresponden a ningún tesoro registrado se ignoran.
      *

@@ -85,7 +85,7 @@ public class SkillsOperation implements IOperation {
         }
     }
 
-    /**
+       /**
      * Muestra los tipos de habilidad y pide uno.
      *
      * @return El tipo elegido, o {@code null} si elige 0 o una opción no válida.
@@ -95,6 +95,7 @@ public class SkillsOperation implements IOperation {
         System.out.println("1. Tesoros");
         System.out.println("2. Excavación");
         System.out.println("3. Terreno");
+        System.out.println("4. Especialista");
         System.out.println("0. Volver");
         int op = InputHelper.leerEntero("Tipo: ");
 
@@ -105,6 +106,8 @@ public class SkillsOperation implements IOperation {
                 return ESkillType.EXCAVATION;
             case 3:
                 return ESkillType.TERRAIN;
+            case 4:
+                return ESkillType.EXPERT;
             default:
                 return null;
         }

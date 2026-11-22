@@ -121,6 +121,9 @@ public class ArcheologistsOperation implements IOperation {
 
         juego.getArqueologos().add(nuevo);
         juego.addPuntos(-COSTE_CONTRATAR);
+
+        commons.SaveManager.guardarPartida(juego); // GUARDAMOS PARTIDA
+
         System.out.println(nombre + " se ha unido al equipo.");
     }
 
@@ -149,6 +152,9 @@ public class ArcheologistsOperation implements IOperation {
             if (InputHelper.confirmar("¿Confirmar?")) {
                 juego.getArqueologos().remove(a);
                 juego.addPuntos(puntos);
+
+                commons.SaveManager.guardarPartida(juego); //GUARDAR PARTIDA
+
                 System.out.println("Se ha licenciado a " + a.getNombre() + ".");
                 return; // vuelve al menú de arqueólogos
             }

@@ -3,8 +3,8 @@ package commons.repositories;
 import java.util.ArrayList;
 import java.util.List;
 import skills.ESkillType;
-import skills.Habilidad.*;
 import skills.Skill;
+import skills.Habilidad.*;
 
 /**
  * Repositorio de todas las habilidades del juego.
@@ -26,7 +26,7 @@ public class SkillRepository {
     private static final ArrayList<Skill> skills = new ArrayList<>();
 
     /**
-     * Crea todas las habilidades de la Base, enlaza sus dependencias y las registra.
+     * Crea todas las habilidades (Base e Imperio de las arenas), enlaza sus dependencias y las registra.
      * Se llama una vez desde Archaios.preInit().
      */
     public static void inicializar() {
@@ -94,11 +94,19 @@ public class SkillRepository {
         Licencia licenciaB = new Licencia("Licencia B", "Añade los terrenos horizontal y vertical", ESkillType.TERRAIN, 2);
         registrar(licenciaA);
         registrar(licenciaB);
-          // Investigación
+
+        // Investigación
         registrar(new Investigacion("Investigación",
                 "Hace un desglose de cuántos tesoros de cada rareza hay", ESkillType.EXCAVATION));
 
-        // Los especialistas de terreno (agua, arena, océano...) son de las ampliaciones
+
+        // Imperio de las arenas
+        registrar(new TerrenoArena("Especialización en desierto",
+                "El coste de excavar arena se fija en 1. Incompatible con otras especializaciones en un terreno",
+                ESkillType.EXPERT));
+        registrar(new TerrenoDemoler("Especialista en demoliciones A",
+                "Rompe hasta 5 piedras aleatorias antes de excavar, pasando sus casillas a tierra",
+                ESkillType.EXPERT, 5));
     }
 
     /**

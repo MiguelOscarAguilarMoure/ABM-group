@@ -1,14 +1,55 @@
 package skills.Habilidad;
 
-
+import excavation.ETerreno;
 import skills.ESkillType;
-import skills.Skill;
 
-import java.util.ArrayList;
+/**
+ * Habilidad "Especialización en desierto".
+ * <p>
+ * Estos arqueólogos están acostumbrados a la arena, por lo que su coste de
+ * excavación en ese terreno se fija en {@value #COSTE_ARENA}.
+ * Es incompatible con cualquier otra especialización en un terreno.
+ * </p>
+ *
+ * @author Miguel Aguilar Moure
+ * @author Alberto Ameneiros
+ * @version 1.0
+ * @see TerrenoEspecializacion
+ * @see skills.Skill#getCosteExcavar(ETerreno)
+ */
+public class TerrenoArena extends TerrenoEspecializacion {
+    /** Coste fijo de excavar arena con esta habilidad. */
+    private static final int COSTE_ARENA = 1;
 
-public class TerrenoArena extends Skill {
+    /**
+     * Crea la habilidad de especialización en desierto.
+     *
+     * @param nombre      Nombre de la habilidad.
+     * @param descripcion Descripción de la habilidad.
+     * @param tipo        Tipo de la habilidad.
+     */
     public TerrenoArena(String nombre, String descripcion, ESkillType tipo) {
         super(nombre, descripcion, tipo);
     }
 
+    /**
+     * Coste de excavar un terreno con esta habilidad.
+     * Lo usa {@code Archeologist.getCosteExcavar()}, que se queda con el menor.
+     *
+     * @param tipo El terreno que se va a excavar.
+     * @return 1 si es arena; 0 (sin efecto) en cualquier otro terreno.
+     */
+    @Override
+    public int getCosteExcavar(ETerreno tipo) {
+        return (tipo == ETerreno.ARENA) ? efecto() : 0;
+    }
+
+    /**
+     * Aplica el efecto de la habilidad.
+     *
+     * @return El coste de excavación en las casillas de arena.
+     */
+    public int efecto() {
+        return COSTE_ARENA;
+    }
 }
