@@ -28,11 +28,11 @@ public class Stats {
 
     /** Código de cada tesoro encontrado (con parte) → veces encontrado. */
     @SerializedName("Tesoros")
-    private final HashMap<String, Integer> tesoros = new HashMap<>();
+    private  HashMap<String, Integer> tesoros = new HashMap<>();
 
     /** Código de cada región → veces que se ha excavado allí. */
     @SerializedName("Lugares")
-    private final HashMap<String, Integer> lugares = new HashMap<>();
+    private  HashMap<String, Integer> lugares = new HashMap<>();
 
     /**
      * Registra una excavación: suma una visita a la región y cada tesoro
