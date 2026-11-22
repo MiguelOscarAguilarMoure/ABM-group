@@ -9,10 +9,11 @@ package excavation;
  * terreno y hay que excavarla de nuevo.
  * </p>
  * <ul>
- * * <li><b>Tierra</b> {@code ·} (coste 1): el terreno básico.</li
+ * *
+ * <li><b>Tierra</b> {@code ·} (coste 1): el terreno básico.</li>
  * <li><b>Piedra</b> {@code ^} (coste 1): al romperla pasa a tierra.</li>
  * <li><b>Arena</b> {@code ~} (coste 1-2, variable).</li>
- *  <li><b>Agua</b> {@code –} (coste 2).</li>
+ * <li><b>Agua</b> {@code –} (coste 2).</li>
  * </ul>
  *
  * @author Miguel Aguilar Moure

@@ -33,4 +33,5 @@ lib/
 backup/
 *.jar
 
-docs/
+docs/*
+!docs/Manual_tecnico_Archaios_final.md
